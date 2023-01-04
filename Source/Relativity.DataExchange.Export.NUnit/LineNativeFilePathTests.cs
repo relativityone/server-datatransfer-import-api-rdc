@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LineNativeFilePathTests
@@ -36,7 +36,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				RecordDelimiter = _RECORD_DELIMITER
 			};
 			this._filePathTransformer = new Mock<IFilePathTransformer>();
-			this._instance = new LineNativeFilePath(new DelimitedCellFormatter(this._exportSettings), this._exportSettings, this._filePathTransformer.Object, new NullLogger());
+			this._instance = new LineNativeFilePath(new DelimitedCellFormatter(this._exportSettings), this._exportSettings, this._filePathTransformer.Object, new TestNullLogger());
 		}
 
 		[Test]

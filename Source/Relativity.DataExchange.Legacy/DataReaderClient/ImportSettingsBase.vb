@@ -1,5 +1,4 @@
 ﻿Imports System.Collections.Generic
-Imports kCura.WinEDDS.Monitoring
 Imports Monitoring.Sinks
 
 Namespace kCura.Relativity.DataReaderClient
@@ -13,6 +12,12 @@ Namespace kCura.Relativity.DataReaderClient
 			ExtractedTextFieldContainsFilePath = False
 
 		End Sub
+
+        ''' <summary>
+        ''' Get class containing telemetry settings
+        ''' </summary>
+        ''' <returns></returns>
+        Public ReadOnly Property Telemetry As IMetricSinkConfig = New ImportApiMetricSinkConfig()
 
 		''' <summary>
 		''' Indicates the level of auditing for an import job.
@@ -135,7 +140,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property NativeFileCopyMode() As NativeFileCopyModeEnum
 
 		''' <summary>
-		''' Indicates whether records should be appended or overlayed. The default mode is Append.
+		''' Indicates whether records should be appended or overlaid. The default mode is Append.
 		''' </summary>
 		''' <remarks>To set this property, see <see cref="kCura.Relativity.DataReaderClient.OverwriteModeEnum">OverwriteModeEnum</see> for a list of values.</remarks>
 		Public Property OverwriteMode() As OverwriteModeEnum
@@ -211,10 +216,10 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property Billable() As Boolean = True
 
         ''' <summary>
-        ''' Get class containing telemetry settings
+        ''' Allows clients of Import API to identify themselves. This property is used for telemetry purpose.
         ''' </summary>
-        ''' <returns></returns>
-        Public ReadOnly Property Telemetry As IMetricsSinkConfig = New ImportApiMetricSinkConfig()
+        ''' <returns>The application name</returns>
+        Public Property ApplicationName As String = Nothing
 
 	End Class
 End Namespace

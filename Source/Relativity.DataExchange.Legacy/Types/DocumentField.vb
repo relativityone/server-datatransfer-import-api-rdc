@@ -202,22 +202,22 @@ Namespace kCura.WinEDDS
 			If Not Me.CodeTypeID Is Nothing Then retval.CodeTypeID = Me.CodeTypeID.Value
 			retval.DisplayName = Me.FieldName
 			If Not Me.FieldLength Is Nothing Then retval.TextLength = Me.FieldLength.Value
-			retval.Type = Me.ConvertFieldTypeEnum(Me.FieldTypeID)
+			retval.Type = Me.ConvertFieldTypeEnum()
 			retval.IsUnicodeEnabled = Me.UseUnicode
-			retval.ImportBehavior = Me.ConvertImportBehaviorEnum(Me.ImportBehavior)
+			retval.ImportBehavior = Me.ConvertImportBehaviorEnum()
 			retval.EnableDataGrid = Me.EnableDataGrid
 			Return retval
 		End Function
 
 		'HACK: This blows, but is necessary because the WSDL generator is mad-retarded re: enums with set numbers
-		Private Function ConvertFieldTypeEnum(ByVal fieldtypeID As Int32) As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
-			Dim ft As FieldType = CType(fieldtypeID, FieldType)
+		Private Function ConvertFieldTypeEnum() As kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType
+			Dim ft As FieldType = CType(Me.FieldTypeID, FieldType)
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType), ft.ToString), kCura.EDDS.WebAPI.BulkImportManagerBase.FieldType)
 		End Function
 
-		Private Function ConvertImportBehaviorEnum(ByVal importBehavior As kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice?) As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice?
-			If Not importBehavior.HasValue Then Return Nothing
-			Select Case importBehavior.Value
+		Private Function ConvertImportBehaviorEnum() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice?
+			If Not Me.ImportBehavior.HasValue Then Return Nothing
+			Select Case Me.ImportBehavior.Value
 				Case EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier
 					Return EDDS.WebAPI.BulkImportManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier
 				Case Else

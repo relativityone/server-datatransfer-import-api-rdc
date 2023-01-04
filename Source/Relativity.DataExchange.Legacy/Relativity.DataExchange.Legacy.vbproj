@@ -103,75 +103,82 @@
   <PropertyGroup>
     <OptionInfer>Off</OptionInfer>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>EnableInjections</DefineConstants>
-    <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\Relativity.DataExchange.Legacy.xml</DocumentationFile>
-    <WarningLevel>1</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>40000,40008</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineDebug>true</DefineDebug>
-    <DefineTrace>true</DefineTrace>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>EnableInjections</DefineConstants>
-    <BaseAddress>285212672</BaseAddress>
-    <DocumentationFile>bin\Relativity.DataExchange.Legacy.xml</DocumentationFile>
-    <WarningLevel>1</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>40000,40008</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109,42353,42354,42355</WarningsAsErrors>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Relativity.Client">
-      <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces">
-      <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System">
-      <Name>System</Name>
-    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Collections" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data">
-      <Name>System.Data</Name>
-    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.Serialization.Formatters.Soap">
-      <Name>System.Runtime.Serialization.Formatters.Soap</Name>
-    </Reference>
-    <Reference Include="System.Web">
-      <Name>System.Web</Name>
-    </Reference>
-    <Reference Include="System.Web.Services">
-      <Name>system.web.services</Name>
-    </Reference>
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml">
-      <Name>System.XML</Name>
-    </Reference>
+    <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oi\unmanaged\libchardet.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.exe">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.jar">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccca-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccch-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccda-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccex-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfa-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfi-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccind-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\scclo-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\wvcore-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Compile Include="CertificateValidator.vb" />
+    <Compile Include="Constants\BulkFileConstants.vb" />
+    <Compile Include="DataReaderClient\BatchReport.vb" />
+    <Compile Include="Service\Kepler\KeplerProxy.vb" />
+    <Compile Include="Service\Kepler\LongTextStreamService.vb" />
+    <Compile Include="Service\Kepler\ReLoginRetryPolicyFactory.vb" />
+    <Compile Include="Service\Kepler\WebApiVsKeplerFactory.vb" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeFactory.vb" />
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
     <Import Include="System.Collections" />
@@ -200,14 +207,26 @@
     <Compile Include="API\IImageReader.vb" />
     <Compile Include="API\ImageRecord.vb" />
     <Compile Include="API\LoginHelper.vb" />
+    <Compile Include="FileValidation\FileInspector.vb" />
+    <Compile Include="FileValidation\ImageValidationResult.vb" />
+    <Compile Include="FileValidation\ImageValidator.vb" />
+    <Compile Include="FileValidation\IFileInspector.vb" />
+    <Compile Include="FileValidation\IImageValidator.vb" />
+    <Compile Include="FileValidation\ITiffValidator.vb" />
+    <Compile Include="FileValidation\TiffValidator.vb" />
+    <Compile Include="Helpers\FileSizeHelper.vb" />
+    <Compile Include="ImportExtension\ImageImport\ImageDataReader.vb" />
+    <Compile Include="Mapping\IServiceExceptionMapper.vb" />
+    <Compile Include="Mapping\KeplerExceptionMapper.vb" />
+    <Compile Include="Mapping\KeplerExceptionDetail.vb" />
+    <Compile Include="Monitoring\BatchInformation.vb" />
+    <Compile Include="Helpers\ClientInformationHelper.vb" />
+    <Compile Include="Monitoring\MetricAuthenticationType.vb" />
+    <Compile Include="Monitoring\MetricJobBase.vb" />
+    <Compile Include="Monitoring\MetricJobBatch.vb" />
     <Compile Include="Config.vb" />
-    <Compile Include="Credentials\Constants.vb" />
     <Compile Include="Credentials\CredentialsNotSetException.vb" />
     <Compile Include="Credentials\ICredentialsProvider.vb" />
-    <Compile Include="Credentials\IntegratedAuthenticationOAuthCredentialsProvider.vb" />
-    <Compile Include="Credentials\OAuth2ClientCredentials.vb" />
-    <Compile Include="Credentials\OAuth2ImplicitCredentials.vb" />
-    <Compile Include="Credentials\OAuth2ImplicitCredentialsHelper.vb" />
     <Compile Include="Credentials\RelativityWebApiCredentialsProvider.vb" />
     <Compile Include="Credentials\UserCredentialsProvider.vb" />
     <Compile Include="DataReaderClient\Enum.vb" />
@@ -252,9 +271,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Exceptions\WebApiException.vb" />
-    <Compile Include="Exceptions\WebDownloadCorruptException.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Exporters\Container\ContainerFactoryProvider.vb" />
     <Compile Include="Exporters\Container\IContainerFactory.vb" />
     <Compile Include="Exporters\ExportConfig.vb" />
@@ -286,7 +302,6 @@
     <Compile Include="Exporters\LoadFileCellFormatters\HtmlCellFormatter.vb" />
     <Compile Include="Exporters\LoadFileCellFormatters\ILoadFileCellFormatter.vb" />
     <Compile Include="Exporters\ILongTextStreamFormatter.vb" />
-    <Compile Include="Exporters\LineFactory\ObjectLineFactoryBase.vb" />
     <Compile Include="Exporters\ObjectExportInfo.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -312,12 +327,9 @@
     <Compile Include="Exporters\VolumeInfo.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Exporters\VolumeManager.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Exporters\VolumePredictions.vb" />
     <Compile Include="FieldProviderCache.vb" />
-    <Compile Include="FileDownloader.vb">
+    <Compile Include="ErrorFileService.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FileNaming\CustomFileNaming\CustomFileNameProvider.vb" />
@@ -382,7 +394,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Importers\ImportConfig.vb" />
-    <Compile Include="Importers\ImportExportTapiBase.vb" />
+    <Compile Include="Importers\ImportTapiBase.vb" />
     <Compile Include="Importers\LoadFileBase.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -408,19 +420,37 @@
     <Compile Include="ImportExtension\DataReaderReaderInitializationArgs.vb" />
     <Compile Include="ImportExtension\ImageImport\DataReaderImageImporter.vb" />
     <Compile Include="ImportExtension\ImageImport\DataReaderImageImporterProcess.vb" />
-    <Compile Include="ImportExtension\ImageImport\DataSource.vb" />
-    <Compile Include="ImportExtension\ImageImport\ImageDataTableReader.vb" />
     <Compile Include="ImportExtension\NativeFileValidatedArtifactFieldCollection.vb" />
-    <Compile Include="Monitoring\Sinks\IMetricSinkManager.vb" />
+    <Compile Include="Monitoring\MetricJobEndReport.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricService.vb" />
     <Compile Include="Monitoring\Sinks\ImportApiMetricSinkConfig.vb" />
-    <Compile Include="Monitoring\Sinks\MetricSinkManager.vb" />
+    <Compile Include="Monitoring\Sinks\ISumMetricFormatter.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkRelativityLogging.vb" />
+    <Compile Include="Monitoring\Sinks\SumMetricFormatter.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkApm.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricSink.vb" />
+    <Compile Include="Monitoring\Sinks\MetricService.vb" />
+    <Compile Include="Monitoring\Sinks\MetricSinkSum.vb" />
+    <Compile Include="Monitoring\TelemetryConstants.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Process\EpochDateConverter.vb" />
+    <Compile Include="Process\ImportStatistics.vb" />
     <Compile Include="Resources\Strings.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="Service\IBulkImportManager.vb" />
+    <Compile Include="Mapping\KeplerTypeMapper.vb" />
+    <Compile Include="Service\Replacement\IUserManager.vb" />
+    <Compile Include="Service\Replacement\IRelativityManager.vb" />
+    <Compile Include="Service\Replacement\IProductionManager.vb" />
+    <Compile Include="Service\Replacement\IObjectTypeManager.vb" />
+    <Compile Include="Service\Replacement\IObjectManager.vb" />
+    <Compile Include="Service\Replacement\IFolderManager.vb" />
+    <Compile Include="Service\Replacement\IFileIO.vb" />
+    <Compile Include="Service\Replacement\IFieldQuery.vb" />
+    <Compile Include="Service\Replacement\IAuditManager.vb" />
+    <Compile Include="Service\Replacement\IBulkImportManager.vb" />
     <Compile Include="Service\ApplicationVersionService.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimeKeeperManager.vb" />
     <Compile Include="Importers\TimeKeeper\DefaultTimerKeeper.vb" />
@@ -428,22 +458,10 @@
     <Compile Include="Importers\TimeKeeper\ITimeKeeperManager.vb" />
     <Compile Include="IO\FileStreamFactory.vb" />
     <Compile Include="IO\IFileStreamFactory.vb" />
-    <Compile Include="Monitoring\Sinks\IMetricsConfig.vb" />
-    <Compile Include="Monitoring\Sinks\JobApmEndOfLifeSink.vb" />
-    <Compile Include="Monitoring\Sinks\JobSumEndOfLifeSink.vb" />
-    <Compile Include="Monitoring\MetricMetadataExtensions.vb" />
-    <Compile Include="Monitoring\Sinks\JobLifetimeSink.vb" />
-    <Compile Include="Monitoring\Sinks\JobLiveMetricSink.vb" />
-    <Compile Include="Monitoring\Sinks\MetricSinkBase.vb" />
-    <Compile Include="Monitoring\TransferJobProgressMessage.vb" />
-    <Compile Include="Monitoring\TransferJobCompletedRecordsCountMessage.vb" />
-    <Compile Include="Monitoring\TransferJobFailedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobMessageBase.vb" />
-    <Compile Include="Monitoring\TransferJobCompletedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobStatisticsMessage.vb" />
-    <Compile Include="Monitoring\TransferJobStartedMessage.vb" />
-    <Compile Include="Monitoring\TransferJobThroughputMessage.vb" />
-    <Compile Include="Monitoring\TransferJobTotalRecordsCountMessage.vb" />
+    <Compile Include="Monitoring\Sinks\IMetricSinkConfig.vb" />
+    <Compile Include="Monitoring\MetricJobProgress.vb" />
+    <Compile Include="Monitoring\MetricBase.vb" />
+    <Compile Include="Monitoring\MetricJobStarted.vb" />
     <Compile Include="Process\MonitoredProcessBase.vb" />
     <Compile Include="Process\StatusEventArgs.vb" />
     <Compile Include="My Project\Settings.Designer.vb">
@@ -476,14 +494,8 @@
     <Compile Include="Process\Statistics.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="PropertyExtractor\EML.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PropertyExtractor\File.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ReadFromExisting.vb" />
-    <Compile Include="ServiceFactoryFactory.vb" />
+    <Compile Include="KeplerProxyFactory.vb" />
     <Compile Include="Service\AuditManager.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -504,7 +516,6 @@
     <Compile Include="Service\Export\IExportManager.vb" />
     <Compile Include="Service\Export\IFieldManager.vb" />
     <Compile Include="Service\Export\IAuditManager.vb" />
-    <Compile Include="Service\Export\IExportFileDownloader.vb" />
     <Compile Include="Service\Export\IProductionManager.vb" />
     <Compile Include="Service\Export\ISearchManager.vb" />
     <Compile Include="Service\Export\IServiceFactory.vb" />
@@ -531,6 +542,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Service\Export\ICaseManager.vb" />
+    <Compile Include="Service\Replacement\ICaseManager.vb" />
+    <Compile Include="Service\Replacement\ICodeManager.vb" />
+    <Compile Include="Service\Replacement\IDocumentManager.vb" />
+    <Compile Include="Service\Replacement\IExportManager.vb" />
     <Compile Include="Service\IHierarchicArtifactManager.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -546,6 +561,27 @@
     <Compile Include="Service\RelativityManager.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Service\Replacement\IFieldManager.vb" />
+    <Compile Include="Service\Replacement\ISearchManager.vb" />
+    <Compile Include="Service\ManagerFactory.vb" />
+    <Compile Include="Service\Replacement\KeplerApplicationVersionService.vb" />
+    <Compile Include="Service\Replacement\KeplerAuditManager.vb" />
+    <Compile Include="Service\Replacement\KeplerBulkImportManager.vb" />
+    <Compile Include="Service\Replacement\KeplerCaseManager.vb" />
+    <Compile Include="Service\Replacement\KeplerCodeManager.vb" />
+    <Compile Include="Service\Replacement\KeplerDocumentManager.vb" />
+    <Compile Include="Service\Replacement\KeplerExportManager.vb" />
+    <Compile Include="Service\Replacement\KeplerFieldManager.vb" />
+    <Compile Include="Service\Replacement\KeplerFileIO.vb" />
+    <Compile Include="Service\Replacement\KeplerFolderManager.vb" />
+    <Compile Include="Service\Replacement\KeplerManager.vb" />
+    <Compile Include="Service\Replacement\KeplerFieldQuery.vb" />
+    <Compile Include="Service\Replacement\KeplerObjectManager.vb" />
+    <Compile Include="Service\Replacement\KeplerObjectTypeManager.vb" />
+    <Compile Include="Service\Replacement\KeplerProductionManager.vb" />
+    <Compile Include="Service\Replacement\KeplerRelativityManager.vb" />
+    <Compile Include="Service\Replacement\KeplerSearchManager.vb" />
+    <Compile Include="Service\Replacement\KeplerUserManager.vb" />
     <Compile Include="Service\SearchManager.vb">
       <SubType>code</SubType>
     </Compile>
@@ -590,9 +626,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Types\FolderInfo.vb">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Types\ImportStatusMessagePriority.vb">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Types\LoadFileFieldMap.vb">
@@ -1202,28 +1235,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.DataTransfer.MessageService">
-          <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="FaspManager">
-          <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Relativity.Kepler">
           <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
           <Private>True</Private>
@@ -1246,8 +1257,24 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client.SDK\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Relativity.Logging">
           <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1268,13 +1295,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.OAuth2Client">
-          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.OAuth2Client.IdentityModel">
-          <HintPath>..\..\packages\Relativity.OAuth2Client\lib\net462\Relativity.OAuth2Client.IdentityModel.dll</HintPath>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\Relativity.OutsideIn\lib\net40\oi.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1284,8 +1306,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.OAuth2Client.Implicit">
-          <HintPath>..\..\packages\Relativity.OAuth2Client.Implicit\lib\net462\Relativity.OAuth2Client.Implicit.dll</HintPath>
+        <Reference Include="Relativity.Services.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1295,24 +1317,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.OAuth2Client.IdentityModel.Interfaces">
-          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.IdentityModel.Interfaces.dll</HintPath>
-          <Private>True</Private>
+        <Reference Include="Microsoft.CSharp">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.OAuth2Client.Interfaces">
-          <HintPath>..\..\packages\Relativity.OAuth2Client.Interfaces\lib\net462\Relativity.OAuth2Client.Interfaces.dll</HintPath>
-          <Private>True</Private>
+        <Reference Include="System.Data.DataSetExtensions">
           <Paket>True</Paket>
         </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.APM">
-          <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+        <Reference Include="System.ServiceModel">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1344,28 +1359,43 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="FaspManager">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataTransfer.Nodes">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Transfer.Client">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Aspera">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Core">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.FileShare">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Http">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -1383,4 +1413,22 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" />
 </Project>

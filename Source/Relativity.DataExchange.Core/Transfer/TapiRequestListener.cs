@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Transfer
 	using System;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -19,14 +20,14 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiRequestListener"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		public TapiRequestListener(ITransferLog log, TransferContext context)
-			: base(log, context)
+		public TapiRequestListener(ILog logger, TransferContext context)
+			: base(logger, context)
 		{
 		}
 
@@ -42,19 +43,19 @@ namespace Relativity.DataExchange.Transfer
 			switch (e.Status)
 			{
 				case TransferRequestStatus.Started:
-					this.TransferLog.LogInformation(Strings.TransferJobStartedMessage);
+					this.Logger.LogInformation(Strings.TransferJobStartedMessage);
 					break;
 
 				case TransferRequestStatus.Ended:
-					this.TransferLog.LogInformation(Strings.TransferJobEndedMessage);
+					this.Logger.LogInformation(Strings.TransferJobEndedMessage);
 					break;
 
 				case TransferRequestStatus.EndedMaxRetry:
-					this.TransferLog.LogInformation(Strings.TransferJobEndedMaxRetryMessage);
+					this.Logger.LogInformation(Strings.TransferJobEndedMaxRetryMessage);
 					break;
 
 				case TransferRequestStatus.Canceled:
-					this.TransferLog.LogInformation(Strings.TransferJobCanceledMessage);
+					this.Logger.LogInformation(Strings.TransferJobCanceledMessage);
 					break;
 			}
 		}

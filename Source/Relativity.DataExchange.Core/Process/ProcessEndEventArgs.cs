@@ -23,10 +23,14 @@ namespace Relativity.DataExchange.Process
 		/// <param name="metadataBytes">
 		/// The total number of metadata bytes that were transferred.
 		/// </param>
-		public ProcessEndEventArgs(long nativeFileBytes, long metadataBytes)
+		/// <param name="sqlProcessRate">
+		/// Server/SQL Process rate (docs / sec).
+		/// </param>
+		public ProcessEndEventArgs(long nativeFileBytes, long metadataBytes, double sqlProcessRate)
 		{
 			this.NativeFileBytes = nativeFileBytes;
 			this.MetadataBytes = metadataBytes;
+			this.SqlProcessRate = sqlProcessRate;
 		}
 
 		/// <summary>
@@ -44,5 +48,13 @@ namespace Relativity.DataExchange.Process
 		/// The total number of bytes.
 		/// </value>
 		public long MetadataBytes { get; }
+
+		/// <summary>
+		/// Gets the Server/SQL Process rate summary.
+		/// </summary>
+		/// <value>
+		/// processed documents /second.
+		/// </value>
+		public double SqlProcessRate { get; }
 	}
 }

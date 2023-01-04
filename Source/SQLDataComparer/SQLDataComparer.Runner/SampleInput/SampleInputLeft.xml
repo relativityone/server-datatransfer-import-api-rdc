@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestWorkspaces>
+	<TestWorkspace TestName="Relativity.DataExchange.Import.NUnit.LoadTests.ImportDocumentsLoadTests.MyTest(1,1000,Web)" DatabaseName="EDDS1050659" ComparerConfigFilePath="MyTest.xml" />
+	<TestWorkspace TestName="Relativity.DataExchange.Import.NUnit.LoadTests.ImportDocumentsLoadTests.MyTest(2,1000,Web)" DatabaseName="EDDS1050661" ComparerConfigFilePath="MyTest.xml" />
+</TestWorkspaces>

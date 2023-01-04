@@ -20,6 +20,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
 	[TestFixture]
@@ -27,6 +28,10 @@ namespace Relativity.DataExchange.Export.NUnit
 	{
 		private IBatchValidator _instance;
 		private Mock<IStatus> _status;
+		private Mock<IAppSettings> _appSettings;
+		private Mock<ILog> _logger;
+
+		private TestNullLogger _testLogger;
 
 		protected Mock<IErrorFileWriter> ErrorFileWriter { get; set; }
 
@@ -37,14 +42,21 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this.ErrorFileWriter = new Mock<IErrorFileWriter>();
 			this.FileHelper = new Mock<IFile>();
-			this._status = new Mock<IStatus>();
+			_testLogger = new TestNullLogger();
 
+			this._status = new Mock<IStatus>();
+			this._appSettings = new Mock<IAppSettings>();
+			this._logger = _testLogger.NullLoggerMock;
 			this._instance = this.CreateSut();
 		}
 
 		protected virtual IBatchValidator CreateSut()
 		{
-			return new ImageFileBatchValidator(this.ErrorFileWriter.Object, this.FileHelper.Object, new NullLogger());
+			return new ImageFileBatchValidator(
+				this.ErrorFileWriter.Object,
+				this.FileHelper.Object,
+				this._appSettings.Object,
+				_testLogger);
 		}
 
 		[Test]
@@ -56,7 +68,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<ObjectExportInfo>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -71,28 +83,34 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<ObjectExportInfo>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]
-		[TestCase(false, 1)]
-		[TestCase(true, 0)]
-		public void ItShouldWriteErrorForMissingOrEmptySingleImage(bool exists, long size)
+		public void ItShouldWriteErrorForMissingSingleImage()
 		{
 			string location = "file_location";
 
 			ObjectExportInfo[] artifacts = { this.CreateSingleWithLocation(location) };
 
-			this.FileHelper.Setup(x => x.Exists(location)).Returns(exists);
-			this.FileHelper.Setup(x => x.GetFileSize(location)).Returns(size);
+			this.FileHelper.Setup(x => x.Exists(location)).Returns(false);
+			this.FileHelper.Setup(x => x.GetFileSize(location)).Returns(1);
 
 			// ACT
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
+						.Image,
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				Times.Once());
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
+			this._logger.Verify(x => x.LogVerbose(It.IsAny<string>(), It.IsAny<object[]>()), Times.Once);
 		}
 
 		[Test]
@@ -110,7 +128,13 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					It.IsAny<ErrorFileWriter.ExportFileType>(),
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				Times.Never);
 			this._status.Verify(x => x.WriteUpdate(It.IsAny<string>(), true), Times.Never);
 		}
 
@@ -129,14 +153,18 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					It.IsAny<ErrorFileWriter.ExportFileType>(),
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				Times.Never);
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
 		[Test]
-		[TestCase(false, 1)]
-		[TestCase(true, 0)]
-		public void ItShouldWriteErrorForMissingOrEmptyOneOfImages(bool exists, long size)
+		public void ItShouldWriteErrorForMissingOneOfImages()
 		{
 			string location1 = "file_location_1";
 			string location2 = "file_location_2";
@@ -146,14 +174,48 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.FileHelper.Setup(x => x.Exists(location1)).Returns(true);
 			this.FileHelper.Setup(x => x.GetFileSize(location1)).Returns(1);
 
-			this.FileHelper.Setup(x => x.Exists(location2)).Returns(exists);
-			this.FileHelper.Setup(x => x.GetFileSize(location2)).Returns(size);
+			this.FileHelper.Setup(x => x.Exists(location2)).Returns(false);
+			this.FileHelper.Setup(x => x.GetFileSize(location2)).Returns(1);
 
 			// ACT
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType.Image,
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				Times.Once());
+			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
+			this._logger.Verify(x => x.LogVerbose(It.IsAny<string>(), It.IsAny<object[]>()), Times.Once);
+		}
+
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ItShouldNotWriteErrorForEmptyFileWhenConfigured(bool createErrorForEmptyNativeFile)
+		{
+			// ARRANGE
+			string location = "file_location";
+			ObjectExportInfo[] artifacts = { this.CreateSingleWithLocation(location) };
+			this._appSettings.SetupGet(x => x.CreateErrorForEmptyNativeFile).Returns(createErrorForEmptyNativeFile);
+			this.FileHelper.Setup(x => x.Exists(location)).Returns(true);
+			this.FileHelper.Setup(x => x.GetFileSize(location)).Returns(0);
+
+			// ACT
+			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
+
+			// ASSERT
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
+						.Image,
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				createErrorForEmptyNativeFile ? Times.Once() : Times.Never());
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -178,7 +240,40 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(x => x.Write(It.IsAny<ErrorFileWriter.ExportFileType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					It.IsAny<ErrorFileWriter.ExportFileType>(),
+					It.IsAny<ObjectExportInfo>(),
+					It.IsAny<string>(),
+					It.IsAny<string>()),
+				Times.Never);
+			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
+		}
+
+		[Test]
+		[TestCase(null)]
+		[TestCase("")]
+		[TestCase(" ")]
+		public void ItShouldWriteErrorForInvalidNativeSourceLocation(string location)
+		{
+			// ARRANGE
+			ObjectExportInfo artifact = this.CreateSingleWithLocation(location);
+			ObjectExportInfo[] artifacts = { artifact };
+			this.FileHelper.Setup(x => x.Exists(location)).Returns(false);
+			this.FileHelper.Setup(x => x.GetFileSize(location)).Returns(0);
+
+			// ACT
+			this._instance.ValidateExportedBatch(artifacts, CancellationToken.None);
+
+			// ASSERT
+			this.ErrorFileWriter.Verify(
+				x => x.Write(
+					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
+						.Image,
+					artifact,
+					location,
+					It.IsAny<string>()),
+				Times.Once);
 			this._status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -210,15 +305,13 @@ namespace Relativity.DataExchange.Export.NUnit
 		private ObjectExportInfo CreateSingleWithLocation(string location)
 		{
 			ImageExportInfo image = new ImageExportInfo
-			{
-				FileGuid = Guid.NewGuid().ToString(),
-				SuccessfulRollup = true,
-				TempLocation = location
-			};
-			ArrayList images = new ArrayList
-			{
-				image
-			};
+				                        {
+					                        FileGuid = Guid.NewGuid().ToString(),
+					                        SourceLocation = @"\\files\T001\Files\EDDS1234567\temp.bin",
+					                        SuccessfulRollup = true,
+					                        TempLocation = location
+				                        };
+			ArrayList images = new ArrayList { image };
 			return new ObjectExportInfo
 			{
 				Images = images

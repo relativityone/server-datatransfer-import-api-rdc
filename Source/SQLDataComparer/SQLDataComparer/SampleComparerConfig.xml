@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<compareConfig>
+	<tables>
+		<table name="EDDSDBO.Document" rowId="ControlNumber" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ParentArtifactID_D"/>
+				<ignore name="OriginatingImagingDocumentError"/>
+				<ignore name="TestOnly"/>
+			</ignored>
+			<mappings>
+        <mapping name="TestMultiObj" type="MultiObject" targetTable="EDDSDBO.ImagingSet"/>
+				<mapping name="Privilege Designation" type="MultiChoice" targetTable="EDDSDBO.Code"/>
+				<mapping name="Confidential Designation" type="SingleChoice" targetTable="EDDSDBO.Code"/>
+        <mapping name="TestOnly" type="SingleObject" targetTable="EDDSDBO.ImagingSet"/>
+			</mappings>
+		</table>
+		<table name="EDDSDBO.Artifact" rowId="TextIdentifier" mapId="ArtifactID">
+      <mappedStrings>
+        <mappedString name="TextIdentifier_sub" left="ToggleOn" right="ToggleOff"/>
+      </mappedStrings>
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ParentArtifactID"/>
+				<ignore name="CreatedOn"/>
+				<ignore name="LastModifiedOn"/>
+				<ignore name="LastModifiedBy"/>
+			</ignored>
+      <mappings>
+        <mapping name="AncestorArtifactID" type="Artifact" targetTable="EDDSDBO.ArtifactAncestry"/>
+      </mappings>
+		</table>
+		<table name="EDDSDBO.Code" rowId="Name" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+			</ignored>
+		</table>
+		<table name="EDDSDBO.Field" rowId="DisplayName" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ArtifactViewFieldID"/>
+				<ignore name="AssociativeArtifactTypeID"/>
+				<ignore name="RelationalIndexViewArtifactID"/>
+			</ignored>
+		</table>
+		<table name="EDDSDBO.ImagingSet" rowId="Name" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+			</ignored>
+		</table>
+		<table name="EDDSDBO.AuditRecord_PrimaryPartition" rowId="TextIdentifier">
+		</table>
+	</tables>
+</compareConfig>

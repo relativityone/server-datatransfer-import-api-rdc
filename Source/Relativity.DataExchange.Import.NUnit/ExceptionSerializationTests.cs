@@ -17,7 +17,6 @@ namespace Relativity.DataExchange.Import.NUnit
 	using kCura.WinEDDS.Exceptions;
 
 	using Relativity.DataExchange.Io;
-	using Relativity.DataExchange.Transfer;
 
 	[TestFixture]
 	public static class ExceptionSerializationTests
@@ -55,12 +54,6 @@ namespace Relativity.DataExchange.Import.NUnit
 					new kCura.WinEDDS.Exceptions.WebApiException("Message", new InvalidOperationException()),
 					validateNoOp);
 				yield return new TestCaseData(
-					new kCura.WinEDDS.Exceptions.WebDownloadCorruptException("Message"),
-					validateNoOp);
-				yield return new TestCaseData(
-					new kCura.WinEDDS.FileDownloader.DistributedReLoginException(),
-					validateNoOp);
-				yield return new TestCaseData(
 					new kCura.WinEDDS.BulkLoadFileImporter.IdentityValueNotSetException(),
 					validateNoOp);
 				yield return new TestCaseData(
@@ -95,12 +88,6 @@ namespace Relativity.DataExchange.Import.NUnit
 					new kCura.WinEDDS.LoadFileBase.NonExistentParentException(1, 1, "Message"), validateNoOp);
 				yield return new TestCaseData(
 					new kCura.WinEDDS.LoadFileBase.ParentObjectReferenceRequiredException(1, 1),
-					validateNoOp);
-				yield return new TestCaseData(
-					new MetadataTransferException("Message"),
-					validateNoOp);
-				yield return new TestCaseData(
-					new MetadataTransferException("Message", new InvalidOperationException()),
 					validateNoOp);
 				yield return new TestCaseData(
 					new kCura.WinEDDS.LoadFileBase.DuplicateMulticodeValueException(1, 1, "Message"), validateNoOp);

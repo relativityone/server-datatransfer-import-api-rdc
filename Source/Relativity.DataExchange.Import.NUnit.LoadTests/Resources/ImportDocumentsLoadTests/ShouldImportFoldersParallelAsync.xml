@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<compareConfig>
+	<tables>
+		<table name="EDDSDBO.Document" rowId="ControlNumber" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ParentArtifactID_D"/>
+				<ignore name="OriginatingImagingDocumentError"/>
+			</ignored>
+		</table>
+		<table name="EDDSDBO.Artifact" rowId="TextIdentifier" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ParentArtifactID"/>
+				<ignore name="CreatedOn"/>
+				<ignore name="LastModifiedOn"/>
+				<ignore name="LastModifiedBy"/>
+			</ignored>
+			<mappedStrings>
+				<mappedString name="TextIdentifier" left="{leftWorkspaceName}" right="{rightWorkspaceName}"/>
+				<mappedString name="TextIdentifier_sub" left="{leftWorkspaceName}" right="{rightWorkspaceName}"/>
+			</mappedStrings>
+			<whereClauses>
+				<where name="ArtifactTypeID" type="IsNot" value="1000051"/>
+				<where name="TextIdentifier" type="IsNot" value="'Relativity Starter Template','ImportApi-SqlComparer'" />
+			</whereClauses>
+			<mappings>
+				<mapping name="AncestorArtifactID" type="Artifact" targetTable="EDDSDBO.ArtifactAncestry"/>
+			</mappings>
+		</table>
+		<table name="EDDSDBO.AuditRecord_PrimaryPartition" rowId="TextIdentifier">
+		</table>
+	</tables>
+</compareConfig>

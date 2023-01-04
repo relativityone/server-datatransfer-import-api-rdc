@@ -20,7 +20,7 @@ namespace Relativity.DataExchange
 	public interface IAppSettings
 	{
 		/// <summary>
-		/// Gets or sets the name of the application. This value is encoded within logs and potential transfer monitors.
+		/// Gets or sets the name of the application. This value is encoded within logs, metrics and potential transfer monitors.
 		/// </summary>
 		/// <value>
 		/// The application name.
@@ -45,12 +45,48 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to create an error when importing a zero byte file. This is <see langword="false" /> by default.
+		/// Gets or sets the number of retry attempts for batch in progress policy.
+		/// </summary>
+		/// <value>
+		/// The total number of retries.
+		/// </value>
+		int BatchInProgressNumberOfRetries
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of seconds to wait between retry attempts for batch in progress policy.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int BatchInProgressWaitTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to create an error when importing or exporting a zero byte file. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to create an error; otherwise, <see langword="false" />.
 		/// </value>
 		bool CreateErrorForEmptyNativeFile
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to create an error when exporting a zero byte file. This is <see langword="false" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to create an error; otherwise, <see langword="false" />.
+		/// </value>
+		bool CreateErrorForEmptyPdfFile
 		{
 			get;
 			set;
@@ -237,12 +273,85 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the number of threads to use during export jobs.
+		/// Gets or sets the size of the buffer in bytes to use when retrieving long text field data from Object Manager during export jobs.
 		/// </summary>
 		/// <value>
-		/// The total number of threads.
+		/// The total number of bytes.
 		/// </value>
-		int ExportThreadCount
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		int ExportLongTextBufferSizeBytes
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the rate, in seconds, that large file progress events are raised when retrieving long text field data from Object Manager during export jobs.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		int ExportLongTextLargeFileProgressRateSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to use Object Manager or the legacy Relativity.Distributed to retrieve long text field data during export jobs. This is <see langword="true" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to use Object Manager; otherwise, <see langword="false" /> for the legacy Relativity.Distributed implementation.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		bool ExportLongTextObjectManagerEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of concurrent requests to retrieve long text field data, stored in Data Grid, from Object Manager during export jobs.
+		/// </summary>
+		/// <value>
+		/// The total number of bytes.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		int ExportLongTextDataGridThreadCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of concurrent requests to retrieve long text field data, stored in SQL Server, from Object Manager during export jobs.
+		/// </summary>
+		/// <value>
+		/// The total number of bytes.
+		/// </value>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Naming",
+			"CA1720:IdentifiersShouldNotContainTypeNames",
+			MessageId = "long",
+			Justification = "This is an appropriate name for this setting and unrelated to the long data type.")]
+		int ExportLongTextSqlThreadCount
 		{
 			get;
 			set;
@@ -273,18 +382,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to use parallelism for production exports that use the new implementation. This is <see langword="false" /> by default.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> to use parallelism; otherwise, <see langword="false" />.
-		/// </value>
-		bool ForceParallelismInNewExport
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to force web-mode. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
@@ -297,12 +394,48 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the HTTP timeout in seconds.
+		/// Gets or sets the number of retry attempts for HTTP related fault tolerant methods.
+		/// </summary>
+		/// <value>
+		/// The total number of retries.
+		/// </value>
+		int HttpErrorNumberOfRetries
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of seconds to wait between retry attempts for HTTP related fault tolerant methods.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int HttpErrorWaitTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the HTTP timeout in seconds. This is 300 seconds by default.
 		/// </summary>
 		/// <value>
 		/// The total number of seconds.
 		/// </value>
 		int HttpTimeoutSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the timeout, in seconds, for the legacy Relativity.Distributed long text specific HTTP/REST-based API web services. This is 900 seconds by default.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int HttpExtractedTextTimeoutSeconds
 		{
 			get;
 			set;
@@ -333,6 +466,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the number of seconds for internal Kepler timeout when calling ExecuteAsync().
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int InternalKeplerTimeoutInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the number of retry attempts for I/O related fault tolerant methods.
 		/// </summary>
 		/// <value>
@@ -351,6 +496,18 @@ namespace Relativity.DataExchange
 		/// The total number of seconds.
 		/// </value>
 		int IoErrorWaitTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether gets or sets the value indicating whether the transfer client mode will attempt retries in the original mode before switching to the web mode.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> attempt the retries in the original transfer mode first; otherwise, <see langword="false" />.
+		/// </value>
+		bool RetryInTheOriginalTransferMode
 		{
 			get;
 			set;
@@ -405,24 +562,9 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the maximum number of files for each Transfer API bridge instance.
+		/// Gets or sets a value indicating whether to hash sensitive data.
 		/// </summary>
-		/// <value>
-		/// The maximum number of files.
-		/// </value>
-		int MaxFilesForTapiBridge
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the maximum number of file export tasks.
-		/// </summary>
-		/// <value>
-		/// The maximum number of tasks.
-		/// </value>
-		int MaxNumberOfFileExportTasks
+		bool LogHashingEnabled
 		{
 			get;
 			set;
@@ -496,12 +638,24 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether permission specific errors are retried. This is <see langword="false" /> by default.
+		/// Gets or sets a value indicating whether permission specific errors are retried in import. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to retry permissions specific errors; otherwise, <see langword="false" />.
 		/// </value>
 		bool PermissionErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether permission specific errors are retried in export. This is <see langword="false" /> by default.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to retry permissions specific errors; otherwise, <see langword="false" />.
+		/// </value>
+		bool ExportPermissionErrorsRetry
 		{
 			get;
 			set;
@@ -591,6 +745,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the size of the largest datagram size that will be used by Aspera.
+		/// </summary>
+		/// <value>Minimum value is <see cref="AppSettingsConstants.TapiAsperaDatagramSizeMinimumValue"/>,
+		/// maximum  value is <see cref="AppSettingsConstants.TapiAsperaDatagramSizeMaximumValue"/>.
+		/// When invalid value is passed to setter, then <see cref="AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue"/> is used.</value>
+		int TapiAsperaDatagramSize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether Transfer API retries files that fail due to invalid paths. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
@@ -603,19 +769,7 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets the time, in seconds, that a Transfer API bridge waits before releasing the wait handle.
-		/// </summary>
-		/// <value>
-		/// The total number of seconds.
-		/// </value>
-		int TapiBridgeExportTransferWaitingTimeInSeconds
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether Transfer API should disable treating missing files as errors. This is <see langword="false" /> by default and always <see langword="true" /> for exports.
+		/// Gets or sets a value indicating whether Transfer API should disable treating missing files as errors in import. This is <see langword="false" /> by default and always <see langword="true" /> for exports.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to disable treating missing files as errors; otherwise, <see langword="false" />.
@@ -627,12 +781,36 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether Transfer API should retry missing files. This is <see langword="true" /> by default and always <see langword="false" /> for exports.
+		/// Gets or sets a value indicating whether Transfer API should disable treating missing files as errors in export. This is <see langword="false" /> by default and always <see langword="true" /> for exports.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to disable treating missing files as errors; otherwise, <see langword="false" />.
+		/// </value>
+		bool TapiExportFileNotFoundErrorsDisabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Transfer API should retry missing files in import. This is <see langword="true" /> by default and always <see langword="false" /> for exports.
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> to retry missing files; otherwise, <see langword="false" />.
 		/// </value>
 		bool TapiFileNotFoundErrorsRetry
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Transfer API should retry missing files in export. This is <see langword="true" /> by default and always <see langword="false" /> for exports.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to retry missing files; otherwise, <see langword="false" />.
+		/// </value>
+		bool TapiExportFileNotFoundErrorsRetry
 		{
 			get;
 			set;
@@ -705,6 +883,18 @@ namespace Relativity.DataExchange
 		/// <see langword="true" /> to raise progress events; otherwise, <see langword="false" />.
 		/// </value>
 		bool TapiLargeFileProgressEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum number of seconds in which no data movement occurs before treating the transfer inactive. When this occurs, the import or export job continues but performance may be degraded.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int TapiMaxInactivitySeconds
 		{
 			get;
 			set;
@@ -831,18 +1021,6 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to use the old export production implementation. This is <see langword="false" /> by default.
-		/// </summary>
-		/// <value>
-		/// <see langword="true" /> to use the old export production implementation; otherwise, <see langword="false" /> to use the new export production implementation.
-		/// </value>
-		bool UseOldExport
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets a value indicating whether to execute native and object import tasks in parallel. This is <see langword="true" /> by default.
 		/// </summary>
 		/// <value>
@@ -879,6 +1057,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the time, in milliseconds, to wait before ReLogin.
+		/// </summary>
+		/// <value>
+		/// The total number of milliseconds.
+		/// </value>
+		int WaitTimeBetweenReLogOn
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the timeout, in seconds, before a WebAPI service call throws a timeout exception.
 		/// </summary>
 		/// <value>
@@ -909,6 +1099,91 @@ namespace Relativity.DataExchange
 		/// The total number of bytes.
 		/// </value>
 		int WebBasedFileDownloadChunkSize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Native File Transfer and Metadata import operations are synchronized in the batch.
+		/// If set to True than Metadata import operation is not triggered until Native File transfer finishes.
+		/// </summary>
+		/// <value>
+		/// The total number of bytes.
+		/// </value>
+		bool UseSynchronizedImportBatchMode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the searchable PDF mode is active or not.
+		/// </summary>
+		/// <value>
+		/// Searchable PDF mode is active.
+		/// </value>
+		bool UseSearchablePdf
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the Kepler service should be used instead of WebApi service.
+		/// </summary>
+		/// <value>
+		/// Kepler service enabled.
+		/// </value>
+		bool? UseKepler
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of retry attempts for reading communication mode.
+		/// </summary>
+		/// <value>
+		/// The total number of retries.
+		/// </value>
+		int ReadCommunicationModeErrorNumberOfRetries
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of seconds to wait between retry attempts for reading communication mode.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int ReadCommunicationModeErrorWaitTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of retry attempts for reading Relativity version.
+		/// </summary>
+		/// <value>
+		/// The total number of retries.
+		/// </value>
+		int ReadRelativityVersionErrorNumberOfRetries
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of seconds to wait between retry attempts for reading Relativity version.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int ReadRelativityVersionErrorWaitTimeInSeconds
 		{
 			get;
 			set;

@@ -21,5 +21,9 @@ Namespace kCura.WinEDDS
 				appendOriginalFilename:=_exportSettings.AppendOriginalFileName
 			)
 		End Function
+
+		Public Function GetPdfName(exportedObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetPdfName
+			Return exportedObjectInfo.PdfFileName(exportedObjectInfo.IdentifierValue, _exportSettings.AppendOriginalFileName)
+		End Function
 	End Class
 End Namespace

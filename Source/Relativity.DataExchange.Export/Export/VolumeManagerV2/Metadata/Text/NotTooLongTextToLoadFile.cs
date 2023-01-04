@@ -8,6 +8,7 @@
 	using kCura.WinEDDS.LoadFileEntry;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class NotTooLongTextToLoadFile : ILongTextHandler
@@ -27,7 +28,7 @@
 
 		public void HandleLongText(ObjectExportInfo artifact, kCura.WinEDDS.ViewFieldInfo field, DeferredEntry lineEntry)
 		{
-			_logger.LogVerbose("Writing text from memory to memory stream for formatting. Passing value to line entry. Field {fieldName}.", field.AvfColumnName);
+			_logger.LogVerbose("Writing text from memory to memory stream for formatting. Passing value to line entry. Field {fieldName}.", field.AvfColumnName.Secure());
 			using (var memoryStream = new MemoryStream())
 			{
 				using (var streamWriter = new StreamWriter(memoryStream, _exportSettings.LoadFileEncoding))

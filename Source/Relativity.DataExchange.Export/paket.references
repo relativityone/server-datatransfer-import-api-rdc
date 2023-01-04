@@ -1,7 +1,10 @@
 castle.core
 castle.windsor
 newtonsoft.json
-relativity.logging
+relativity.kepler.client
 relativity.logging.interfaces
+relativity.services.datacontracts
+relativity.services.interfaces
 relativity.transfer.client
-zetalongpaths
+system.reactive
+ConfigureAwaitChecker.Analyzer

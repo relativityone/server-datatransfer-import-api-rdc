@@ -1,9 +1,12 @@
+Imports kCura.WinEDDS.Service
+Imports Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 	Public Class ImportImageFileProcess
@@ -13,6 +16,7 @@ Namespace kCura.WinEDDS
 		Private WithEvents _imageFileImporter As kCura.WinEDDS.BulkImageFileImporter
 		Protected WithEvents _ioReporterContext As IoReporterContext
 		Private _errorCount As Int32
+		Private _perBatchErrorCount As Int32
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
 
@@ -21,15 +25,21 @@ Namespace kCura.WinEDDS
 		Private _disableImageTypeValidation As Boolean?
 		Private _disableImageLocationValidation As Boolean?
 
-		Public Sub New ()
-			MyBase.New(new MessageService())
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(correlationIdFunc As Func(Of String))
+			Me.New(New MetricService(New ImportApiMetricSinkConfig), New RunningContext, correlationIdFunc)
 		End Sub
 
-		Public Sub New (messageService As IMessageService)
-			MyBase.New(messageService)
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			Me.New(metricService, runningContext, RelativityLogger.Instance, correlationIdFunc)
 		End Sub
 
-        Public WriteOnly Property DisableImageTypeValidation As Boolean
+		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, logger, correlationIdFunc)
+		End Sub
+
+		Public WriteOnly Property DisableImageTypeValidation As Boolean
 			Set(value As Boolean)
 				_disableImageTypeValidation = value
 			End Set
@@ -53,14 +63,27 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Protected Overrides ReadOnly Property JobType As String = "Import"
-		Protected Overrides ReadOnly Property TapiClientName As String
+		Protected Overrides ReadOnly Property TransferDirection As TelemetryConstants.TransferDirection = TelemetryConstants.TransferDirection.Import
+
+		Protected Overrides ReadOnly Property TapiClient As TapiClient
 			Get
 				If _imageFileImporter Is Nothing Then
-					Return _tapiClientName
+					Return TapiClient.None
 				Else
-					Return _imageFileImporter.TapiClientName
+					Return _imageFileImporter.TapiClient
 				End If
+			End Get
+		End Property
+
+		Private ReadOnly Property ImportStatistics As ImportStatistics
+			Get
+				Return _imageFileImporter.Statistics
+			End Get
+		End Property 
+
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return ImportStatistics
 			End Get
 		End Property
 
@@ -70,12 +93,9 @@ Namespace kCura.WinEDDS
 
 		Public Property CloudInstance As Boolean
 
-		Public Property EnforceDocumentLimit As Boolean
-
-		Public Property ExecutionSource As ExecutionSource
-
 		Protected Overrides Function Run() As Boolean
 			_imageFileImporter.ReadFile(ImageLoadFile.FileName)
+			RunId = _imageFileImporter.RunId
 			Return Not _hasFatalErrorOccured
 		End Function
 
@@ -83,23 +103,29 @@ Namespace kCura.WinEDDS
 			Return _imageFileImporter.HasErrors
 		End Function
 
-		Protected Overrides Sub OnFatalError()
-			SendTransferJobFailedMessage()
-			MyBase.OnFatalError()
-			SendJobStatistics(_imageFileImporter.Statistics)
-		End Sub
+		Protected Overrides Function IsCancelled() As Boolean
+			Return _imageFileImporter.IsCancelledByUser
+		End Function
+
+		''' <inheritdoc/>
+		Protected Overrides Function GetTotalRecordsCount() As Long
+			Return _imageFileImporter.TotalRecords
+		End Function
+
+		''' <inheritdoc/>
+		Protected Overrides Function GetCompletedRecordsCount() As Long
+			Return _imageFileImporter.CompletedRecords
+		End Function
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendJobStatistics(_imageFileImporter.Statistics)
-			SendTransferJobCompletedMessage()
+			Me.Context.PublishProcessEnded(Me.Statistics.FileTransferredBytes, Me.Statistics.MetadataTransferredBytes, Me.Statistics.GetSqlProcessRate())
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendJobStatistics(_imageFileImporter.Statistics)
-			SendTransferJobCompletedMessage()
+			Me.Context.PublishProcessEnded(Me.Statistics.FileTransferredBytes, Me.Statistics.MetadataTransferredBytes, Me.Statistics.GetSqlProcessRate())
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
@@ -108,6 +134,7 @@ Namespace kCura.WinEDDS
 			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
+			_perBatchErrorCount = 0
 			Me.Context.InputArgs = ImageLoadFile.FileName
 			_imageFileImporter = Me.GetImageFileImporter
 
@@ -127,24 +154,51 @@ Namespace kCura.WinEDDS
 			_imageFileImporter.SkipExtractedTextEncodingCheck = SkipExtractedTextEncodingCheck.GetValueOrDefault(False)
 		End Sub
 
+		Protected Overrides Sub SetBaseMetrics(metric As MetricJobBase)
+			MyBase.SetBaseMetrics(metric)
+			metric.ImportObjectType = ImportStatistics.ImportObjectType
+		End Sub
+
+		Protected Overrides Function BuildProgressMetric(statistics As Statistics) As MetricJobProgress
+			Dim metric As MetricJobProgress = MyBase.BuildProgressMetric(statistics)
+
+			Dim importStatistics As ImportStatistics = TryCast(statistics, ImportStatistics)
+			If importStatistics Is Nothing Then
+				Logger.LogWarning("Unable to parse ImportStatistics in BuildProgressMetric")
+				Return metric
+			End If
+
+			metric.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(importStatistics.DocumentsCreated + importStatistics.DocumentsUpdated, statistics.MassImportDuration.TotalSeconds)
+
+			Return metric			
+		End Function
+
+		Protected Overrides Function BuildEndMetric(jobStatus As TelemetryConstants.JobStatus) As MetricJobEndReport
+			Dim metric As MetricJobEndReport = MyBase.BuildEndMetric(jobStatus)
+			
+			metric.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(ImportStatistics.DocumentsCreated + ImportStatistics.DocumentsUpdated, Statistics.MassImportDuration.TotalSeconds)
+		
+			Return metric
+		End Function
+
 		Protected Overridable Function GetImageFileImporter() As kCura.WinEDDS.BulkImageFileImporter
 		    _ioReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
 		    Dim reporter As IIoReporter = Me.CreateIoReporter(_ioReporterContext)
-            Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(
-	            ImageLoadFile.DestinationFolderID, _
-	            ImageLoadFile, _
-	            Me.Context, _
-	            reporter, _
-	            logger, _
-	            Me.ProcessID, _
-	            True, _
-	            EnforceDocumentLimit, _
-	            Me.CancellationTokenSource, _
-	            ExecutionSource)
+			Dim returnImporter As BulkImageFileImporter = New kCura.WinEDDS.BulkImageFileImporter(
+				ImageLoadFile.DestinationFolderID,
+				ImageLoadFile,
+				Me.Context,
+				reporter,
+				Logger,
+				Me.ProcessId,
+				True,
+				Me.CancellationTokenSource,
+				_correlationIdFunc,
+				Me.RunningContext.ExecutionSource)
 			Return returnImporter
 		End Function
 
-		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
+		Private Sub AuditRun(ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ImageImportStatistics
 				retval.DestinationFolderArtifactID = ImageLoadFile.DestinationFolderID
@@ -184,13 +238,14 @@ Namespace kCura.WinEDDS
 				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(StartTime).TotalMilliseconds, Int32)
 				retval.SupportImageAutoNumbering = ImageLoadFile.AutoNumberImages
 				retval.StartLine = CType(System.Math.Min(ImageLoadFile.StartLineNumber, Int32.MaxValue), Int32)
-				retval.TotalFileSize = _imageFileImporter.Statistics.FileBytes
-				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataBytes
+				retval.TotalFileSize = _imageFileImporter.Statistics.FileTransferredBytes
+				retval.TotalMetadataBytes = _imageFileImporter.Statistics.MetadataTransferredBytes
 				retval.SendNotification = ImageLoadFile.SendEmailOnLoadCompletion
-				Dim auditmanager As New kCura.WinEDDS.Service.AuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer)
+				Dim auditmanager As kCura.WinEDDS.Service.Replacement.IAuditManager = ManagerFactory.CreateAuditManager(ImageLoadFile.Credential, ImageLoadFile.CookieContainer, AddressOf GetCorrelationId)
 
-				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
-			Catch
+				auditmanager.AuditImageImport(ImageLoadFile.CaseInfo.ArtifactID, runID, _hasFatalErrorOccured, retval)
+			Catch ex As Exception
+				logger.LogError(ex, "An error has occurred during audit")
 			End Try
 		End Sub
 
@@ -200,17 +255,18 @@ Namespace kCura.WinEDDS
 				If Not e.AdditionalInfo Is Nothing Then additionalInfo = DirectCast(e.AdditionalInfo, IDictionary)
 				Select Case e.EventType
 					Case EventType2.Error
-						If e.CountsTowardsTotal Then _errorCount += 1
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
+						If e.CountsTowardsTotal Then
+							_errorCount += 1
+							_perBatchErrorCount += 1
+						End If
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Progress
-						TotalRecords = e.TotalRecords
-						CompletedRecordsCount = e.CurrentRecordIndex
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New System.DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, additionalInfo)
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
 					Case EventType2.Statistics
-						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+						SendMetricJobProgress(e.Statistics, checkThrottling := True)
 					Case EventType2.Status
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Warning
@@ -225,27 +281,27 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _imageFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _imageFileImporter.FatalErrorEvent
-			SyncLock Me.Context
-				Me.Context.PublishFatalException(ex)
-				Me.Context.PublishProcessCompleted(False, _imageFileImporter.ErrorLogFileName, True)
-				_hasFatalErrorOccured = True
-			End SyncLock
+			If Not _hasFatalErrorOccured Then
+				SyncLock Me.Context
+					Me.Context.PublishFatalException(ex)
+					Me.Context.PublishProcessEnded(Me.Statistics.FileTransferredBytes, Me.Statistics.MetadataTransferredBytes, Me.Statistics.GetSqlProcessRate())
+					Me.Context.PublishProcessCompleted(False, _imageFileImporter.ErrorLogFileName, True)
+					_hasFatalErrorOccured = True
+				End SyncLock
+			End If
 		End Sub
 
 		Private Sub _imageFileImporter_ReportErrorEvent(ByVal row As System.Collections.IDictionary) Handles _imageFileImporter.ReportErrorEvent
 			Me.Context.PublishErrorReport(row)
 		End Sub
 
-		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _imageFileImporter.UploadModeChangeEvent
+		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String) Handles _imageFileImporter.UploadModeChangeEvent
 			If _uploadModeText Is Nothing Then
-				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(True)
+				_uploadModeText = TapiModeHelper.BuildDocText()
 			End If
-			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
 
-			SendTransferJobStartedMessage()
-
-			Me.Context.PublishStatusBarChanged(statusBarMessage, _uploadModeText)
+			OnTapiClientChanged()
+			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
 		End Sub
 
 		Private Sub _imageFileImporter_IoErrorEvent(ByVal sender As Object, ByVal e As IoWarningEventArgs) Handles _ioReporterContext.IoWarningEvent
@@ -254,8 +310,17 @@ Namespace kCura.WinEDDS
 			End SyncLock
 		End Sub
 
-		Private Sub _imageFileImporter_EndRun(ByVal success As Boolean, ByVal runID As String) Handles _imageFileImporter.EndRun
-			Me.AuditRun(success, runID)
+		Private Sub _imageFileImporter_EndRun(ByVal runID As String) Handles _imageFileImporter.EndRun
+			Statistics.DocsErrorsCount = _errorCount
+			Me.AuditRun(runID)
 		End Sub
+
+		Private Sub _imageFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _imageFileImporter.BatchCompleted
+			batchInformation.NumberOfRecordsWithErrors = _perBatchErrorCount
+			_perBatchErrorCount = 0
+			SendMetricJobBatch(batchInformation)
+			Me.Context.PublishBatchCompleted(batchInformation.OrdinalNumber, batchInformation.NumberOfFilesProcessed, batchInformation.NumberOfRecords, batchInformation.NumberOfRecordsWithErrors)
+		End Sub
+
 	End Class
 End Namespace

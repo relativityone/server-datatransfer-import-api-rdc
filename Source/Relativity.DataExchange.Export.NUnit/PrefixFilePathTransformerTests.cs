@@ -11,7 +11,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class PrefixFilePathTransformerTests
@@ -28,7 +28,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				FilePrefix = prefix
 			};
 
-			var instance = new PrefixFilePathTransformer(exportSettings, new FilePathHelper(new NullLogger()));
+			var instance = new PrefixFilePathTransformer(exportSettings, new FilePathHelper(new TestNullLogger()));
 
 			// ACT
 			string pathWithPrefix = instance.TransformPath(path);

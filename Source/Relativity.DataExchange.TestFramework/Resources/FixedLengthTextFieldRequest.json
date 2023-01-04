@@ -1,0 +1,23 @@
+{
+   "Artifact Type Name":"Field",
+   "Parent Artifact":{
+      "Artifact ID":1014823
+   },
+   "Name":"Fixed Length Text Field",
+   "Object Type":{
+      "Descriptor Artifact Type ID":10
+   },
+   "Field Type ID":0,
+   "Is Required":false,
+   "Open To Associations":false,
+   "Linked":false,
+   "Allow Sort/Tally":false,
+   "Width":"",
+   "Wrapping":false,
+   "Allow Group By":false,
+   "Allow Pivot":false,
+   "Length":255,
+   "Include In Text Index":false,
+   "Unicode":false,
+   "Allow HTML":false
+}

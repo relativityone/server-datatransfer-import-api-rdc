@@ -1,6 +1,7 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Batches
 {
 	using System.Threading;
+	using System.Threading.Tasks;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
@@ -17,21 +18,26 @@
 		private readonly IImageLoadFile _imageLoadFile;
 		private readonly ILoadFile _loadFile;
 
+		private readonly IFileDownloadSubscriber _fileDownloadSubscriber;
+
 		public BatchExporter(IDownloader downloader, IImagesRollupManager imagesRollupManager,
-			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile)
+			IMessenger messenger, IImageLoadFile imageLoadFile, ILoadFile loadFile, IFileDownloadSubscriber fileDownloadSubscriber)
 		{
 			_downloader = downloader;
 			_imagesRollupManager = imagesRollupManager;
 			_messenger = messenger;
 			_imageLoadFile = imageLoadFile;
 			_loadFile = loadFile;
+			_fileDownloadSubscriber = fileDownloadSubscriber;
 		}
 
-		public void Export(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
+		public async Task ExportAsync(ObjectExportInfo[] artifacts, CancellationToken cancellationToken)
 		{
-			_downloader.DownloadFilesForArtifacts(cancellationToken);
+			await this._downloader.DownloadFilesForArtifactsAsync(cancellationToken).ConfigureAwait(false);
 
 			_messenger.FilesDownloadCompleted();
+
+			await _fileDownloadSubscriber.WaitForConversionCompletion().ConfigureAwait(false);
 
 			if (cancellationToken.IsCancellationRequested)
 			{

@@ -62,8 +62,10 @@ Namespace kCura.WinEDDS
 			Get
 				Dim item As LoadFileFieldMapItem
 				For Each item In _al
-					If item.DocumentField.FieldCategory = FieldCategory.Identifier Then
-						Return item
+					If Not item.DocumentField Is Nothing Then
+						If item.DocumentField.FieldCategory = FieldCategory.Identifier Then
+							Return item
+						End If
 					End If
 				Next
 				Return Nothing

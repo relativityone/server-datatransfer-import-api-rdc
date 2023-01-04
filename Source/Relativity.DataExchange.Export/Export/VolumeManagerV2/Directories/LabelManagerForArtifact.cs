@@ -28,6 +28,11 @@
 			return _labelManager.GetCurrentTextSubdirectoryLabel();
 		}
 
+		public string GetPdfSubdirectoryLabel(int objectExportInfoArtifactId)
+		{
+			return _labelManager.GetCurrentPdfSubdirectoryLabel();
+		}
+
 		public string GetVolumeLabel(int objectExportInfoArtifactId)
 		{
 			return _labelManager.GetCurrentVolumeLabel();

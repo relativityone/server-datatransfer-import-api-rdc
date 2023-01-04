@@ -12,12 +12,17 @@ namespace Relativity.DataExchange.NUnit.Integration
 	using System;
 	using System.IO;
 	using System.Net;
+	using System.Threading;
 
 	using global::NUnit.Framework;
+	using global::System.Collections.Generic;
 
 	using Relativity.DataExchange;
+	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.DataExchange.Transfer;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -40,6 +45,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// </summary>
 		private static readonly object SyncRoot = new object();
 
+		private readonly bool useLegacyWebApi;
+
 		/// <summary>
 		/// The file count.
 		/// </summary>
@@ -59,6 +66,29 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// The total number of fatal errors.
 		/// </summary>
 		private int fatalErrors;
+
+		protected TapiBridgeTestBase(bool useLegacyWebApi)
+		{
+			this.useLegacyWebApi = useLegacyWebApi;
+			if (!this.useLegacyWebApi)
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
+			}
+
+			if (this.useLegacyWebApi)
+			{
+				RelativityVersionChecker.SkipTestIfRelativityVersionIsGreaterOrEqual(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.WhiteSedge);
+			}
+		}
+
+		/// <summary>
+		/// Gets list of paths to files successfully transferred by <see cref="TapiBridge"/>.
+		/// </summary>
+		protected List<string> TransferredFilesPaths
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Gets the cookie container.
@@ -180,12 +210,12 @@ namespace Relativity.DataExchange.NUnit.Integration
 		}
 
 		/// <summary>
-		/// Gets the mock transfer log.
+		/// Gets the mock logger.
 		/// </summary>
 		/// <value>
-		/// The <see cref="ITransferLog"/> instance.
+		/// The <see cref="ILog"/> instance.
 		/// </value>
-		protected ITransferLog TransferLog
+		protected ILog Logger
 		{
 			get;
 			private set;
@@ -197,7 +227,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// <value>
 		/// The full paths.
 		/// </value>
-		protected System.Collections.Generic.IList<string> SourcePaths
+		protected List<string> SourcePaths
 		{
 			get;
 			private set;
@@ -225,13 +255,17 @@ namespace Relativity.DataExchange.NUnit.Integration
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
 			this.AssignTestSettings();
+
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(this.TestParameters);
+
 			Assert.That(
 				this.TestParameters.WorkspaceId,
 				Is.Positive,
 				() => "The test workspace must be created or specified in order to run this integration test.");
 			this.TempDirectory = new TempDirectory2();
 			this.TempDirectory.Create();
-			this.SourcePaths = new global::System.Collections.Generic.List<string>();
+			this.SourcePaths = new List<string>();
+			this.TransferredFilesPaths = new List<string>();
 			this.MaxFilesPerFolder = 1000;
 			this.PreserveFileTimestamps = false;
 			this.TapiClient = TapiClient.None;
@@ -241,7 +275,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this.filesTransferred = 0;
 			this.fatalErrors = 0;
 			this.warnings = 0;
-			this.TransferLog = new RelativityTransferLog(IntegrationTestHelper.Logger, false);
+			this.Logger = IntegrationTestHelper.Logger;
 			this.FileCreationTime = new DateTime(2001, 6, 1, 18, 0, 0);
 			this.FileLastAccessTime = new DateTime(2002, 6, 1, 18, 0, 0);
 			this.FileLastWriteTime = new DateTime(2003, 6, 1, 18, 0, 0);
@@ -251,6 +285,47 @@ namespace Relativity.DataExchange.NUnit.Integration
 		public void Teardown()
 		{
 			this.TapiBridge?.Dispose();
+			if (this.TempDirectory != null)
+			{
+				this.TempDirectory.DeleteDirectory = true;
+				this.TempDirectory.Dispose();
+			}
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We use method from derived class")]
+		protected static void RunUpload(UploadTapiBridge2 bridge, List<string> sourcePaths)
+		{
+			bridge = bridge ?? throw new ArgumentNullException(nameof(bridge));
+			sourcePaths = sourcePaths ?? throw new ArgumentNullException(nameof(sourcePaths));
+
+			var order = 0;
+			foreach (var sourcePath in sourcePaths)
+			{
+				bridge.AddPath(sourcePath, null, order++);
+			}
+
+			const bool KeepJobAlive = false;
+			bridge.WaitForTransfers("Waiting...", "Success", "Error", KeepJobAlive);
+		}
+
+		protected static void RunDownload(TapiBridgeBase2 bridge, List<string> sourcePaths)
+		{
+			bridge = bridge ?? throw new ArgumentNullException(nameof(bridge));
+			sourcePaths = sourcePaths ?? throw new ArgumentNullException(nameof(sourcePaths));
+
+			var order = 0;
+			foreach (var sourcePath in sourcePaths)
+			{
+				bridge.AddPath(new TransferPath
+				{
+					Order = order,
+					SourcePath = sourcePath,
+					TargetPath = bridge.TargetPath,
+				});
+			}
+
+			const bool KeepJobAlive = true;
+			bridge.WaitForTransfers("Waiting...", "Success", "Error", KeepJobAlive);
 		}
 
 		/// <summary>
@@ -308,14 +383,9 @@ namespace Relativity.DataExchange.NUnit.Integration
 			this.fileCount = value;
 		}
 
-		/// <summary>
-		/// Given the dataset is auto-generated by the number of specified files.
-		/// </summary>
-		/// <param name="directory">
-		/// The directory.
-		/// </param>
-		protected void GivenTheAutoGeneratedDataset(string directory)
+		protected List<string> GenerateTestFilesInDirectory(string directory)
 		{
+			var testFiles = new List<string>();
 			Directory.CreateDirectory(directory);
 
 			for (var i = 0; i < this.fileCount; i++)
@@ -327,15 +397,47 @@ namespace Relativity.DataExchange.NUnit.Integration
 					false);
 				if (this.PreserveFileTimestamps)
 				{
-					System.IO.File.SetCreationTime(file, this.FileCreationTime);
-					System.IO.File.SetLastAccessTime(file, this.FileLastAccessTime);
-					System.IO.File.SetLastWriteTime(file, this.FileLastWriteTime);
+					File.SetCreationTime(file, this.FileCreationTime);
+					File.SetLastAccessTime(file, this.FileLastAccessTime);
+					File.SetLastWriteTime(file, this.FileLastWriteTime);
 				}
 
-				this.SourcePaths.Add(file);
+				testFiles.Add(file);
 			}
 
-			this.TransferLog.LogInformation("Autogenerated {FileCount} source files.", this.fileCount);
+			this.Logger.LogInformation("Autogenerated {FileCount} source files.", this.fileCount);
+			return testFiles;
+		}
+
+		/// <summary>
+		/// Given the dataset is auto-generated by the number of specified files.
+		/// </summary>
+		/// <param name="filePaths">
+		/// Paths to test files.
+		/// </param>
+		protected void GivenTheDataset(IEnumerable<string> filePaths)
+		{
+			this.SourcePaths.AddRange(filePaths);
+		}
+
+		protected UploadTapiBridge2 CreateUploadTapiBridge(string targetPath)
+		{
+			var parameters = new UploadTapiBridgeParameters2();
+			this.InitializeTapiBridgeParameters(parameters);
+			parameters.TargetPath = targetPath;
+
+			this.SetupTapiBridgeParameters(parameters);
+			return new UploadTapiBridge2(parameters, this.Logger, new NullAuthTokenProvider(), CancellationToken.None, this.useLegacyWebApi, new RelativityManagerServiceFactory());
+		}
+
+		protected DownloadTapiBridge2 CreateDownloadTapiBridge(string targetPath)
+		{
+			var parameters = new DownloadTapiBridgeParameters2();
+			this.InitializeTapiBridgeParameters(parameters);
+			parameters.TargetPath = targetPath;
+
+			this.SetupTapiBridgeParameters(parameters);
+			return new DownloadTapiBridge2(parameters, this.Logger, CancellationToken.None, this.useLegacyWebApi, new RelativityManagerServiceFactory());
 		}
 
 		/// <summary>
@@ -377,7 +479,12 @@ namespace Relativity.DataExchange.NUnit.Integration
 			{
 				lock (SyncRoot)
 				{
-					this.filesTransferred++;
+					if (args.Successful)
+					{
+						this.filesTransferred++;
+						this.TransferredFilesPaths.Add(args.TargetFile);
+					}
+
 					Console.WriteLine($"[TapiBridge Progress]: {args.FileName} ({args.LineNumber})");
 				}
 			};
@@ -385,11 +492,14 @@ namespace Relativity.DataExchange.NUnit.Integration
 
 		protected void SetupTapiBridgeParameters(TapiBridgeParameters2 parameters)
 		{
-			ITapiObjectService objectService = new TapiObjectService();
+			ITapiObjectService objectService = new TapiObjectService(new RelativityManagerServiceFactory(), this.useLegacyWebApi);
 			objectService.SetTapiClient(parameters, this.TapiClient);
 		}
 
 		protected abstract void CreateTapiBridge();
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "This method should be called only when we check timestamps")]
+		protected abstract List<string> GetFilesToCheckTimestamps();
 
 		/// <summary>
 		/// Then all the files were transferred.
@@ -424,8 +534,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 				Assert.Fail("A logic error has occurred because the web client doesn't preserve timestamps.");
 			}
 
-			string[] targetFiles = Directory.GetFiles(this.TargetPath, "*", SearchOption.AllDirectories);
-			foreach (string targetFile in targetFiles)
+			foreach (string targetFile in this.GetFilesToCheckTimestamps())
 			{
 				DateTime creationTime = System.IO.File.GetCreationTime(targetFile);
 				Assert.That(creationTime, Is.EqualTo(this.FileCreationTime));
@@ -436,13 +545,19 @@ namespace Relativity.DataExchange.NUnit.Integration
 			}
 		}
 
-		protected virtual void CheckSkipTest(TapiClient client)
+		private void InitializeTapiBridgeParameters(TapiBridgeParameters2 parameters)
 		{
-			if ((client == TapiClient.Aspera && this.TestParameters.SkipAsperaModeTests) ||
-				(client == TapiClient.Direct && this.TestParameters.SkipDirectModeTests))
-			{
-				Assert.Ignore(TestStrings.SkipTestMessage, $"{client}");
-			}
+			parameters.Credentials = new NetworkCredential(
+				this.TestParameters.RelativityUserName,
+				this.TestParameters.RelativityPassword);
+			parameters.FileShare = this.TestParameters.FileShareUncPath;
+			parameters.MaxJobParallelism = 1;
+			parameters.MaxJobRetryAttempts = 1;
+			parameters.PreserveFileTimestamps = this.PreserveFileTimestamps;
+			parameters.WaitTimeBetweenRetryAttempts = 0;
+			parameters.WebCookieContainer = this.CookieContainer;
+			parameters.WebServiceUrl = this.TestParameters.RelativityWebApiUrl.ToString();
+			parameters.WorkspaceId = this.TestParameters.WorkspaceId;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 
@@ -66,7 +67,7 @@ Namespace kCura.WinEDDS
 		Private _continue As Boolean
 		Dim _folders As System.Collections.Specialized.HybridDictionary
 		Dim _choicesTable As New Dictionary(Of Int32, Dictionary(Of String, Boolean))	 'Dictionary to track the choice values created per column index
-		Dim _codeManager As kCura.WinEDDS.Service.CodeManager
+		Dim _codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager
 #End Region
 
 #Region "Event stuff"
@@ -95,12 +96,12 @@ Namespace kCura.WinEDDS
 
 #End Region
 
-		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean)
-			MyBase.New(args, trackErrorsAsFieldValues)
+		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, correlationIdFunc As Func(Of String))
+			MyBase.New(args, trackErrorsAsFieldValues, correlationIdFunc)
 			_haltListener = New HaltListener
 			_continue = True
 			_folders = New System.Collections.Specialized.HybridDictionary
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
+			_codeManager = ManagerFactory.CreateCodeManager(args.Credentials, args.CookieContainer, correlationIdFunc)
 		End Sub
 
 		Private Function NeedToCheckFolders() As Boolean
@@ -140,7 +141,7 @@ Namespace kCura.WinEDDS
 
 			While Not Me.HasReachedEOF And _continue
 				currentRun = System.DateTime.Now.Ticks
-				If currentRun - lastRun > 10000000 Then
+				If currentRun - lastRun > TimeSpan.TicksPerSecond Then
 					lastRun = currentRun
 					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
@@ -179,7 +180,7 @@ Namespace kCura.WinEDDS
 				If Me.RecordCount > AppSettings.Instance.PreviewThreshold Then
 					AdvanceLine()
 					currentRun = System.DateTime.Now.Ticks
-					If currentRun - lastRun > 10000000 Then
+					If currentRun - lastRun > TimeSpan.TicksPerSecond Then
 						lastRun = currentRun
 						Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 					End If
@@ -224,7 +225,7 @@ Namespace kCura.WinEDDS
 
 				'Report progress
 				currentRun = System.DateTime.Now.Ticks
-				If currentRun - lastRun > 10000000 Then
+				If currentRun - lastRun > TimeSpan.TicksPerSecond Then
 					lastRun = currentRun
 					Me.ProcessProgress(Me.CurrentLineNumber, Me.Reader.BaseStream.Position, fileSize, stepSize)
 				End If
@@ -246,7 +247,7 @@ Namespace kCura.WinEDDS
 
 		Private Function DisplayFolderAndChoiceWarning(ByVal checkFolders As Boolean, ByVal checkChoices As Boolean) As Boolean
 			'Determine choice threshold
-			Dim popupRetVal As Int32 = -1
+			Dim popupRetVal As Int32
 			Dim choiceCountThreshold As Int32
 			If checkChoices Then
 				choiceCountThreshold = _codeManager.GetChoiceLimitForUI()
@@ -298,7 +299,7 @@ Namespace kCura.WinEDDS
 		End Function
 
 		''' <summary>
-		''' Returns maximum snumber of choices that will be created in any column of the import (based on the rows analyzed so far)
+		''' Returns maximum number of choices that will be created in any column of the import (based on the rows analyzed so far)
 		''' </summary>
 		Private Function GetMaxChoiceCount() As Int32
 			Dim maxChoiceCount As Int32 = 0

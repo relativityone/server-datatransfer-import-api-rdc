@@ -2,14 +2,17 @@
 {
 	using System;
 	using System.IO;
+	using System.Threading.Tasks;
 
 	using Castle.Core;
 
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exceptions;
+	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class ErrorFileWriter : IErrorFileWriter
@@ -42,13 +45,18 @@
 			_status = status;
 		}
 
-		public void Write(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
+		public void Write(ExportFileType type, ObjectExportInfo documentInfo, string fileLocation, string errorText)
 		{
+			WriteAsync(type, documentInfo, fileLocation, errorText).ConfigureAwait(false).GetAwaiter().GetResult();
+		}
+
+		public async Task WriteAsync(ExportFileType type, ObjectExportInfo documentInfo, string fileLocation, string errorText)
+		{
+			string recordIdentifier = documentInfo?.IdentifierValue ?? string.Empty;
 			try
 			{
-				InitializeStream();
-
-				WriteLine(type, recordIdentifier, fileLocation, errorText);
+				await InitializeStreamAsync().ConfigureAwait(false);
+				await WriteLineAsync(type, recordIdentifier, fileLocation, errorText).ConfigureAwait(false);
 			}
 			catch (IOException ex)
 			{
@@ -56,30 +64,52 @@
 				throw new FileWriteException(FileWriteException.DestinationFile.Errors, ex);
 			}
 
-			_status.WriteError($"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}");
+			this.UpdateStatus(documentInfo, type, recordIdentifier, fileLocation, errorText);
 		}
 
-		private void InitializeStream()
+		private void UpdateStatus(ObjectExportInfo documentInfo, ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
 		{
-			if (_streamWriter == null)
+			string statusMessage =
+				$"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}";
+
+			// Don't sent Error status update on the document if it was already triggered to prevent failed record count duplication issue
+			if (documentInfo == null || !documentInfo.DocumentError)
 			{
-				_logger.LogVerbose("Creating stream for error file in {destination}.", _errorFileDestinationPath.Path);
-				_streamWriter = _streamFactory.Create(_streamWriter, 0, _errorFileDestinationPath.Path, _errorFileDestinationPath.Encoding, false);
-				WriteHeader();
+				this._status.WriteError(statusMessage);
+			}
+			else
+			{
+				this._status.WriteWarning(statusMessage);
 			}
 		}
 
-		private void WriteHeader()
+		private async Task InitializeStreamAsync()
 		{
-			string header = FormatErrorLine("File Type", "Document Identifier", "File Guid", "Error Description");
-			_streamWriter.WriteLine(header);
+			if (_streamWriter == null)
+			{
+				_logger.LogVerbose("Creating stream for error file in {destination}.", _errorFileDestinationPath.Path.Secure());
+				_streamWriter = _streamFactory.Create(_streamWriter, 0, _errorFileDestinationPath.Path, _errorFileDestinationPath.Encoding, false);
+				await WriteHeaderAsync().ConfigureAwait(false);
+			}
 		}
 
-		private void WriteLine(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
+		private Task WriteHeaderAsync()
+		{
+			string header = FormatErrorLine("File Type", "Document Identifier", "File Guid", "Error Description");
+			return _streamWriter.WriteLineAsync(header);
+		}
+
+		private Task WriteLineAsync(ExportFileType type, string recordIdentifier, string fileLocation, string errorText)
 		{
 			string line = FormatErrorLine(type.ToString(), recordIdentifier, fileLocation, errorText.ToCsvCellContents());
-			_logger.LogError(line);
-			_streamWriter.WriteLine(line);
+			_logger.LogError(
+				"{fileType},{documentIdentifier},{fileGuid},{errorDescription}",
+				type.ToString(),
+				recordIdentifier,
+				fileLocation.Secure(),
+				errorText.ToCsvCellContents());
+		
+			return _streamWriter.WriteLineAsync(line);
 		}
 
 		private string FormatErrorLine(string fileType, string documentIdentifier, string fileGuid, string errorDescription)
@@ -96,7 +126,8 @@
 		{
 			Image,
 			Native,
-			Generic
+			Generic,
+			Pdf
 		}
 	}
 }

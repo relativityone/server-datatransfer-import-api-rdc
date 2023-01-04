@@ -10,6 +10,7 @@
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class ImageExportRequestBuilder : IExportRequestBuilder
@@ -69,7 +70,7 @@
 				return false;
 			}
 
-			_logger.LogVerbose("Creating image file ExportRequest for image {image}.", image.FileName);
+			_logger.LogVerbose("Creating image file ExportRequest for image {image}.", image.FileName.Secure());
 			string destinationLocation = GetExportDestinationLocation(artifact, image);
 			image.TempLocation = destinationLocation;
 
@@ -77,15 +78,15 @@
 
 			if (!_validator.CanExport(destinationLocation, warningInCaseOfOverwriting))
 			{
-				_logger.LogVerbose("File {file} already exists - updating statistics.", destinationLocation);
+				_logger.LogVerbose("File {file} already exists - updating statistics.", destinationLocation.Secure());
 				_fileProcessingStatistics.UpdateStatisticsForFile(destinationLocation);
 				exportRequest = null;
 				return false;
 			}
 
-			_logger.LogVerbose("Image file will be export to {destinationLocation}.", destinationLocation);
+			_logger.LogVerbose("Image file will be export to {destinationLocation}.", destinationLocation.Secure());
 
-			exportRequest = new PhysicalFileExportRequest(image, destinationLocation);
+			exportRequest = PhysicalFileExportRequest.CreateRequestForImage(image, destinationLocation);
 			return true;
 		}
 

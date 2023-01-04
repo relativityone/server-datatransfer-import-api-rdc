@@ -20,27 +20,20 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiClientEventArgs"/> class.
 		/// </summary>
+		/// <param name="instanceId">
+		/// The current transfer bridge instance unique identifier.
+		/// </param>
 		/// <param name="name">
 		/// The current transfer client name.
 		/// </param>
 		/// <param name="client">
 		/// The current transfer client type.
 		/// </param>
-		public TapiClientEventArgs(string name, TapiClient client)
+		public TapiClientEventArgs(Guid instanceId, string name, TapiClient client)
 		{
+			this.InstanceId = instanceId;
 			this.Name = name;
 			this.Client = client;
-		}
-
-		/// <summary>
-		/// Gets the current client name.
-		/// </summary>
-		/// <value>
-		/// The name.
-		/// </value>
-		public string Name
-		{
-			get;
 		}
 
 		/// <summary>
@@ -51,6 +44,28 @@ namespace Relativity.DataExchange.Transfer
 		/// <see cref="TapiClient"/> value.
 		/// </value>
 		public TapiClient Client
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets the transfer client instance unique identifier that raised this event.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Guid"/> value.
+		/// </value>
+		public Guid InstanceId
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Gets the current transfer client name.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
+		public string Name
 		{
 			get;
 		}

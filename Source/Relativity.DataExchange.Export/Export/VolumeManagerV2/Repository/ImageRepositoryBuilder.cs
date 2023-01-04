@@ -30,7 +30,7 @@
 
 			_logger.LogVerbose("{count} export request for images found.", exportRequests.Count);
 
-			IList<Image> images = new List<Image>();
+			IList<ImageRequest> images = new List<ImageRequest>();
 
 			foreach (var imageExportInfo in artifact.Images.Cast<ImageExportInfo>())
 			{
@@ -38,13 +38,13 @@
 
 				_logger.LogVerbose("For image {batesNumber} export request has been found: {result}.", imageExportInfo.BatesNumber, imageExportRequest != null);
 
-				Image image = new Image(imageExportInfo)
+				ImageRequest imageRequest = new ImageRequest(imageExportInfo)
 				{
 					ExportRequest = imageExportRequest,
-					HasBeenDownloaded = imageExportRequest == null
+					TransferCompleted = imageExportRequest == null
 				};
 
-				images.Add(image);
+				images.Add(imageRequest);
 			}
 
 			_imageRepository.Add(images);

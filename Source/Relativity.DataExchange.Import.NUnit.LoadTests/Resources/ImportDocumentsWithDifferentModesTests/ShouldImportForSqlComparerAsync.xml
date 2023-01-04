@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<compareConfig>
+	<tables>
+		<table name="EDDSDBO.Document" rowId="ControlNumber" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="ParentArtifactID_D"/>
+				<ignore name="OriginatingImagingDocumentError"/>
+				<ignore name="Single_0_0"/>
+				<ignore name="Single_0_1"/>
+				<ignore name="Single_0_2"/>
+				<ignore name="Single_0_3"/>
+				<ignore name="Single_0_4"/>
+				<ignore name="Single_1_0"/>
+				<ignore name="Single_1_1"/>
+			</ignored>
+			<mappings>
+				<mapping name="MultiChoice_SqlComparer" type="MultiChoice" targetTable="EDDSDBO.Code"/>
+				<mapping name="SingleChoice_SqlComparer" type="SingleChoice" targetTable="EDDSDBO.Code"/>
+				<mapping name="Single_0_0" type="SingleObject" targetTable="EDDSDBO.Single_0_0"/>
+				<mapping name="Single_0_1" type="SingleObject" targetTable="EDDSDBO.Single_0_1"/>
+				<mapping name="Single_0_2" type="SingleObject" targetTable="EDDSDBO.Single_0_2"/>
+				<mapping name="Single_0_3" type="SingleObject" targetTable="EDDSDBO.Single_0_3"/>
+				<mapping name="Single_0_4" type="SingleObject" targetTable="EDDSDBO.Single_0_4"/>
+				<mapping name="Single_1_0" type="SingleObject" targetTable="EDDSDBO.Single_1_0"/>
+				<mapping name="Single_1_1" type="SingleObject" targetTable="EDDSDBO.Single_1_1"/>
+				<mapping name="Multi_0_0" type="MultiObject" targetTable="EDDSDBO.Multi_0_0"/>
+				<mapping name="Multi_0_1" type="MultiObject" targetTable="EDDSDBO.Multi_0_1"/>
+				<mapping name="Multi_0_2" type="MultiObject" targetTable="EDDSDBO.Multi_0_2"/>
+				<mapping name="Multi_0_3" type="MultiObject" targetTable="EDDSDBO.Multi_0_3"/>
+				<mapping name="Multi_0_4" type="MultiObject" targetTable="EDDSDBO.Multi_0_4"/>
+				<mapping name="Multi_1_0" type="MultiObject" targetTable="EDDSDBO.Multi_1_0"/>
+				<mapping name="Multi_1_1" type="MultiObject" targetTable="EDDSDBO.Multi_1_1"/>
+			</mappings>
+		</table>
+		<table name="EDDSDBO.Code" rowId="Name" mapId="ArtifactID">
+			<ignored>
+				<ignore name="ArtifactID"/>
+				<ignore name="CodeTypeID"/>
+			</ignored>
+		</table>
+		<table name="EDDSDBO.Single_0_0" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_1" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_2" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_3" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_0_4" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_1_0" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Single_1_1" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_0" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_1" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_2" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_3" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_0_4" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_1_0" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.Multi_1_1" rowId="Name" mapId="ArtifactID" />
+		<table name="EDDSDBO.[File]" rowId="Filename" mapId="FileID">
+			<ignored>
+				<ignore name="Guid"/>
+				<ignore name="Location"/>
+				<ignore name="FileID"/>
+			</ignored>
+		</table>
+	</tables>
+</compareConfig>

@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="DownloadTapiBridge2.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
@@ -13,6 +13,8 @@ namespace Relativity.DataExchange.Transfer
 	using System.Threading;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.DataExchange.Service;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Aspera;
 
@@ -21,25 +23,33 @@ namespace Relativity.DataExchange.Transfer
 	/// </summary>
 	public sealed class DownloadTapiBridge2 : TapiBridgeBase2
 	{
-		private readonly TapiBridgeParameters2 parameters;
+		private readonly DownloadTapiBridgeParameters2 parameters;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DownloadTapiBridge2"/> class.
 		/// </summary>
 		/// <param name="parameters">
-		/// The native file transfer parameters.
+		///     The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		///     The Relativity logging instance.
 		/// </param>
 		/// <param name="token">
-		/// The cancellation token.
+		///     The cancellation token.
 		/// </param>
-		/// <remarks>
-		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
-		/// </remarks>
-		public DownloadTapiBridge2(TapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
-			: this(new TapiObjectService(), parameters, log, token)
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
+		/// </param>
+		/// <param name="relativityManagerServiceFactory">
+		///     Factory to create Relativity service manager.
+		/// </param>
+		public DownloadTapiBridge2(
+			DownloadTapiBridgeParameters2 parameters,
+			ILog logger,
+			CancellationToken token,
+			bool useLegacyWebApi,
+			IRelativityManagerServiceFactory relativityManagerServiceFactory)
+			: this(new TapiObjectService(relativityManagerServiceFactory, useLegacyWebApi), parameters, logger, useLegacyWebApi, token)
 		{
 		}
 
@@ -52,21 +62,54 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logging instance.
+		/// </param>
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		/// <remarks>
-		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
-		/// </remarks>
 		public DownloadTapiBridge2(
 			ITapiObjectService factory,
-			TapiBridgeParameters2 parameters,
-			ITransferLog log,
+			DownloadTapiBridgeParameters2 parameters,
+			ILog logger,
+			bool useLegacyWebApi,
 			CancellationToken token)
-			: base(factory, parameters, TransferDirection.Download, log, token)
+			: this(factory, parameters, null, logger, useLegacyWebApi, token)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DownloadTapiBridge2" /> class.
+		/// </summary>
+		/// <param name="factory">
+		/// The Transfer API object factory.
+		/// </param>
+		/// <param name="parameters">
+		/// The native file transfer parameters.
+		/// </param>
+		/// <param name="context">
+		/// The transfer context.
+		/// </param>
+		/// <param name="logger">
+		/// The Relativity logging instance.
+		/// </param>
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		public DownloadTapiBridge2(
+			ITapiObjectService factory,
+			DownloadTapiBridgeParameters2 parameters,
+			TransferContext context,
+			ILog logger,
+			bool useLegacyWebApi,
+			CancellationToken token)
+			: base(factory, parameters, TransferDirection.Download, context, logger, useLegacyWebApi, token)
 		{
 			this.parameters = parameters;
 		}
@@ -113,25 +156,18 @@ namespace Relativity.DataExchange.Transfer
 			}
 
 			IRemotePathResolver resolver = null;
+
 			switch (this.ClientId.ToString().ToUpperInvariant())
 			{
 				case TransferClientConstants.AsperaClientId:
 					resolver = new AsperaUncPathResolver(
-							this.parameters.FileShare,
-							this.parameters.AsperaDocRootLevels);
+						this.parameters.FileShare,
+						this.parameters.AsperaDocRootLevels,
+						this.TransferLog);
 					break;
 			}
 
 			request.SourcePathResolver = resolver;
-		}
-
-		/// <inheritdoc />
-		protected override ClientConfiguration CreateClientConfiguration()
-		{
-			var clientConfiguration = base.CreateClientConfiguration();
-			clientConfiguration.FileNotFoundErrorsDisabled = true;
-			clientConfiguration.FileNotFoundErrorsRetry = false;
-			return clientConfiguration;
 		}
 	}
 }

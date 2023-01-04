@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
+	using System;
 	using System.Collections;
 
 	using global::NUnit.Framework;
@@ -20,14 +21,24 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using HtmlCellFormatter = Relativity.DataExchange.Export.HtmlCellFormatter;
 
-    [TestFixture]
+	[TestFixture]
 	public class HtmlCellFormatterTests
 	{
+		private Mock<IFilePathTransformer> _filePathTransformerMock;
+		private Mock<IFileNameProvider> _fileNameProviderMock;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_filePathTransformerMock = new Mock<IFilePathTransformer>();
+			_fileNameProviderMock = new Mock<IFileNameProvider>();
+		}
+
 		[Test]
 		public void ItShouldProperlyTransformToCell()
 		{
 			ExportFile settings = new ExportFile((int)ArtifactType.Document);
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
+			HtmlCellFormatter subject = CreateSut(settings);
 
 			var result = subject.TransformToCell("<>");
 			Assert.AreEqual("<td>&lt;&gt;</td>", result);
@@ -41,7 +52,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				ExportImages = false
 			};
 
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
+			HtmlCellFormatter subject = CreateSut(settings);
 
 			ObjectExportInfo arg = new ObjectExportInfo();
 			var result = subject.CreateImageCell(arg);
@@ -56,7 +67,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				ExportImages = true
 			};
 
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
+			HtmlCellFormatter subject = CreateSut(settings);
 
 			ObjectExportInfo arg = new ObjectExportInfo();
 			var newResult = subject.CreateImageCell(arg);
@@ -71,7 +82,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				ExportImages = true
 			};
 
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
+			HtmlCellFormatter subject = CreateSut(settings);
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
 				Images = new ArrayList()
@@ -92,9 +103,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				}
 			};
 
-			var filePathTransformer = new Mock<IFilePathTransformer>();
-			filePathTransformer.Setup(x => x.TransformPath(It.IsAny<string>())).Returns(() => "./transformed_path.txt");
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, filePathTransformer.Object);
+			_filePathTransformerMock.Setup(x => x.TransformPath(It.IsAny<string>())).Returns(() => "./transformed_path.txt");
+			HtmlCellFormatter subject = CreateSut(settings);
 
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
@@ -122,9 +132,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				}
 			};
 
-			var filePathTransformer = new Mock<IFilePathTransformer>();
-			filePathTransformer.Setup(x => x.TransformPath(It.IsAny<string>())).Returns(() => "./fake/path.txt");
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, filePathTransformer.Object);
+			_filePathTransformerMock.Setup(x => x.TransformPath(It.IsAny<string>())).Returns(() => "./fake/path.txt");
+			HtmlCellFormatter subject = CreateSut(settings);
 
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
@@ -154,7 +163,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				}
 			};
 
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
+			HtmlCellFormatter subject = CreateSut(settings);
 
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
@@ -179,7 +188,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			ExportFile settings = new ExportFile((int)ArtifactType.Document);
 
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
+			HtmlCellFormatter subject = CreateSut(settings);
 
 			ObjectExportInfo arg = new ObjectExportInfo();
 			var result = subject.CreateNativeCell(string.Empty, arg);
@@ -194,7 +203,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				ExportImages = true
 			};
 
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
+			HtmlCellFormatter subject = CreateSut(settings);
 
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
@@ -207,18 +216,83 @@ namespace Relativity.DataExchange.Export.NUnit
 		[Test]
 		public void ItShouldReturnValidNativeCell()
 		{
+			// arrange
+			const string FileName = "test.docx";
 			ExportFile settings = new ExportFile((int)ArtifactType.Field)
 			{
 				ExportImages = true
 			};
 
-			HtmlCellFormatter subject = new HtmlCellFormatter(settings, new Mock<IFilePathTransformer>().Object);
+			HtmlCellFormatter subject = CreateSut(settings);
 			ObjectExportInfo arg = new ObjectExportInfo()
 			{
 				FileID = 1
 			};
+			this._fileNameProviderMock.Setup(x => x.GetName(arg)).Returns(FileName);
+
+			// act
 			var result = subject.CreateNativeCell("location", arg);
-			Assert.AreEqual("<td><a style='display:block' href='location'></a></td>", result);
+
+			// assert
+			Assert.AreEqual("<td><a style='display:block' href='location'>test.docx</a></td>", result);
+		}
+
+		[Test]
+		public void ItShouldReturnEmptyPdfCellWhenArtifactIsNotDocument()
+		{
+			// ARRANGE
+			ExportFile settings = new ExportFile((int)ArtifactType.Field);
+			HtmlCellFormatter formatter = CreateSut(settings);
+			ObjectExportInfo artifact = new ObjectExportInfo();
+
+			// ACT
+			var actual = formatter.CreatePdfCell("location", artifact);
+
+			// ASSERT
+			Assert.AreEqual("<td></td>", actual);
+		}
+
+		[Test]
+		public void ItShouldReturnEmptyPdfCellWhenArtifactHasNoPdf()
+		{
+			// ARRANGE
+			ExportFile settings = new ExportFile((int)ArtifactType.Document);
+			HtmlCellFormatter formatter = CreateSut(settings);
+			ObjectExportInfo artifact = new ObjectExportInfo { PdfFileGuid = string.Empty };
+
+			// ACT
+			var actual = formatter.CreatePdfCell("location", artifact);
+
+			// ASSERT
+			Assert.AreEqual("<td></td>", actual);
+		}
+
+		[Test]
+		public void ItShouldReturnValidPdfCell()
+		{
+			// ARRANGE
+			const string Location = "location";
+			const string FileName = "file.pdf";
+			ExportFile settings = new ExportFile((int)ArtifactType.Document) { AppendOriginalFileName = false };
+			HtmlCellFormatter formatter = CreateSut(settings);
+			ObjectExportInfo artifact = new ObjectExportInfo
+			{
+				PdfFileGuid = Guid.NewGuid().ToString(),
+				IdentifierValue = "ItShouldNotBeUsed"
+			};
+
+			this._fileNameProviderMock.Setup(x => x.GetPdfName(artifact)).Returns(FileName);
+
+			// ACT
+			var actual = formatter.CreatePdfCell("location", artifact);
+
+			// ASSERT
+			Assert.AreEqual($"<td><a style='display:block' href='{Location}'>{FileName}</a></td>", actual);
+		}
+
+		private HtmlCellFormatter CreateSut(ExportFile settings)
+		{
+			return new HtmlCellFormatter(settings, _filePathTransformerMock.Object, _fileNameProviderMock.Object);
 		}
 	}
 }

@@ -52,9 +52,6 @@ namespace Relativity.DataExchange.NUnit
 			//       character array and string parameters and the rules on null
 			//       are very particular.
 			const string NeverExecuteMessage = "This should never execute!";
-			string nullStringDelimiter = null;
-			string nullStringBound = null;
-			string nullStringNewline = null;
 			Assert.That(
 				() =>
 					{
@@ -81,60 +78,26 @@ namespace Relativity.DataExchange.NUnit
 						Assert.That(temp, Is.Null, NeverExecuteMessage);
 					},
 				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("logger"));
-			Assert.That(
-				() =>
-					{
-						DelimitedFileImporter2 temp = new MockDelimitedFileImport(nullStringDelimiter);
-						Assert.That(temp, Is.Null, NeverExecuteMessage);
-					},
-				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("delimiter"));
-			Assert.That(
-				() =>
-					{
-						DelimitedFileImporter2 temp = new MockDelimitedFileImport(",;");
-						Assert.That(temp, Is.Null, NeverExecuteMessage);
-					},
-				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("delimiter"));
-			Assert.That(
-				() =>
-					{
-						DelimitedFileImporter2 temp = new MockDelimitedFileImport(",", nullStringBound);
-						Assert.That(temp, Is.Null, NeverExecuteMessage);
-					},
-				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("bound"));
-			Assert.That(
-				() =>
-					{
-						DelimitedFileImporter2 temp = new MockDelimitedFileImport(";", "ab");
-						Assert.That(temp, Is.Null, NeverExecuteMessage);
-					},
-				Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("bound"));
-			Assert.That(
-				() =>
-					{
-						DelimitedFileImporter2 temp = new MockDelimitedFileImport(
-							MockDelimitedFileImport.DefaultDelimiter.ToString(),
-							nullStringBound,
-							nullStringNewline,
-							null,
-							this.mockLogger.Object,
-							CancellationToken.None);
-						Assert.That(temp, Is.Null, NeverExecuteMessage);
-					},
-				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("context"));
-			Assert.That(
-				() =>
-					{
-						DelimitedFileImporter2 temp = new MockDelimitedFileImport(
-							MockDelimitedFileImport.DefaultDelimiter.ToString(),
-							nullStringBound,
-							nullStringNewline,
-							new IoReporterContext(),
-							null,
-							CancellationToken.None);
-						Assert.That(temp, Is.Null, NeverExecuteMessage);
-					},
-				Throws.TypeOf<ArgumentNullException>().With.Property("ParamName").EqualTo("logger"));
+		}
+
+		[Test]
+		[TestCase(' ')]
+		[TestCase('\t')]
+		[TestCase('\n')]
+		[TestCase('\r')]
+		[TestCase('\v')]
+		[TestCase('\u000C')]
+		[TestCase('\u0085')]
+		public void ShouldNotThrowWhenTheArgsAreSupportedWhitespaceCharacters(char value)
+		{
+			DelimitedFileImporter2 temp = new MockDelimitedFileImport(
+				value,
+				value,
+				value,
+				new IoReporterContext(),
+				this.mockLogger.Object,
+				CancellationToken.None);
+			temp.Close();
 		}
 
 		[Test]

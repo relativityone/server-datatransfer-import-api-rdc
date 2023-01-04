@@ -7,9 +7,11 @@
 namespace Relativity.DataExchange.Transfer
 {
 	using System;
-	using System.Globalization;
+	using System.Text;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -25,8 +27,8 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiPathIssueListener"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="direction">
 		/// The transfer direction.
@@ -34,10 +36,80 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		public TapiPathIssueListener(ITransferLog log, TransferDirection direction, TransferContext context)
-			: base(log, context)
+		public TapiPathIssueListener(ILog logger, TransferDirection direction, TransferContext context)
+			: base(logger, context)
 		{
 			this.transferDirection = direction;
+		}
+
+		/// <summary>
+		/// Formats a job-level or file-level message using the supplied issue parameters.
+		/// </summary>
+		/// <param name="clientDisplayName">
+		/// The client name.
+		/// </param>
+		/// <param name="message">
+		/// The issue message.
+		/// </param>
+		/// <param name="direction">
+		/// The transfer direction.
+		/// </param>
+		/// <param name="jobLevelIssue">
+		/// Specify whether this is a job-level or file-level issue.
+		/// </param>
+		/// <param name="retryable">
+		/// Specify whether this is a retryable issue.
+		/// </param>
+		/// <param name="retriesLeft">
+		/// The number of retries left.
+		/// </param>
+		/// <param name="retryTimeSpan">
+		/// The wait period between retry attempts.
+		/// </param>
+		/// <returns>
+		/// The overall message.
+		/// </returns>
+		internal static string FormatIssueMessage(
+			string clientDisplayName,
+			string message,
+			TransferDirection direction,
+			bool jobLevelIssue,
+			bool retryable,
+			int retriesLeft,
+			TimeSpan retryTimeSpan)
+		{
+			if (!string.IsNullOrEmpty(message))
+			{
+				message = message.TrimEnd('.');
+			}
+
+			StringBuilder sb = new StringBuilder();
+			if (jobLevelIssue)
+			{
+				sb.AppendFormat(
+					direction == TransferDirection.Upload
+						? Strings.TransferTransferUploadJobWarningMessage
+						: Strings.TransferTransferDownloadJobWarningMessage,
+					clientDisplayName,
+					message);
+			}
+			else
+			{
+				sb.AppendFormat(
+					direction == TransferDirection.Upload
+						? Strings.TransferTransferUploadFileWarningMessage
+						: Strings.TransferTransferDownloadFileWarningMessage,
+					clientDisplayName,
+					message);
+			}
+
+			sb.Append(".");
+			if (!retryable)
+			{
+				return sb.ToString();
+			}
+
+			return ErrorMessageFormatter.AppendRetryDetails(sb.ToString(), retryTimeSpan, retriesLeft);
 		}
 
 		/// <inheritdoc />
@@ -48,73 +120,111 @@ namespace Relativity.DataExchange.Transfer
 				throw new ArgumentNullException(nameof(e));
 			}
 
-			var triesLeft = e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
-			var retryCalculation = e.Request.RetryStrategy.Calculation;
-			var retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
+			int triesLeft = CalculateTriesLeft(e);
+			TimeSpan retryTimeSpan = CalculateRetryTimeSpan(e);
 
-			// Note: this issue is indicative of a job-level issue - especially with Aspera.
-			if (e.Issue.Path == null)
+			this.HandleFileLevelIssue(e.Issue, triesLeft, retryTimeSpan);
+		}
+
+		/// <inheritdoc />
+		protected override void OnTransferJobIssue(object sender, TransferPathIssueEventArgs e)
+		{
+			if (e == null)
 			{
-				var formattedMessage = this.transferDirection == TransferDirection.Download
-					? Strings.TransferJobDownloadWarningMessage
-					: Strings.TransferJobUploadWarningMessage;
-				var message = string.Format(
-					CultureInfo.CurrentCulture,
-					formattedMessage,
-					this.ClientDisplayName,
-					e.Issue.Message,
-					retryTimeSpan.TotalSeconds,
-					triesLeft);
-				this.PublishWarningMessage(message, TapiConstants.NoLineNumber);
-				this.TransferLog.LogWarning(
-					"A transfer warning has occurred. LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
-					TapiConstants.NoLineNumber,
-					"(no path)",
-					e.Issue.Attributes);
-				return;
+				throw new ArgumentNullException(nameof(e));
 			}
 
-			var lineNumber = e.Issue.Path.Order;
-			if (e.Issue.Attributes.HasFlag(IssueAttributes.Error))
+			int triesLeft = CalculateTriesLeft(e);
+			TimeSpan retryTimeSpan = CalculateRetryTimeSpan(e);
+
+			this.HandleJobLevelIssue(e.Issue, triesLeft, retryTimeSpan);
+		}
+
+		private static int CalculateTriesLeft(TransferPathIssueEventArgs e)
+		{
+			return e.Issue.MaxRetryAttempts - e.Issue.RetryAttempt - 1;
+		}
+
+		private static TimeSpan CalculateRetryTimeSpan(TransferPathIssueEventArgs e)
+		{
+			Func<int, TimeSpan> retryCalculation = e.Request.RetryStrategy.Calculation;
+			TimeSpan retryTimeSpan = retryCalculation(e.Issue.RetryAttempt);
+			return retryTimeSpan;
+		}
+
+		private void HandleJobLevelIssue(ITransferIssue issue, int triesLeft, TimeSpan retryTimeSpan)
+		{
+			if (issue.Attributes.HasFlag(IssueAttributes.Error))
 			{
-				// Note: paths containing fatal errors force the transfer to terminate
-				//       and error handling is already addressed. Log it here just in case.
-				this.TransferLog.LogError(
-					"A transfer error has occurred. Message={Message}, LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
-					e.Issue.Message,
-					lineNumber,
-					e.Issue.Path.SourcePath,
-					e.Issue.Attributes);
-			}
-			else if (triesLeft > 0)
-			{
-				var formattedMessage = this.transferDirection == TransferDirection.Download
-					? Strings.TransferFileDownloadWarningMessage
-					: Strings.TransferFileUploadWarningMessage;
-				var message = string.Format(
-					CultureInfo.CurrentCulture,
-					formattedMessage,
-					this.ClientDisplayName,
-					e.Issue.Message,
-					retryTimeSpan.TotalSeconds,
-					triesLeft);
-				this.PublishWarningMessage(message, e.Issue.Path.Order);
-				this.TransferLog.LogWarning(
-					"A transfer warning has occurred. Message={Message}, LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
-					e.Issue.Message,
-					lineNumber,
-					e.Issue.Path.SourcePath,
-					e.Issue.Attributes);
+				this.Logger.LogError(
+					"A serious transfer job-level error has occurred. Message={Message}, Code={Code}, Attributes={Attributes}, IsRetryable={IsRetryable}",
+					issue.Message,
+					issue.Code,
+					issue.Attributes,
+					issue.IsRetryable);
 			}
 			else
 			{
-				// Avoid raising this as a warning. The request will now terminate and messaging is handled in NativeFileTransfer.
-				this.TransferLog.LogError(
-					"A transfer error has occurred. Message={Message}, LineNumber={LineNumber}, SourcePath={SourcePath}, Attributes={Attributes}.",
-					e.Issue.Message,
+				const bool JobLevelIssue = true;
+				string message = FormatIssueMessage(
+					this.ClientDisplayName,
+					issue.Message,
+					this.transferDirection,
+					JobLevelIssue,
+					issue.IsRetryable,
+					triesLeft,
+					retryTimeSpan);
+				this.PublishWarningMessage(message, TapiConstants.NoLineNumber);
+				this.Logger.LogWarning(
+					"A transfer job-level warning has occurred. Message={Message}, Code={Code}, Attributes={Attributes}, IsRetryable={IsRetryable}.",
+					issue.Message,
+					issue.Code,
+					issue.Attributes,
+					issue.IsRetryable);
+			}
+		}
+
+		private void HandleFileLevelIssue(ITransferIssue issue, int triesLeft, TimeSpan retryTimeSpan)
+		{
+			int lineNumber = issue.Path.Order;
+			if (issue.Attributes.HasFlag(IssueAttributes.Error))
+			{
+				// Note: paths containing fatal errors force the transfer to terminate
+				//       and error handling is already addressed. Log it here just in case.
+				this.Logger.LogError(
+					"A serious transfer file-level error has occurred on line {LineNumber}. Message={Message}, Code={Code}, SourcePath={SourcePath}, Attributes={Attributes}, IsRetryable={IsRetryable}",
 					lineNumber,
-					e.Issue.Path.SourcePath,
-					e.Issue.Attributes);
+					issue.Message,
+					issue.Code,
+					issue.Path.SourcePath.Secure(),
+					issue.Attributes,
+					issue.IsRetryable);
+			}
+			else
+			{
+				if (issue.Attributes.HasFlag(IssueAttributes.Malware))
+				{
+					this.PublishErrorMessage($"Malware exception {issue.Path.SourcePath}", issue.Path.Order, isMalwareError: true);
+				}
+
+				const bool JobLevelIssue = false;
+				string message = FormatIssueMessage(
+					this.ClientDisplayName,
+					issue.Message,
+					this.transferDirection,
+					JobLevelIssue,
+					issue.IsRetryable,
+					triesLeft,
+					retryTimeSpan);
+				this.PublishWarningMessage(message, issue.Path.Order);
+				this.Logger.LogWarning(
+					"A transfer file-level warning has occurred on line {LineNumber}. Message={Message}, Code={Code}, SourcePath={SourcePath}, Attributes={Attributes}, IsRetryable={IsRetryable}",
+					lineNumber,
+					issue.Message,
+					issue.Code,
+					issue.Path.SourcePath.Secure(),
+					issue.Attributes,
+					issue.IsRetryable);
 			}
 		}
 	}

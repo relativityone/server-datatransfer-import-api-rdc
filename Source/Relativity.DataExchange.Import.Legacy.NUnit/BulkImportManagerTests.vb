@@ -4,7 +4,9 @@
 ' </copyright>
 ' -----------------------------------------------------------------------------------------------------
 
+Imports kCura.EDDS.WebAPI.BulkImportManagerBase
 Imports NUnit.Framework
+Imports BulkImportManager = kCura.WinEDDS.Service.BulkImportManager
 
 Namespace Relativity.DataExchange.Import.NUnit
 
@@ -16,7 +18,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 #Region "Members"
 		Private _keyPathExistsAlready As Boolean
 		Private _keyValExistsAlready As Boolean
-		Private _settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo
+		Private _settings As ImageLoadInfo
 #End Region
 
 #Region " Setup "
@@ -33,10 +35,10 @@ Namespace Relativity.DataExchange.Import.NUnit
 				RegKeyHelper.CreateKeyWithValueOnPath(Not _keyPathExistsAlready, RegKeyHelper.RelativityKeyPath, RegKeyHelper.RelativityServiceURLKey, RegKeyHelper.RelativityDefaultServiceURL)
 			End If
 
-			_settings = New kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo With {
+			_settings = New ImageLoadInfo With {
 	 .BulkFileName = "",
 	 .UploadFullText = False,
-	 .Overlay = kCura.EDDS.WebAPI.BulkImportManagerBase.OverwriteType.Both,
+	 .Overlay = OverwriteType.Both,
 	 .DestinationFolderArtifactID = 0,
 	 .Repository = "",
 	 .UseBulkDataImport = False,
@@ -55,78 +57,139 @@ Namespace Relativity.DataExchange.Import.NUnit
 #Region " Should throw Bulk SQL exceptions "
 		<Test()>
 		Public Sub Image_Import_Failure_Throws_Exception()
-			Dim manager As New MockBulkImportManager(True)
-			Assert.Throws(Of kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportImage(0, _settings, False))
+			Using manager As New MockBulkImportManager(True)
+				Assert.Throws(Of BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportImage(0, _settings, False))
+			End Using
+		End Sub
+
+		<Test()>
+		Public Sub CheckResultsForException_should_throw_BulkImportSqlException()
+			Using manager As New MockBulkImportManager(True)
+				Dim results = New MassImportResults()
+				results.ExceptionDetail = New SoapExceptionDetail()
+				results.ExceptionDetail.ExceptionMessage = "Some message --nothing specific-- rest of message"
+				Assert.Throws(Of BulkImportManager.BulkImportSqlException)(Sub() manager.CheckResultsForExceptionPublic(results))
+			End Using
+		End Sub
+
+		<Test()>
+		Public Sub CheckResultsForException_should_throw_BulkImportSqlTimeoutException()
+			Using manager As New MockBulkImportManager(True)
+				Dim results = New MassImportResults()
+				results.ExceptionDetail = New SoapExceptionDetail()
+				results.ExceptionDetail.ExceptionMessage = "Some message Timeout expired rest of message"
+				Assert.Throws(Of BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.CheckResultsForExceptionPublic(results))
+			End Using
+		End Sub
+
+		<Test()>
+		Public Sub CheckResultsForException_should_throw_InsufficientPermissionsForImportException()
+			Using manager As New MockBulkImportManager(True)
+				Dim results = New MassImportResults()
+				results.ExceptionDetail = New SoapExceptionDetail()
+				results.ExceptionDetail.ExceptionMessage = "Some message ##InsufficientPermissionsForImportException## rest of message"
+				Assert.Throws(Of BulkImportManager.InsufficientPermissionsForImportException)(Sub() manager.CheckResultsForExceptionPublic(results))
+			End Using
+		End Sub
+
+		<Test()>
+		Public Sub CheckResultsForException_should_add_message_for_stack_overflow()
+			Using manager As New MockBulkImportManager(True)
+				Dim results = New MassImportResults()
+				results.ExceptionDetail = New SoapExceptionDetail()
+				results.ExceptionDetail.ExceptionMessage = "Some message Server stack limit has been reached rest of message"
+				Dim exception = Assert.Throws(Of BulkImportManager.BulkImportSqlException)(Sub() manager.CheckResultsForExceptionPublic(results))
+				Assert.That(exception.Message.Contains("Try to import less fields"))
+			End Using
+		End Sub
+
+		<Test()>
+		Public Sub CheckResultsForException_should_not_throw_when_exception_details_are_empty()
+			Using manager As New MockBulkImportManager(True)
+				Dim results = New MassImportResults()
+				manager.CheckResultsForExceptionPublic(results)
+			End Using
 		End Sub
 
 		<Test()>
 		Public Sub Production_Image_Import_Failure_Throws_Exception()
-			Dim manager As New MockBulkImportManager(True)
-			Assert.Throws(Of kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportProductionImage(0, _settings, 0, False))
+			Using manager As New MockBulkImportManager(True)
+				Assert.Throws(Of BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportProductionImage(0, _settings, 0, False))
+			End Using
 		End Sub
 
 		<Test()>
 		Public Sub Native_Import_Failure_Throws_Exception()
-			Dim manager As New MockBulkImportManager(True)
-			Assert.Throws(Of kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportNative(0, Nothing, False, False))
+			Using manager As New MockBulkImportManager(True)
+				Assert.Throws(Of BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportNative(0, Nothing, False, False))
+			End Using
 		End Sub
 
 		<Test()>
 		Public Sub Object_Import_Failure_Throws_Exception()
-			Dim manager As New MockBulkImportManager(True)
-			Assert.Throws(Of kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportObjects(0, Nothing, False))
+			Using manager As New MockBulkImportManager(True)
+				Assert.Throws(Of BulkImportManager.BulkImportSqlException)(Sub() manager.BulkImportObjects(0, Nothing, False))
+			End Using
 		End Sub
 #End Region
 
 #Region " Should throw Bulk SQL Timeout exceptions "
 		<Test()>
 		Public Sub Image_Import_Timeout_Throws_Timeout_Exception()
-			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			Assert.Throws(Of kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportImage(0, _settings, False))
+			Using manager As New MockBulkImportManager(TimeoutMessage)
+				Assert.Throws(Of BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportImage(0, _settings, False))
+			End Using
 		End Sub
 
 		<Test()>
 		Public Sub Production_Image_Import_Timeout_Throws_Timeout_Exception()
-			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			Assert.Throws(Of kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportProductionImage(0, _settings, 0, False))
+			Using manager As New MockBulkImportManager(TimeoutMessage)
+				Assert.Throws(Of BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportProductionImage(0, _settings, 0, False))
+			End Using
 		End Sub
 
 		<Test()>
 		Public Sub Native_Import_Timeout_Throws_Timeout_Exception()
-			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			Assert.Throws(Of kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportNative(0, Nothing, False, False))
+			Using manager As New MockBulkImportManager(TimeoutMessage)
+				Assert.Throws(Of BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportNative(0, Nothing, False, False))
+			End Using
 		End Sub
 
 		<Test()>
 		Public Sub Object_Import_Timeout_Throws_Timeout_Exception()
-			Dim manager As New MockBulkImportManager(TimeoutMessage)
-			Assert.Throws(Of kCura.WinEDDS.Service.BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportObjects(0, Nothing, False))
+			Using manager As New MockBulkImportManager(TimeoutMessage)
+				Assert.Throws(Of BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.BulkImportObjects(0, Nothing, False))
+			End Using
 		End Sub
 #End Region
 
 #Region " Shouldn't throw exceptions "
 		<Test()> Public Sub Image_Import_Worked_No_Exception()
-			Dim manager As New MockBulkImportManager(False)
-			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = manager.BulkImportImage(0, _settings, False)
-			Assert.AreEqual(Nothing, retval.ExceptionDetail)
+			Using manager As New MockBulkImportManager(False)
+				Dim retval As MassImportResults = manager.BulkImportImage(0, _settings, False)
+				Assert.AreEqual(Nothing, retval.ExceptionDetail)
+			End Using
 		End Sub
 
 		<Test()> Public Sub Production_Image_Import_Worked_No_Exception()
-			Dim manager As New MockBulkImportManager(False)
-			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = manager.BulkImportProductionImage(0, _settings, 0, False)
-			Assert.AreEqual(Nothing, retval.ExceptionDetail)
+			Using manager As New MockBulkImportManager(False)
+				Dim retval As MassImportResults = manager.BulkImportProductionImage(0, _settings, 0, False)
+				Assert.AreEqual(Nothing, retval.ExceptionDetail)
+			End Using
 		End Sub
 
 		<Test()> Public Sub Native_Import_Worked_No_Exception()
-			Dim manager As New MockBulkImportManager(False)
-			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = manager.BulkImportNative(0, Nothing, False, False)
-			Assert.AreEqual(Nothing, retval.ExceptionDetail)
+			Using manager As New MockBulkImportManager(False)
+				Dim retval As MassImportResults = manager.BulkImportNative(0, Nothing, False, False)
+				Assert.AreEqual(Nothing, retval.ExceptionDetail)
+			End Using
 		End Sub
 
 		<Test()> Public Sub Object_Import_Worked_No_Exception()
-			Dim manager As New MockBulkImportManager(False)
-			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults = manager.BulkImportObjects(0, Nothing, False)
-			Assert.AreEqual(Nothing, retval.ExceptionDetail)
+			Using manager As New MockBulkImportManager(False)
+				Dim retval As MassImportResults = manager.BulkImportObjects(0, Nothing, False)
+				Assert.AreEqual(Nothing, retval.ExceptionDetail)
+			End Using
 		End Sub
 #End Region
 
@@ -137,49 +200,52 @@ Namespace Relativity.DataExchange.Import.NUnit
 		''' Mock BulkImportManager for testing when the webservice throws bulk SQL Exceptions
 		''' </summary>
 		Public Class MockBulkImportManager
-			Inherits kCura.WinEDDS.Service.BulkImportManager
+			Inherits BulkImportManager
 
-			Public Property ErrorMessage As kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
+			Public Property ErrorMessage As SoapExceptionDetail
 
 			Public Sub New(ByVal throwsException As Boolean)
-				MyBase.new(Nothing, Nothing)
+				MyBase.New(Nothing, Nothing)
 				If throwsException Then
-					Me.ErrorMessage = New kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail()
+					Me.ErrorMessage = New SoapExceptionDetail()
 				Else
 					Me.ErrorMessage = Nothing
 				End If
 			End Sub
 
 			Public Sub New(ByVal exceptionMessage As String)
-				MyBase.new(Nothing, Nothing)
+				MyBase.New(Nothing, Nothing)
 				If exceptionMessage IsNot Nothing Then
-					Me.ErrorMessage = New kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail()
+					Me.ErrorMessage = New SoapExceptionDetail()
 					Me.ErrorMessage.ExceptionMessage = exceptionMessage
 				Else
 					Me.ErrorMessage = Nothing
 				End If
 			End Sub
+			Public Sub CheckResultsForExceptionPublic(ByVal results As MassImportResults)
+				CheckResultsForException(results)
+			End Sub
 
-			Protected Overrides Function InvokeBulkImportImage(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-				Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Protected Overrides Function InvokeBulkImportImage(ByVal appID As Integer, ByVal settings As ImageLoadInfo, ByVal inRepository As Boolean) As MassImportResults
+				Dim retval As New MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval
 			End Function
 
-			Protected Overrides Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-				Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Protected Overrides Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
+				Dim retval As New MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval
 			End Function
 
-			Protected Overrides Function InvokeBulkImportObjects(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-				Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Protected Overrides Function InvokeBulkImportObjects(ByVal appID As Integer, ByVal settings As ObjectLoadInfo, ByVal inRepository As Boolean) As MassImportResults
+				Dim retval As New MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval
 			End Function
 
-			Protected Overrides Function InvokeBulkImportProductionImage(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean) As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
-				Dim retval As New kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults
+			Protected Overrides Function InvokeBulkImportProductionImage(ByVal appID As Integer, ByVal settings As ImageLoadInfo, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean) As MassImportResults
+				Dim retval As New MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval
 			End Function

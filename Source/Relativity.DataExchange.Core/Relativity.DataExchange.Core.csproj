@@ -22,7 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591;0649</NoWarn>
@@ -45,41 +45,12 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.DataExchange.Core.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591;0649</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.DataExchange.Core.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591;0649</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FreeImageNET">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Vendor\FreeImage\3.18.0\x64\FreeImageNET.dll</HintPath>
-    </Reference>
     <Reference Include="itextsharp">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll</HintPath>
+      <HintPath>..\..\Vendor\iTextSharp\5.5.13.1\x64\itextsharp.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -95,7 +66,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ByteSize.cs" />
     <Compile Include="CacheKeys.cs" />
+    <Compile Include="AuthTokenProviderAdapter.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Data\BooleanImporterException.cs" />
     <Compile Include="Data\CellImporterException.cs" />
     <Compile Include="Data\ConditionalArrayList.cs" />
@@ -108,9 +82,15 @@
     <Compile Include="Data\ImporterException.cs" />
     <Compile Include="Data\IntegerImporterException.cs" />
     <Compile Include="Data\ObjectNameImporterException.cs" />
+    <Compile Include="Data\RestartableFileStream.cs" />
     <Compile Include="Data\StringImporterException.cs" />
     <Compile Include="Data\TrimOption.cs" />
+    <Compile Include="Service\BatchInProgressErrorPolicyFactory.cs" />
+    <Compile Include="TaskExtensions.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="ExceptionHelper.cs" />
+    <Compile Include="Helpers\HashingHelper.cs" />
+    <Compile Include="Helpers\JwtTokenHelper.cs" />
     <Compile Include="Io\ErrorBeforeMassImportArgs.cs" />
     <Compile Include="Io\ErrorDuringMassImportArgs.cs" />
     <Compile Include="Io\ErrorMessageWriter.cs" />
@@ -129,25 +109,44 @@
     <Compile Include="Io\OutsideInFileTypeIdentifierService.cs" />
     <Compile Include="Io\TempFileBuilder.cs" />
     <Compile Include="Io\TempFileConstants.cs" />
+    <Compile Include="IRunningContext.cs" />
+    <Compile Include="IRelativityTokenProvider.cs" />
+    <Compile Include="IWebApiVsKeplerFactory.cs" />
+    <Compile Include="JwtAuthToken.cs" />
+    <Compile Include="Logging\LogExtensions.cs" />
+    <Compile Include="Logger\AggregatingLoggerDecorator.cs" />
+    <Compile Include="Logging\LogContext.cs" />
+    <Compile Include="Logging\StackOfDisposables.cs" />
+    <Compile Include="Media\ByteArrayConverter.cs" />
+    <Compile Include="Logger\ImportApiSecureLogFactory.cs" />
+    <Compile Include="Logger\ISecureLogFactory.cs" />
+    <Compile Include="Logger\SecurePropertyValueBase.cs" />
+    <Compile Include="Logger\HashingLoggerDecorator.cs" />
+    <Compile Include="Logger\LoggerDecoratorBase.cs" />
+    <Compile Include="Logger\RdcSecureLogFactory.cs" />
+    <Compile Include="Logger\SecurePropertyValue.cs" />
+    <Compile Include="Logger\SecurePropertyValueExtensions.cs" />
     <Compile Include="Media\ByteOrdering.cs" />
-    <Compile Include="Media\FreeImageService.cs" />
+    <Compile Include="Media\IByteArrayConverter.cs" />
+    <Compile Include="Media\ImageDataValidationException.cs" />
     <Compile Include="Media\IImageConverter.cs" />
     <Compile Include="Media\IImageValidator.cs" />
-    <Compile Include="Media\IImageFormatIdentifier.cs" />
-    <Compile Include="Media\ImageConstants.cs" />
     <Compile Include="Media\ImageConversionException.cs" />
     <Compile Include="Media\ImageConverterService.cs" />
     <Compile Include="Media\ImageFormat.cs" />
-    <Compile Include="Media\ImageValidationException.cs" />
+    <Compile Include="Media\ImageFileValidationException.cs" />
     <Compile Include="Media\MultiPagePdfConversionException.cs" />
     <Compile Include="Media\MultiPageTiffConversionException.cs" />
     <Compile Include="MemoryCacheRepository.cs" />
+    <Compile Include="NullAuthTokenProvider.cs" />
+    <Compile Include="Process\BatchCompletedEventArgs.cs" />
     <Compile Include="Process\EventType2.cs" />
     <Compile Include="Process\ProcessBase2.cs" />
     <Compile Include="Process\NullProcessEventWriter.cs" />
     <Compile Include="Process\NullProcessErrorWriter.cs" />
     <Compile Include="Process\ProcessPool2.cs" />
     <Compile Include="RdcFileSerializationBinder.cs" />
+    <Compile Include="Logger\RelativityLogger.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="AppSettingsDictionary.cs" />
     <Compile Include="AppSettingsConstants.cs" />
@@ -162,7 +161,7 @@
     <Compile Include="RelativityInstanceInfo.cs" />
     <Compile Include="RelativityNotSupportedException.cs" />
     <Compile Include="NullableTypesHelper.cs" />
-    <Compile Include="NullArgValidationExtensions.cs" />
+    <Compile Include="ArgValidationExtensions.cs" />
     <Compile Include="Process\FieldMappedEventArgs.cs" />
     <Compile Include="Process\CancellationRequestEventArgs.cs" />
     <Compile Include="Process\ErrorReportEventArgs.cs" />
@@ -175,6 +174,46 @@
     <Compile Include="Process\ExportErrorEventArgs.cs" />
     <Compile Include="Process\RecordNumberEventArgs.cs" />
     <Compile Include="Process\ShowReportEventArgs.cs" />
+    <Compile Include="Service\HttpErrorRetryPolicyFactory.cs" />
+    <Compile Include="Service\IKeplerProxy.cs" />
+    <Compile Include="Service\IRelativityManagerService.cs" />
+    <Compile Include="Service\IRelativityManagerServiceFactory.cs" />
+    <Compile Include="Service\IReLoginService.cs" />
+    <Compile Include="Service\KeplerRelativityManagerService.cs" />
+    <Compile Include="Service\IKeplerRetryPolicyFactory.cs" />
+    <Compile Include="Service\RetryableErrorsRetryPolicyFactory.cs" />
+    <Compile Include="Service\RelativityDistributed\FileDownloadRequest.cs" />
+    <Compile Include="Service\RelativityDistributed\KeplerDistributedReplacement.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacade.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeAuthenticationDecorator.cs" />
+    <Compile Include="Service\RelativityDistributed\FileDownloadResponse.cs" />
+    <Compile Include="Service\RelativityDistributed\IRelativityDistributedFacade.cs" />
+    <Compile Include="Service\IServiceNotification.cs" />
+    <Compile Include="ErrorMessageFormatter.cs" />
+    <Compile Include="Service\ObjectManagerExceptionHelper.cs" />
+    <Compile Include="Service\KeplerServiceConnectionInfo.cs" />
+    <Compile Include="Service\IServiceConnectionInfo.cs" />
+    <Compile Include="Service\IServiceProxyFactory.cs" />
+    <Compile Include="Service\KeplerServiceProxyFactory.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedErrorType.cs" />
+    <Compile Include="Service\RelativityDistributed\RelativityDistributedFacadeRetriesDecorator.cs" />
+    <Compile Include="Service\RelativityManagerServiceFactory.cs" />
+    <Compile Include="Service\TriggerManager.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\IAPICommunicationModeManager.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\IIAPICommunicationModeManager.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\IServiceAvailabilityChecker.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\IWebApiVsKepler.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\ServiceAvailabilityChecker.cs" />
+    <Compile Include="Service\WebApiVsKeplerSwitch\WebApiVsKepler.cs" />
+    <Compile Include="SettingsConstants.cs" />
+    <Compile Include="Transfer\ILongTextStreamService.cs" />
+    <Compile Include="Transfer\LongTextStreamProgressEventArgs.cs" />
+    <Compile Include="Transfer\LongTextStreamRequest.cs" />
+    <Compile Include="Transfer\LongTextStreamResult.cs" />
+    <Compile Include="RsaBearerTokenAuthenticationProvider.cs" />
+    <Compile Include="RunningContext.cs" />
+    <Compile Include="Transfer\DownloadTapiBridgeParameters2.cs" />
+    <Compile Include="UrlHelper.cs" />
     <Compile Include="SerializationHelper.cs" />
     <Compile Include="Service\ArtifactType.cs" />
     <Compile Include="Service\ArtifactTypeHelper.cs" />
@@ -204,16 +243,24 @@
     <Compile Include="StringExtensions.cs" />
     <Compile Include="ImportExportCompatibilityCheck.cs" />
     <Compile Include="IApplicationVersionService.cs" />
+    <Compile Include="WebApiCredential.cs" />
     <Compile Include="TempDirectory2.cs" />
     <Compile Include="Timekeeper2.cs" />
     <Compile Include="TimekeeperEntry2.cs" />
     <Compile Include="Transfer\DownloadTapiBridge2.cs" />
-    <Compile Include="Transfer\MetadataTransferException.cs" />
+    <Compile Include="Transfer\TapiMultiClientEventArgs.cs" />
+    <Compile Include="Transfer\TapiFileStorageSearchResults.cs" />
+    <Compile Include="Transfer\ITapiObjectService.cs" />
+    <Compile Include="Transfer\TapiModeHelper.cs" />
+    <Compile Include="Transfer\TapiTotals.cs" />
+    <Compile Include="Transfer\ITapiBridge.cs" />
     <Compile Include="Transfer\TapiBridgeBase2.cs" />
     <Compile Include="Transfer\TapiBridgeFactory.cs" />
     <Compile Include="Transfer\TapiBridgeParameters2.cs" />
+    <Compile Include="Transfer\TapiLargeFileProgressEventArgs.cs" />
     <Compile Include="Transfer\UploadTapiBridge2.cs" />
     <Compile Include="Transfer\UploadTapiBridgeParameters2.cs" />
+    <Compile Include="ValidatedNotNullAttribute.cs" />
     <Compile Include="VersionConstants.cs" />
     <Compile Include="VisualBasicConstants.cs" />
     <Compile Include="CollectionExtensions.cs" />
@@ -261,7 +308,7 @@
     <Compile Include="Process\IRunnable.cs" />
     <Compile Include="Transfer\ClientChangeReason.cs" />
     <Compile Include="Transfer\RelativityTransferLog.cs" />
-    <Compile Include="Transfer\ITapiObjectService.cs" />
+    <Compile Include="Transfer\ITapiFileStorageSearchResults.cs" />
     <Compile Include="Transfer\TapiClient.cs" />
     <Compile Include="Transfer\TapiClientEventArgs.cs" />
     <Compile Include="Transfer\TapiConstants.cs" />
@@ -275,12 +322,9 @@
     <Compile Include="Transfer\TapiRequestListener.cs" />
     <Compile Include="Transfer\TapiStatisticsEventArgs.cs" />
     <Compile Include="Transfer\TapiStatisticsListener.cs" />
-    <Compile Include="RelativityLogFactory.cs" />
     <Compile Include="WaitAndRetryPolicy.cs" />
-    <Content Include="oi\docs\fileids_values_only_sorted.txt">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\docs\fileids_values_strs.txt">
+    <Compile Include="DefaultImageFieldNames.cs" />
+    <Content Include="oi\unmanaged\libchardet.dll">
       <Paket>True</Paket>
     </Content>
     <Content Include="oi\unmanaged\cmmap000.bin">
@@ -377,13 +421,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+    <When Condition="'$(Configuration)'!='Debug'">
       <ItemGroup>
-        <Reference Include="oi">
-          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
-          <Private>True</Private>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
           <Paket>True</Paket>
-        </Reference>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+          <Paket>True</Paket>
+        </Analyzer>
       </ItemGroup>
     </When>
   </Choose>
@@ -412,8 +457,41 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="FaspManager">
-          <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
+        <Reference Include="Relativity.AutomatedWorkflows.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.AutomatedWorkflows.Services.Interfaces\lib\net462\Relativity.AutomatedWorkflows.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Kepler">
+          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client.SDK\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -428,14 +506,8 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -445,28 +517,82 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\Relativity.OutsideIn\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Data.DataSetExtensions">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ServiceModel">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Services.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="FaspManager">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataTransfer.Nodes">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Transfer.Client">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Aspera">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Core">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.FileShare">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Http">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -484,34 +610,54 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
+  <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" />
   <ItemGroup>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

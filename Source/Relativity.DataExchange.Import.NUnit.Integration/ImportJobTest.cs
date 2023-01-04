@@ -3,7 +3,7 @@
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="ImportAPI"/> tests.
+//   Represents <see cref="ImportJobTest"/> tests.
 // </summary>
 // -----------------------------------------------------------------------------------------------------
 

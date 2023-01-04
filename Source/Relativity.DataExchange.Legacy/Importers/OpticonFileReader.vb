@@ -59,7 +59,7 @@ Namespace kCura.WinEDDS
 			Throw New MethodAccessException("Unsupported Operation")
 		End Function
 
-		Public Function CountRecords() As Long Implements Api.IImageReader.CountRecords
+		Public Function CountRecords() As Long? Implements Api.IImageReader.CountRecords
 			Return Global.Relativity.DataExchange.Io.FileSystem.Instance.File.CountLinesInFile(Me.Settings.FileName)
 		End Function
 

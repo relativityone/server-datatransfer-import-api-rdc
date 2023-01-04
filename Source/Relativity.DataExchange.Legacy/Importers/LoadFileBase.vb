@@ -1,4 +1,6 @@
+Imports System.Collections.Generic
 Imports System.Threading
+Imports kCura.WinEDDS.Service
 
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Data
@@ -8,20 +10,19 @@ Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public MustInherit Class LoadFileBase
-		Inherits ImportExportTapiBase
+		Inherits ImportTapiBase
 
 #Region "Members"
 
 		Protected _columnsAreInitialized As Boolean
-		Protected _columnHeaders As String()
-
-		Protected _documentManager As kCura.WinEDDS.Service.DocumentManager
-		Protected _codeManager As kCura.WinEDDS.Service.CodeManager
-		Protected _folderManager As kCura.WinEDDS.Service.FolderManager
-		Protected _fieldQuery As kCura.WinEDDS.Service.FieldQuery
-		Protected _bulkImportManager As kCura.WinEDDS.Service.IBulkImportManager
-		Protected _usermanager As kCura.WinEDDS.Service.UserManager
-		Protected _objectManager As kCura.WinEDDS.Service.ObjectManager
+		
+		Protected _documentManager As kCura.WinEDDS.Service.Replacement.IDocumentManager
+		Protected _codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager
+		Protected _folderManager As kCura.WinEDDS.Service.Replacement.IFolderManager
+		Protected _fieldQuery As kCura.WinEDDS.Service.Replacement.IFieldQuery
+		Protected _bulkImportManager As kCura.WinEDDS.Service.Replacement.IBulkImportManager
+		Protected _usermanager As kCura.WinEDDS.Service.Replacement.IUserManager
+		Protected _objectManager As kCura.WinEDDS.Service.Replacement.IObjectManager
 
 		Protected _filePathColumn As String
 		Protected _filePathColumnIndex As Int32
@@ -56,7 +57,9 @@ Namespace kCura.WinEDDS
 		Private _codeValidator As CodeValidator.Base
 		Protected WithEvents _artifactReader As Api.IArtifactReader
 		Protected _executionSource As ExecutionSource
-		Public Property SkipExtractedTextEncodingCheck As Boolean
+		Protected _runningContext As IRunningContext
+
+		Public Property SkipExtractedTextEncodingAndSizeCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
 		Public Property OIFileIdMapped As Boolean
@@ -66,6 +69,7 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
 		Public Property SupportedByViewerColumn As String
+		Private Property _artifactIDDataSetCache As Dictionary(Of Tuple(Of Integer, String), DataSet)
 #End Region
 
 #Region "Accessors"
@@ -111,15 +115,19 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Protected Overridable ReadOnly Property BulkImportManager As kCura.WinEDDS.Service.IBulkImportManager
+		Protected Overridable ReadOnly Property BulkImportManager As Service.Replacement.IBulkImportManager
 			Get
 				If _bulkImportManager Is Nothing Then
-					_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(_settings.Credentials, _settings.CookieContainer)
+					_bulkImportManager = ManagerFactory.CreateBulkImportManager(_settings.Credentials, _settings.CookieContainer, AddressOf GetCorrelationId)
 				End If
 
 				Return _bulkImportManager
 			End Get
 		End Property
+
+		Protected Overridable Function GetCorrelationId() As String
+			Return CorrelationIdFunc?.Invoke()
+		End Function
 
 #End Region
 
@@ -134,35 +142,38 @@ Namespace kCura.WinEDDS
 			_artifactReader.AdvanceRecord()
 		End Sub
 
-		Protected Sub New(args As LoadFile, _
-		                  reporter As IIoReporter, _
-		                  logger As ILog, _
-		                  timezoneoffset As Int32, _
-		                  doRetryLogic As Boolean, _
-		                  autoDetect As Boolean, _
-		                  cancellationToken As CancellationTokenSource, _
-		                  ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			Me.New(args, _
-			       reporter, _
-			       logger, _
-			       timezoneoffset, _
-			       doRetryLogic, _
-			       autoDetect, _
-			       cancellationToken, _
-			       initializeArtifactReader:=True, _
-			       executionSource := executionSource)
+		Protected Sub New(args As LoadFile,
+						  reporter As IIoReporter,
+						  logger As ILog,
+						  timezoneoffset As Int32,
+						  doRetryLogic As Boolean,
+						  autoDetect As Boolean,
+						  cancellationToken As CancellationTokenSource,
+						  correlationIdFunc As Func(Of String),
+						  ByVal Optional runningContext As IRunningContext = Nothing)
+			Me.New(args,
+				   reporter,
+				   logger,
+				   timezoneoffset,
+				   doRetryLogic,
+				   autoDetect,
+				   cancellationToken,
+				   initializeArtifactReader:=True,
+				   correlationIdFunc:=correlationIdFunc,
+				   runningContext:=runningContext)
 		End Sub
 
-		Protected Sub New(args As LoadFile, _
-		                  reporter As IIoReporter, _
-		                  logger As ILog, _
-		                  timezoneoffset As Int32, _
-		                  doRetryLogic As Boolean, _
-		                  autoDetect As Boolean, _
-		                  cancellationToken As CancellationTokenSource, _
-		                  initializeArtifactReader As Boolean, _
-		                  ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-            MyBase.New(reporter, logger, cancellationToken)
+		Protected Sub New(args As LoadFile,
+						  reporter As IIoReporter,
+						  logger As ILog,
+						  timezoneoffset As Int32,
+						  doRetryLogic As Boolean,
+						  autoDetect As Boolean,
+						  cancellationToken As CancellationTokenSource,
+						  initializeArtifactReader As Boolean,
+						  correlationIdFunc As Func(Of String),
+						  ByVal Optional runningContext As IRunningContext = Nothing)
+			MyBase.New(reporter, logger, cancellationToken, correlationIdFunc)
 
 			_settings = args
 			OIFileIdColumnName = args.OIFileIdColumnName
@@ -174,7 +185,8 @@ Namespace kCura.WinEDDS
 			SupportedByViewerColumn = args.SupportedByViewerColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
-			_executionSource = executionSource
+			_executionSource = If(runningContext Is Nothing, ExecutionSource.Unknown, runningContext.ExecutionSource)
+			_runningContext = runningContext
 			InitializeManagers(args)
 
 			If initializeArtifactReader Then
@@ -207,11 +219,9 @@ Namespace kCura.WinEDDS
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
 			_codeValidator = Me.GetSingleCodeValidator()
+			_artifactIDDataSetCache = New Dictionary(Of Tuple(Of Integer, String), DataSet)
 
 			MulticodeMatrix = New System.Collections.Hashtable
-			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower AndAlso args.ArtifactTypeID = ArtifactType.Document Then
-				_keyFieldID = -1
-			End If
 			If _keyFieldID = -1 Then
 				For Each field As DocumentField In _docFields
 					If field.FieldCategory = FieldCategory.Identifier Then
@@ -223,13 +233,13 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Protected Overridable Sub InitializeManagers(ByVal args As LoadFile)
-			_documentManager = New kCura.WinEDDS.Service.DocumentManager(args.Credentials, args.CookieContainer)
-			_codeManager = New kCura.WinEDDS.Service.CodeManager(args.Credentials, args.CookieContainer)
-			_folderManager = New kCura.WinEDDS.Service.FolderManager(args.Credentials, args.CookieContainer)
-			_fieldQuery = New kCura.WinEDDS.Service.FieldQuery(args.Credentials, args.CookieContainer)
-			_usermanager = New kCura.WinEDDS.Service.UserManager(args.Credentials, args.CookieContainer)
+			_documentManager = ManagerFactory.CreateDocumentManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_codeManager = ManagerFactory.CreateCodeManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_folderManager = ManagerFactory.CreateFolderManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_fieldQuery = ManagerFactory.CreateFieldQuery(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			_usermanager = ManagerFactory.CreateUserManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
 			'_bulkImportManager = New kCura.WinEDDS.Service.BulkImportManager(args.Credentials, args.CookieContainer)
-			_objectManager = New kCura.WinEDDS.Service.ObjectManager(args.Credentials, args.CookieContainer)
+			_objectManager = ManagerFactory.CreateObjectManager(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
 		End Sub
 
 #Region "Code Parsing"
@@ -311,7 +321,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		'returning identifier/artifactID pairs for objects. -1 for new artifactIDs
-		Public Overridable Function GetObjects(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal associatedObjectTypeID As Int32) As System.Collections.Hashtable
+		Public Overridable Function GetObjects(ByVal value As String(), ByVal column As Int32, ByVal field As Api.ArtifactField, ByVal associatedObjectTypeID As Int32,
+											   shouldRetrieveIdFromServer As Boolean) As System.Collections.Hashtable
 			Dim al As New System.Collections.ArrayList(value)
 			Dim goodObjects As New System.Collections.ArrayList
 			For Each objectString As String In al
@@ -329,7 +340,7 @@ Namespace kCura.WinEDDS
 				If objectName.Length > field.TextLength Then
 					Throw New StringImporterException(Me.CurrentLineNumber, column, objectName.Length, field.TextLength, field.DisplayName)
 				End If
-				nameIDPairs(objectName) = Me.LookupArtifactIDForName(objectName, associatedObjectTypeID)
+				nameIDPairs(objectName) = If(shouldRetrieveIdFromServer, Me.LookupArtifactIDForName(objectName, associatedObjectTypeID), -1)
 			Next
 			Return nameIDPairs
 		End Function
@@ -342,10 +353,16 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Overridable Function LookupArtifactIDForName(objectName As String, associatedObjectTypeID As Int32) As Int32
-			Dim artifactID As System.Data.DataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
+			Dim artifactIDDataSet As DataSet = Nothing
+			Dim key As New Tuple(Of Integer, String)(associatedObjectTypeID, objectName)
+			If Not _artifactIDDataSetCache.TryGetValue(key, artifactIDDataSet) Then
+				artifactIDDataSet = _objectManager.RetrieveArtifactIdOfMappedObject(_caseArtifactID, objectName, associatedObjectTypeID)
+				_artifactIDDataSetCache.Add(key, artifactIDDataSet)
+			End If
+
 			Dim retval As Int32 = -1
 
-			If artifactID.Tables(0).Rows.Count > 0 Then retval = CInt(artifactID.Tables(0).Rows(0)(0))
+			If artifactIDDataSet.Tables(0).Rows.Count > 0 Then retval = CInt(artifactIDDataSet.Tables(0).Rows(0)(0))
 			Return retval
 		End Function
 
@@ -550,18 +567,18 @@ Namespace kCura.WinEDDS
 									If (performExtractedTextFileLocationValidation) Then
 										Dim foundFileName As String = Me.GetExistingFilePath(value, retry)
 										Dim fileExists As Boolean = Not String.IsNullOrEmpty(foundFileName)
-										
-										If Not fileExists
+
+										If Not fileExists Then
 											Throw New MissingFullTextFileException(Me.CurrentLineNumber, columnIndex)
 										End If
 
-										If Not String.Equals(value, foundFileName)
+										If Not String.Equals(value, foundFileName) Then
 											Dim message As String = $"File {value} defined in column {columnIndex} in line {Me.CurrentLineNumber} does not exist. File {foundFileName} will be used instead."
-											Me.PublishIoWarningEvent(new IoWarningEventArgs(message, currentLineNumber))
+											Me.PublishIoWarningEvent(New IoWarningEventArgs(message, CurrentLineNumber))
 											value = foundFileName
 										End If
 									End If
-									
+
 									Dim detectedEncoding As System.Text.Encoding = _extractedTextFileEncoding
 									Dim determinedEncodingStream As DeterminedEncodingStream
 
@@ -569,11 +586,11 @@ Namespace kCura.WinEDDS
 									' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
 									' across the network for the file, so this override allows that check to be skipped.
 									' -Phil S. 07/27/2012
-									If Not SkipExtractedTextEncodingCheck Then
+									If Not SkipExtractedTextEncodingAndSizeCheck Then
 										determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performExtractedTextFileLocationValidation)
 										detectedEncoding = determinedEncodingStream.DeterminedEncoding
 									End If
-															
+
 									If (performExtractedTextFileLocationValidation AndAlso (Me.GetFileLength(value, retry) > GetMaxExtractedTextLength(detectedEncoding))) Then
 										Throw New ExtractedTextTooLargeException
 									Else
@@ -637,15 +654,11 @@ Namespace kCura.WinEDDS
 			If value.Length = 0 Then
 				field.Value = String.Empty
 			Else
-				Dim objectValues As System.Collections.Hashtable = GetObjects(value, columnIndex, field, field.AssociatedObjectTypeID)
+				Dim objectValues As System.Collections.Hashtable = GetObjects(value, columnIndex, field, field.AssociatedObjectTypeID, ShouldGetIdsFromServer(forPreview))
 				Dim newVal As String = String.Empty
 				Dim objName As String
 				If objectValues.Count > 0 Then
 					For Each objName In objectValues.Keys
-						'If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
-						'	objectValues(objName) = "[new object]"
-						'End If
-						'newVal &= ";" & objName
 						If forPreview And DirectCast(objectValues(objName), Int32) = -1 Then
 							newVal &= ";" & "[new object]"
 						Else
@@ -671,6 +684,10 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 		End Sub
+
+		Private Function ShouldGetIdsFromServer(forPreview As Boolean) As Boolean
+			Return forPreview OrElse _runningContext Is Nothing OrElse _runningContext.ImportExportWebApiVersion < VersionConstants.AssociatedDocsImportServerSideSupportFromWebApiVersion
+		End Function
 
 		Private Sub SetFieldValueObjectsByArtifactID(ByVal field As Api.ArtifactField, ByVal columnIndex As Int32, ByVal forPreview As Boolean, ByVal identityValue As String)
 			Dim value As String() = Nothing
@@ -772,7 +789,7 @@ Namespace kCura.WinEDDS
 
 		''' <summary>
 		''' The exception thrown when the extracted text file length exceeds the max extracted text length.
-		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB;
+		''' When the encoding is not specified or is <see cref="System.Text.Encoding.UTF8"/>, the max length is 1GB
 		''' otherwise, the max length is <see cref="System.Int32.MaxValue"/>.
 		''' </summary>
 		<Serializable>
@@ -1078,10 +1095,10 @@ Namespace kCura.WinEDDS
 
 		Private Sub _artifactReader_OnIoWarning(ByVal e As IoWarningEventArgs) Handles _artifactReader.OnIoWarning
 			If e.Exception Is Nothing Then
-				Me.PublishIoWarningEvent(new IoWarningEventArgs(e.Message, e.CurrentLineNumber))
+				Me.PublishIoWarningEvent(New IoWarningEventArgs(e.Message, e.CurrentLineNumber))
 			Else
 				Dim message As String = IoReporter.BuildIoReporterWarningMessage(e.Exception, e.WaitTime)
-				Me.PublishIoWarningEvent(new IoWarningEventArgs(message, e.CurrentLineNumber))
+				Me.PublishIoWarningEvent(New IoWarningEventArgs(message, e.CurrentLineNumber))
 			End If
 		End Sub
 	End Class

@@ -11,15 +11,20 @@ namespace Relativity.DataExchange.Import.NUnit
 	using System.Threading;
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 	using kCura.WinEDDS;
+
+	using Moq;
+
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Logging;
 
 	/// <summary>
 	/// Represents a mock class object for <see cref="BulkLoadFileImporter"/>.
 	/// </summary>
-	public class MockBulkLoadFileImporter : BulkLoadFileImporter
+	public sealed class MockBulkLoadFileImporter : BulkLoadFileImporter
 	{
 		public MockBulkLoadFileImporter(
 			LoadFile args,
@@ -32,9 +37,9 @@ namespace Relativity.DataExchange.Import.NUnit
 			Guid processID,
 			bool doRetryLogic,
 			string bulkLoadFileFieldDelimiter,
-			kCura.WinEDDS.Service.IBulkImportManager manager,
+			kCura.WinEDDS.Service.Replacement.IBulkImportManager manager,
 			CancellationTokenSource tokenSource,
-			Relativity.DataExchange.Service.ExecutionSource executionSource)
+			IRunningContext runningContext)
 			: base(
 				args,
 				context,
@@ -46,13 +51,17 @@ namespace Relativity.DataExchange.Import.NUnit
 				processID,
 				doRetryLogic,
 				bulkLoadFileFieldDelimiter,
-				false,
 				tokenSource,
-				executionSource)
+				() => nameof(MockBulkLoadFileImporter),
+				runningContext)
 		{
 			this._bulkImportManager = manager;
 			this.ImportBatchSize = 500;
 			this.ImportBatchVolume = 1000000;
+			this.OutputFileWriter = new OutputFileWriter(
+				new TestNullLogger(),
+				Relativity.DataExchange.Io.FileSystem.Instance);
+			this.OutputFileWriter.Open(true);
 		}
 
 		public int GetMetadataFilesCount => this.MetadataFilesCount;
@@ -120,7 +129,11 @@ namespace Relativity.DataExchange.Import.NUnit
 					                                         FileShare = "./somepath/",
 					                                         TimeoutSeconds = 0,
 				                                         };
-			this.CreateTapiBridges(parameters, parameters.ShallowCopy());
+			var relativityManagerServiceFactoryMock = new Mock<IRelativityManagerServiceFactory>();
+			relativityManagerServiceFactoryMock
+				.Setup(x => x.Create(It.IsAny<RelativityInstanceInfo>(), It.IsAny<bool>()))
+				.Returns<RelativityInstanceInfo, bool>((x, y) => new RelativityManagerService(x));
+			this.CreateTapiBridges(parameters, parameters.ShallowCopy(), new NullAuthTokenProvider(), relativityManagerServiceFactoryMock.Object);
 		}
 
 		public void SetBatchCounter(int numberToSet)
@@ -131,6 +144,12 @@ namespace Relativity.DataExchange.Import.NUnit
 		public void PushNativeBatchInvoker(string outputNativePath, bool shouldCompleteJob, bool lastRun)
 		{
 			this.PushNativeBatch(outputNativePath, shouldCompleteJob, lastRun);
+		}
+
+		public override void Dispose()
+		{
+			this.OutputFileWriter?.Dispose();
+			base.Dispose();
 		}
 
 		protected override void RaiseWarningAndPause(Exception exception, int timeoutSeconds, int retryCount, int totalRetryCount)

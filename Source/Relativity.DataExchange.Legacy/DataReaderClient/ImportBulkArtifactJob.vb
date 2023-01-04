@@ -1,9 +1,9 @@
 Imports System.Net
 Imports kCura.WinEDDS
+Imports Relativity.DataExchange
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -26,11 +26,12 @@ Namespace kCura.Relativity.DataReaderClient
 		Private _nativeSettings As ImportSettingsBase
 
 		Private _credentials As ICredentials
-		Private _tapiCredential As NetworkCredential = Nothing
+		Private _webApiCredential As WebApiCredential
 		Private _cookieMonster As Net.CookieContainer
+		Private _correlationIdFunc As Func(Of String)
+		Private _instanceId As Guid = Guid.NewGuid()
 
-		Private ReadOnly _executionSource As ExecutionSource
-        Private ReadOnly _metricSinkManager As IMetricSinkManager
+		Private ReadOnly _runningContext As IRunningContext
 
 		Private Const _DOCUMENT_ARTIFACT_TYPE_ID As Int32 = 10 'TODO: make a reference to Relativity so we don't have to do this
 
@@ -46,15 +47,21 @@ Namespace kCura.Relativity.DataReaderClient
 			_nativeDataReader = New SourceIDataReader
 
 			_bulkLoadFileFieldDelimiter = ServiceConstants.DEFAULT_FIELD_DELIMITER
+
+			_runningContext = New RunningContext()
+			_webApiCredential = New WebApiCredential()
+			_webApiCredential.TokenProvider = New NullAuthTokenProvider
+
+			_correlationIdFunc = AddressOf GetDefaultCorrelationId
 		End Sub
 
-		Friend Sub New(ByVal credentials As ICredentials, ByVal tapiCredentials As NetworkCredential, ByVal cookieMonster As Net.CookieContainer, ByVal metricSinkManager As IMetricSinkManager, ByVal Optional executionSource As Integer = 0)
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, ByVal runningContext As IRunningContext, correlationIdFunc As Func(Of String))
 			Me.New()
-			_executionSource = CType(executionSource, ExecutionSource)
+			_runningContext = runningContext
 			_credentials = credentials
-			_tapiCredential = tapiCredentials
+			_webApiCredential = webApiCredential
 			_cookieMonster = cookieMonster
-            _metricSinkManager = metricSinkManager
+		    _correlationIdFunc = correlationIdFunc
 		End Sub
 
 #End Region
@@ -91,7 +98,12 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <param name="completedRow">The processed record.</param>
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
-
+		
+		''' <summary>
+		''' Occurs when a batch is processed.
+		''' </summary>
+		''' <param name="batchReport">The batch report.</param>
+		Public Event OnBatchComplete(ByVal batchReport As BatchReport) Implements IImportNotifier.OnBatchComplete
 
 #End Region
 
@@ -103,62 +115,63 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Sub Execute() Implements IImportBulkArtifactJob.Execute
 			_jobReport = New JobReport()
 			_jobReport.StartTime = DateTime.Now()
+			Try
+				' authenticate here
+				If _credentials Is Nothing Then
+					ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
+					Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext, _correlationIdFunc)
+					_credentials = creds.Credentials
+					_webApiCredential.Credential = creds.Credentials
+					_cookieMonster = creds.CookieMonster
+				End If
 
-			' authenticate here
-			If _credentials Is Nothing Then
-				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
-				_credentials = creds.Credentials
-				_tapiCredential = creds.TapiCredential
-				_cookieMonster = creds.CookieMonster
-			End If
+				If IsSettingsValid() Then
 
-			If IsSettingsValid() Then
+					RaiseEvent OnMessage(New Status("Getting source data from database"))
+					Dim metricService As IMetricService = New MetricService(Settings.Telemetry, KeplerProxyFactory.CreateKeplerProxy(_webApiCredential.Credential))
+					_runningContext.ApplicationName = Settings.ApplicationName
+					Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(metricService, _runningContext, _correlationIdFunc) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
+						_processContext = process.Context
 
-				RaiseEvent OnMessage(New Status("Getting source data from database"))
-				Using process As ImportExtension.DataReaderImporterProcess = New ImportExtension.DataReaderImporterProcess(SourceData.SourceData, _metricSinkManager.SetupMessageService(_nativeSettings.Telemetry)) With {.OnBehalfOfUserToken = Settings.OnBehalfOfUserToken}
-					process.ExecutionSource = _executionSource
-					_processContext = process.Context
+						If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
+						If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
+						process.MaximumErrorCount = Settings.MaximumErrorCount
+						process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
+						process.AuditLevel = Settings.AuditLevel
+						process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
+						process.LoadImportedFullTextFromServer = Settings.LoadImportedFullTextFromServer
+						process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
+						process.OIFileIdColumnName = Settings.OIFileIdColumnName
+						If (Not String.IsNullOrEmpty(Settings.BulkLoadFileFieldDelimiter)) Then
+							process.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter
+						Else
+							process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
+						End If
+						process.OIFileIdMapped = Settings.OIFileIdMapped
+						process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
+						process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
+						process.FileSizeMapped = Settings.FileSizeMapped
+						process.FileSizeColumn = Settings.FileSizeColumn
+						process.FileNameColumn = Settings.FileNameColumn
+						process.TimeKeeperManager = Settings.TimeKeeperManager
 
-					If Settings.DisableNativeValidation.HasValue Then process.DisableNativeValidation = Settings.DisableNativeValidation.Value
-					If Settings.DisableNativeLocationValidation.HasValue Then process.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation.Value
-					process.MaximumErrorCount = Settings.MaximumErrorCount
-					process.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck
-					process.AuditLevel = Settings.AuditLevel
-					process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
-					process.LoadImportedFullTextFromServer = Settings.LoadImportedFullTextFromServer
-					process.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation
-					process.OIFileIdColumnName = Settings.OIFileIdColumnName
-					If (Not String.IsNullOrEmpty(Settings.BulkLoadFileFieldDelimiter)) Then
-						process.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter
-					Else
-						process.BulkLoadFileFieldDelimiter = _bulkLoadFileFieldDelimiter
-					End If
-					process.OIFileIdMapped = Settings.OIFileIdMapped
-					process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
-					process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
-					process.FileSizeMapped = Settings.FileSizeMapped
-					process.FileSizeColumn = Settings.FileSizeColumn
-					process.FileNameColumn = Settings.FileNameColumn
-					process.TimeKeeperManager = Settings.TimeKeeperManager
+						RaiseEvent OnMessage(New Status("Updating settings"))
+						process.LoadFile = CreateLoadFile(Settings)
+						process.CaseInfo = process.LoadFile.CaseInfo
 
-					RaiseEvent OnMessage(New Status("Updating settings"))
-					process.LoadFile = CreateLoadFile(Settings)
-
-					RaiseEvent OnMessage(New Status("Executing"))
-					Try
+						RaiseEvent OnMessage(New Status("Executing"))
 						process.Start()
-					Catch ex As Exception
-						RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
-						_jobReport.FatalException = ex
-						RaiseFatalException()
-					End Try
-				End Using
-			Else
-				RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
-				' exception was set in the IsSettingsValid function
+					End Using
+				Else
+					RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
+					' exception was set in the IsSettingsValid function
+					RaiseFatalException()
+				End If
+			Catch ex As Exception
+				RaiseEvent OnMessage(New Status(String.Format("Exception: {0}", ex.ToString)))
+				_jobReport.FatalException = ex
 				RaiseFatalException()
-			End If
+			End Try
 		End Sub
 
 		'The 'OnComplete' and 'OnFatalException' events are alternatives to OnMessage, OnError, and
@@ -202,10 +215,8 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Function CreateLoadFile(ByVal clientSettings As Settings) As kCura.WinEDDS.ImportExtension.DataReaderLoadFile
 			Dim loadFileTemp As WinEDDS.LoadFile = MapInputToSettingsFactory(clientSettings).ToLoadFile
 
-			' If IdentityFieldId is greater than zero, it has been explicitly set, 
-			' otherwise allow LoadFile its defaulting as it already does
-			If AllowNonIdentifierKeyField(clientSettings) Then
-				loadFileTemp.IdentityFieldId = clientSettings.IdentityFieldId
+			If loadFileTemp.ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID And loadFileTemp.IdentityFieldId > 0 Then
+				ValidateIdentifierMapping(loadFileTemp.IdentityFieldId)
 			End If
 
 			Dim tempLoadFile As New WinEDDS.ImportExtension.DataReaderLoadFile
@@ -219,7 +230,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CopyFilesToDocumentRepository = loadFileTemp.CopyFilesToDocumentRepository
 			tempLoadFile.CreateFolderStructure = loadFileTemp.CreateFolderStructure
 			tempLoadFile.Credentials = loadFileTemp.Credentials
-			tempLoadFile.TapiCredentials = loadFileTemp.TapiCredentials
+			tempLoadFile.WebApiCredential = loadFileTemp.WebApiCredential
 			tempLoadFile.DestinationFolderID = loadFileTemp.DestinationFolderID
 			tempLoadFile.ExtractedTextFileEncoding = loadFileTemp.ExtractedTextFileEncoding
 			tempLoadFile.ExtractedTextFileEncodingName = loadFileTemp.ExtractedTextFileEncodingName
@@ -255,11 +266,7 @@ Namespace kCura.Relativity.DataReaderClient
 				RaiseEvent OnMessage(New Status(String.Format("Using default identifier field {0}", loadFileTemp.SelectedIdentifierField.FieldName)))
 				tempIDField = loadFileTemp.SelectedIdentifierField
 			End If
-			'
-			'
-			'
 			tempLoadFile.SelectedIdentifierField = tempIDField
-			'
 			tempLoadFile.SendEmailOnLoadCompletion = clientSettings.SendEmailOnLoadCompletion
 			tempLoadFile.SourceFileEncoding = loadFileTemp.SourceFileEncoding
 			tempLoadFile.StartLineNumber = loadFileTemp.StartLineNumber
@@ -267,18 +274,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.OverlayBehavior = loadFileTemp.OverlayBehavior
 			tempLoadFile.Billable = loadFileTemp.Billable
 
-			ValidateIdentifierMapping()
-
 			Return tempLoadFile
-		End Function
-
-
-		Private Function AllowNonIdentifierKeyField(clientSettings As Settings) As Boolean
-			Dim retval As Boolean = (clientSettings.IdentityFieldId > 0)
-			If clientSettings.ArtifactTypeId = _DOCUMENT_ARTIFACT_TYPE_ID Then
-				retval = retval AndAlso (clientSettings.OverwriteMode = OverwriteModeEnum.Overlay)
-			End If
-			Return retval
 		End Function
 
 		''' <summary>
@@ -354,11 +350,8 @@ Namespace kCura.Relativity.DataReaderClient
 			End Try
 			Return True
 		End Function
-
-		Private Sub ValidateIdentifierMapping()
-			If Me._nativeSettings.OverwriteMode <> OverwriteModeEnum.Overlay OrElse Me._nativeSettings.IdentityFieldId <= 0 Then
-				Return
-			End If
+		
+		Private Sub ValidateIdentifierMapping(IdentityFieldId As Integer)
 			Dim idField As DocumentField = Nothing
 			For Each item As DocumentField In _docIDFieldCollection
 				If Not item Is Nothing AndAlso item.FieldCategory = FieldCategory.Identifier Then
@@ -368,21 +361,20 @@ Namespace kCura.Relativity.DataReaderClient
 			Next
 			If Not idField Is Nothing Then
 				For i As Integer = 0 To _nativeDataReader.SourceData.FieldCount - 1
-					If _nativeDataReader.SourceData.GetName(i) = idField.FieldName AndAlso idField.FieldID <> Me._nativeSettings.IdentityFieldId Then
-						Throw New ImportSettingsException("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field")
+					If _nativeDataReader.SourceData.GetName(i) = idField.FieldName AndAlso idField.FieldID <> IdentityFieldId Then
+						_jobReport.FatalException = New ImportSettingsException("The field marked [identifier] cannot be part of a field map when it's not the Overlay Identifier field")
+						RaiseEvent OnMessage(New Status("There was an error in your settings.  Import aborted."))
+						RaiseFatalException()
 					End If
 				Next
 			End If
 		End Sub
 
-
 		Private Function MapInputToSettingsFactory(ByVal clientSettings As Settings) As WinEDDS.DynamicObjectSettingsFactory
-			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory = Nothing
-			'If clientSettings.Credential Is Nothing Then
-			'dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(clientSettings.RelativityUsername, clientSettings.RelativityPassword, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
-			'Else
-			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _tapiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId)
-			'End If
+			Dim dosf_settings As kCura.WinEDDS.DynamicObjectSettingsFactory
+
+			dosf_settings = New kCura.WinEDDS.DynamicObjectSettingsFactory(_credentials, _webApiCredential, _cookieMonster, clientSettings.CaseArtifactId, clientSettings.ArtifactTypeId, _correlationIdFunc)
+
 			_docIDFieldCollection = dosf_settings.DocumentIdentifierFields
 
 			With dosf_settings
@@ -401,8 +393,8 @@ Namespace kCura.Relativity.DataReaderClient
 
 				.MoveDocumentsInAppendOverlayMode = clientSettings.MoveDocumentsInAppendOverlayMode
 
-				.MultiRecordDelimiter = CType(clientSettings.MultiValueDelimiter, Char)
-				.HierarchicalValueDelimiter = CType(clientSettings.NestedValueDelimiter, Char)
+				.MultiRecordDelimiter = clientSettings.MultiValueDelimiter
+				.HierarchicalValueDelimiter = clientSettings.NestedValueDelimiter
 
 				If Not clientSettings.NativeFilePathSourceFieldName = String.Empty Then
 					.NativeFilePathColumn = clientSettings.NativeFilePathSourceFieldName
@@ -456,6 +448,10 @@ Namespace kCura.Relativity.DataReaderClient
 				.DataGridIDColumn = clientSettings.DataGridIDColumnName
 
 				.Billable = clientSettings.Billable
+
+				If clientSettings.IdentityFieldId > 0 Then
+					.IdentityFieldId = clientSettings.IdentityFieldId
+				End If
 			End With
 
 			Return dosf_settings
@@ -517,6 +513,10 @@ Namespace kCura.Relativity.DataReaderClient
 				Throw New ImportSettingsException("MaximumErrorCount", "This must be greater than 0 and less than Int32.MaxValue.")
 			End If
 		End Sub
+
+        Private Function GetDefaultCorrelationId() As String
+            Return _instanceId.ToString()
+        End Function
 #End Region
 
 #Region "Event Handlers"
@@ -569,13 +569,14 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Sub _processContext_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _processContext.Progress
-			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, e.TotalProcessedRecordsDisplay)))
-			RaiseEvent OnProcessProgress(New FullStatus(e.TotalRecords, e.TotalProcessedRecords, e.TotalProcessedWarningRecords, e.TotalProcessedErrorRecords, e.StartTime, e.Timestamp, e.TotalRecordsDisplay, e.TotalProcessedRecordsDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessId, e.Metadata))
+			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, e.ProcessedDisplay)))
+			RaiseEvent OnProcessProgress(New FullStatus(e.Total, e.Processed, e.ProcessedWithWarning, e.ProcessedWithError, e.StartTime, e.Timestamp, e.TotalDisplay, e.ProcessedDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessId, e.Metadata))
 		End Sub
 
 		Private Sub _processContext_OnOnProcessEnd(ByVal sender As Object, ByVal e As ProcessEndEventArgs) Handles _processContext.ProcessEnded
 			_jobReport.FileBytes = e.NativeFileBytes
 			_jobReport.MetadataBytes = e.MetadataBytes
+			_jobReport.SqlProcessRate = e.SqlProcessRate
 		End Sub
 
 		Private Sub _processContext_RecordProcessedEvent(ByVal sender As Object, ByVal e As RecordNumberEventArgs) Handles _processContext.RecordProcessed
@@ -585,6 +586,11 @@ Namespace kCura.Relativity.DataReaderClient
 		Private Sub _processContext_IncrementRecordCount(ByVal sender As Object, ByVal e As RecordCountEventArgs) Handles _processContext.RecordCountIncremented
 			_jobReport.TotalRows += 1
 		End Sub
+
+		Private Sub _processContext_OnBatchCompleted(sender As Object, e As BatchCompletedEventArgs) Handles _processContext.BatchCompleted
+			RaiseEvent OnBatchComplete(New BatchReport(e.BatchOrdinalNumber, e.NumberOfFiles, e.NumberOfRecords, e.NumberOfRecordsWithErrors))
+		End Sub
+
 #End Region
 
 #Region "Properties"
@@ -608,7 +614,7 @@ Namespace kCura.Relativity.DataReaderClient
 			End Set
 		End Property
 
-		'TODO: Because these were public fields before (vs properties), no exception was thrown if value = Nothing;
+		'TODO: Because these were public fields before (vs properties), no exception was thrown if value = Nothing
 		' for compatibility, that is still the case here
 		''' <summary>
 		''' Gets or sets the current settings for the import job.

@@ -7,6 +7,7 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System.Threading;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -30,6 +31,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		private Mock<IImageLoadFile> _imageLoadFile;
 		private Mock<ILoadFile> _loadFile;
 
+		private Mock<IFileDownloadSubscriber> _fileDownloadSubscriber;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -37,23 +40,25 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._imagesRollupManager = new Mock<IImagesRollupManager>();
 			this._imageLoadFile = new Mock<IImageLoadFile>();
 			this._loadFile = new Mock<ILoadFile>();
-
-			this._instance = new BatchExporter(this._downloader.Object, this._imagesRollupManager.Object, new Mock<IMessenger>().Object, this._imageLoadFile.Object, this._loadFile.Object);
+			this._fileDownloadSubscriber = new Mock<IFileDownloadSubscriber>();
+			this._instance = new BatchExporter(
+				this._downloader.Object, this._imagesRollupManager.Object, new Mock<IMessenger>().Object, this._imageLoadFile.Object, this._loadFile.Object, this._fileDownloadSubscriber.Object);
 		}
 
 		[Test]
-		public void GoldWorkflow()
+		public async Task GoldWorkflow()
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 
 			// ACT
-			this._instance.Export(artifacts, CancellationToken.None);
+			await this._instance.ExportAsync(artifacts, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
-			this._downloader.Verify(x => x.DownloadFilesForArtifacts(CancellationToken.None), Times.Once);
+			this._downloader.Verify(x => x.DownloadFilesForArtifactsAsync(CancellationToken.None), Times.Once);
 			this._imagesRollupManager.Verify(x => x.RollupImagesForArtifacts(artifacts, CancellationToken.None), Times.Once);
 			this._imageLoadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
 			this._loadFile.Verify(x => x.Create(artifacts, CancellationToken.None), Times.Once);
+			this._fileDownloadSubscriber.Verify(x => x.WaitForConversionCompletion(), Times.Once);
 		}
 	}
 }

@@ -11,7 +11,6 @@ namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Net;
-	using System.Threading;
 
 	using global::NUnit.Framework;
 
@@ -24,13 +23,19 @@ namespace Relativity.DataExchange.NUnit
 	/// <summary>
 	/// Represents <see cref="UploadTapiBridge2"/> tests.
 	/// </summary>
-	[TestFixture]
+	[TestFixture(false)]
+	[TestFixture(true)]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
 		"CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",
 		Justification = "The test class handles the disposal.")]
 	public class UploadTapiBridgeTests : TapiBridgeTestsBase<UploadTapiBridge2>
 	{
+		public UploadTapiBridgeTests(bool useLegacyWebApi)
+			: base(useLegacyWebApi)
+		{
+		}
+
 		[Test]
 		[Category(TestCategories.TransferApi)]
 		public void ShouldThrowWhenTheConstructorArgsAreInvalid()
@@ -43,8 +48,9 @@ namespace Relativity.DataExchange.NUnit
 						using (new UploadTapiBridge2(
 							null,
 							parameters,
-							this.MockTransferLogger.Object,
-							CancellationToken.None))
+							this.MockLogger.Object,
+							this.UseLegacyWebApi,
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -55,20 +61,9 @@ namespace Relativity.DataExchange.NUnit
 						using (new UploadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							null,
-							this.MockTransferLogger.Object,
-							CancellationToken.None))
-						{
-						}
-					});
-
-			Assert.Throws<ArgumentNullException>(
-				() =>
-					{
-						using (new UploadTapiBridge2(
-							this.MockTapiObjectService.Object,
-							parameters,
-							null,
-							CancellationToken.None))
+							this.MockLogger.Object,
+							this.UseLegacyWebApi,
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -80,8 +75,9 @@ namespace Relativity.DataExchange.NUnit
 						using (new UploadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							parameters,
-							this.MockTransferLogger.Object,
-							CancellationToken.None))
+							this.MockLogger.Object,
+							this.UseLegacyWebApi,
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -93,8 +89,9 @@ namespace Relativity.DataExchange.NUnit
 						using (new UploadTapiBridge2(
 							this.MockTapiObjectService.Object,
 							parameters,
-							this.MockTransferLogger.Object,
-							CancellationToken.None))
+							this.MockLogger.Object,
+							this.UseLegacyWebApi,
+							this.CancellationTokenSource.Token))
 						{
 						}
 					});
@@ -102,15 +99,15 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[Category(TestCategories.TransferApi)]
-		public void ShouldDumpTheTapiBridgeParameters()
+		public void ShouldLogTheTapiBridgeParameters()
 		{
 			this.CreateTapiBridge(WellKnownTransferClient.Unassigned);
-			this.TapiBridgeInstance.DumpInfo();
+			this.TapiBridgeInstance.LogTransferParameters();
 
 			// Force somebody to review this test should the number of logged entries change.
-			this.MockTransferLogger.Verify(
+			this.MockLogger.Verify(
 				log => log.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()),
-				Times.Exactly(25));
+				Times.Exactly(27));
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -123,8 +120,28 @@ namespace Relativity.DataExchange.NUnit
 			this.TapiBridgeInstance = new UploadTapiBridge2(
 				this.MockTapiObjectService.Object,
 				parameters,
-				this.MockTransferLogger.Object,
-				CancellationToken.None);
+				this.TestTransferContext,
+				this.MockLogger.Object,
+				this.UseLegacyWebApi,
+				this.CancellationTokenSource.Token);
+			this.OnTapiBridgeCreated();
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Reliability",
+			"CA2000:Dispose objects before losing scope",
+			Justification = "The test teardown disposes the test object.")]
+		protected override void CreateTapiBridge(WellKnownTransferClient client, TapiBridgeParameters2 parameters)
+		{
+			UploadTapiBridgeParameters2 uploadParameters = new UploadTapiBridgeParameters2(parameters);
+			this.TapiBridgeInstance = new UploadTapiBridge2(
+				this.MockTapiObjectService.Object,
+				uploadParameters,
+				this.TestTransferContext,
+				this.MockLogger.Object,
+				this.UseLegacyWebApi,
+				this.CancellationTokenSource.Token);
+			this.OnTapiBridgeCreated();
 		}
 
 		private UploadTapiBridgeParameters2 CreateUploadTapiBridgeParameters(WellKnownTransferClient client)
@@ -134,7 +151,9 @@ namespace Relativity.DataExchange.NUnit
 				Credentials = new NetworkCredential(),
 				WebServiceUrl = "https://relativity.one.com",
 				WorkspaceId = this.TestWorkspaceId,
+				MaxInactivitySeconds = this.TestMaxInactivitySeconds,
 			};
+
 			this.ConfigureTapiBridgeParameters(parameters, client);
 			return parameters;
 		}

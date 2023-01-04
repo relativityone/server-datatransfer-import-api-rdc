@@ -24,38 +24,22 @@
 
 			if (exportSettings.ExportFullTextAsFile)
 			{
-				if (!exportConfig.ForceParallelismInNewExport)
-				{
-					AddValidator<LongTextBatchValidator>(batchValidators, container);
-				}
-				else
-				{
-					AddValidator<LongTextParallelBatchValidator>(batchValidators, container);
-				}
+				AddValidator<LongTextBatchValidator>(batchValidators, container);
 			}
 
 			if (exportSettings.ExportNative && exportSettings.VolumeInfo.CopyNativeFilesFromRepository)
 			{
-				if (!exportConfig.ForceParallelismInNewExport)
-				{
-					AddValidator<NativeFileBatchValidator>(batchValidators, container);
-				}
-				else
-				{
-					AddValidator<NativeFileParallelBatchValidator>(batchValidators, container);
-				}
+				AddValidator<NativeFileBatchValidator>(batchValidators, container);
+			}
+
+			if (exportSettings.ExportPdf && exportSettings.VolumeInfo.CopyPdfFilesFromRepository)
+			{
+				AddValidator<PdfFileBatchValidator>(batchValidators, container);
 			}
 
 			if (exportSettings.ExportImages && exportSettings.VolumeInfo.CopyImageFilesFromRepository)
 			{
-				if (!exportConfig.ForceParallelismInNewExport)
-				{
-					AddValidator<ImageFileBatchValidator>(batchValidators, container);
-				}
-				else
-				{
-					AddValidator<ImageFileParallelBatchValidator>(batchValidators, container);
-				}
+				AddValidator<ImageFileBatchValidator>(batchValidators, container);
 			}
 
 			if (exportSettings.ExportImages)
@@ -63,7 +47,7 @@
 				AddValidator<ImageLoadFileBatchValidator>(batchValidators, container);
 			}
 
-			if (exportSettings.ExportNative)
+			if (exportSettings.ExportNative || exportSettings.ExportPdf)
 			{
 				AddValidator<LoadFileBatchValidator>(batchValidators, container);
 			}

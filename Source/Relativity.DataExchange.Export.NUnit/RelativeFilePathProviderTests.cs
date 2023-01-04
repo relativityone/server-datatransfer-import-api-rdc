@@ -11,7 +11,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using kCura.WinEDDS;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class RelativeFilePathProviderTests
@@ -28,7 +28,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			string absolutePath = path;
 
-			var instance = new RelativeFilePathTransformer(exportSettings, new FilePathHelper(new NullLogger()));
+			var instance = new RelativeFilePathTransformer(exportSettings, new FilePathHelper(new TestNullLogger()));
 
 			// ACT
 			string relativePath = instance.TransformPath(absolutePath);

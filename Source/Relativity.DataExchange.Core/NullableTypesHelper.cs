@@ -172,7 +172,6 @@ namespace Relativity.DataExchange
 							{
 								if (value.Trim() == "00000000")
 								{
-									nullableDateValue = null;
 									throw new SystemException("Invalid date.");
 								}
 

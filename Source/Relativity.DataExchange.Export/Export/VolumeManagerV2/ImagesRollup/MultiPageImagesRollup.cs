@@ -10,6 +10,7 @@
 	using kCura.WinEDDS.Exporters;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Media;
 	using Relativity.Logging;
 
@@ -50,7 +51,7 @@
 
 			try
 			{
-				_logger.LogVerbose("Attempting to rollup images in temporary location {tempLocation}. List of images {images}.", rollupTempLocation, string.Join(",", imagesLocations));
+				_logger.LogVerbose("Attempting to rollup images in temporary location {tempLocation}. List of images {images}.", rollupTempLocation.Secure(), string.Join(",", imagesLocations).Secure());
 				ConvertImage(imagesLocations, rollupTempLocation);
 
 				_logger.LogVerbose("Attempting to delete images.");
@@ -59,16 +60,15 @@
 				_logger.LogVerbose("Attempting to update images location.");
 				UpdateImageLocation(destinationImage);
 
-				_logger.LogVerbose("Attempting to move temporary image {tempImage} to destination location {destinationLocation}.", rollupTempLocation, destinationImage.TempLocation);
+				_logger.LogVerbose("Attempting to move temporary image {tempImage} to destination location {destinationLocation}.", rollupTempLocation.Secure(), destinationImage.TempLocation.Secure());
 				MoveFileFromTempToDestination(destinationImage, rollupTempLocation);
 			}
 			catch (ImageConversionException ex)
 			{
 				HandleImageRollupException(artifact, ex, rollupTempLocation);
-				destinationImage.SuccessfulRollup = false;
+				artifact.DocumentError = true;
 				return;
 			}
-
 			_logger.LogVerbose("Images rollup finished.");
 			destinationImage.SuccessfulRollup = true;
 		}
@@ -77,7 +77,7 @@
 		{
 			string tempFileName = Path.ChangeExtension(Guid.NewGuid().ToString(), _TEMP_FILE_EXTENSION);
 			string tempFilePath = Path.Combine(_exportSettings.FolderPath, tempFileName);
-			_logger.LogVerbose("Temp file {tempFile} for images rollup created.", tempFilePath);
+			_logger.LogVerbose("Temp file {tempFile} for images rollup created.", tempFilePath.Secure());
 			return tempFilePath;
 		}
 
@@ -87,7 +87,7 @@
 		{
 			foreach (var imageLocation in imageList)
 			{
-				_logger.LogVerbose("Removing image {image}.", imageLocation);
+				_logger.LogVerbose("Removing image {image}.", imageLocation.Secure());
 				_fileWrapper.Delete(imageLocation);
 			}
 		}
@@ -106,21 +106,21 @@
 			{
 				if (_exportSettings.Overwrite)
 				{
-					_logger.LogVerbose("Overwriting image {image} with image from {tempLocation}.", image.TempLocation, rollupTempLocation);
+					_logger.LogVerbose("Overwriting image {image} with image from {tempLocation}.", image.TempLocation.Secure(), rollupTempLocation.Secure());
 
 					_fileWrapper.Delete(image.TempLocation);
 					_fileWrapper.Move(rollupTempLocation, image.TempLocation);
 				}
 				else
 				{
-					_logger.LogWarning("File {file} exists - skipping. Removing temp file.", image.TempLocation);
+					_logger.LogWarning("File {file} exists - skipping. Removing temp file.", image.TempLocation.Secure());
 					_status.WriteWarning($"File exists - file copy skipped: {image.TempLocation}");
 					_fileWrapper.Delete(rollupTempLocation);
 				}
 			}
 			else
 			{
-				_logger.LogVerbose("Moving file from {tempLocation} to {destinationLocation}.", rollupTempLocation, image.TempLocation);
+				_logger.LogVerbose("Moving file from {tempLocation} to {destinationLocation}.", rollupTempLocation.Secure(), image.TempLocation.Secure());
 				_fileWrapper.Move(rollupTempLocation, image.TempLocation);
 			}
 		}
@@ -132,7 +132,7 @@
 			{
 				if (!string.IsNullOrEmpty(rollupTempLocation) && _fileWrapper.Exists(rollupTempLocation))
 				{
-					_logger.LogVerbose("Removing unfinished image {image}.", rollupTempLocation);
+					_logger.LogVerbose("Removing unfinished image {image}.", rollupTempLocation.Secure());
 					_fileWrapper.Delete(rollupTempLocation);
 				}
 
@@ -140,7 +140,7 @@
 			}
 			catch (IOException ioEx)
 			{
-				_logger.LogError(ioEx, "Failed to delete image temp file {tempFile}.", rollupTempLocation);
+				_logger.LogError(ioEx, "Failed to delete image temp file {tempFile}.", rollupTempLocation.Secure());
 				throw new FileWriteException(FileWriteException.DestinationFile.Errors, ioEx);
 			}
 		}

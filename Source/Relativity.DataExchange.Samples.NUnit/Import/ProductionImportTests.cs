@@ -10,10 +10,13 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents a test that imports production images and validates the results.
@@ -22,6 +25,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	/// This test requires the Relativity.Productions.Client package but hasn't yet been published to nuget.org.
 	/// </remarks>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportProduction]
+	[TestType.MainFlow]
 	public class ProductionImportTests : ImageImportTestsBase
 	{
 		/// <summary>
@@ -42,16 +47,15 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		/// </remarks>
 		private const int TotalImagesForFirstDocument = 1001;
 
-		[Test]
-		[Category(TestCategories.ImportProduction)]
-		[Category(TestCategories.Integration)]
-		public void ShouldImportTheProductionImages()
+		[Category(TestCategories.Regression)]
+		[IdentifiedTest("52733679-207e-424f-b3bf-4bbf5feeaa54")]
+		public async Task ShouldImportTheProductionImagesAsync()
 		{
 			// Arrange
 			IList<string> controlNumbers = new List<string> { FirstDocumentControlNumber, SecondDocumentControlNumber };
 			this.ImportDocuments(controlNumbers);
 			string productionSetName = GenerateProductionSetName();
-			int productionId = this.CreateProduction(productionSetName, BatesPrefix);
+			int productionId = await this.CreateProductionAsync(productionSetName, BatesPrefix).ConfigureAwait(false);
 
 			// Act
 			this.ImportProduction(productionId);
@@ -61,9 +65,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(this.PublishedJobReport.EndTime, Is.GreaterThan(this.PublishedJobReport.StartTime));
 			Assert.That(this.PublishedJobReport.ErrorRowCount, Is.Zero);
 
-			// Note: Importing images do NOT currently update FileBytes/MetadataBytes.
 			Assert.That(this.PublishedJobReport.FileBytes, Is.Zero);
-			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Zero);
+			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Positive);
 			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
 			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(this.DataSource.Rows.Count));
 
@@ -75,7 +78,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(this.PublishedProgressRows.Count, Is.Positive);
 
 			// Assert - the first and last bates numbers match the expected values.
-			Tuple<string, string> batesNumbers = this.QueryProductionBatesNumbers(productionId);
+			Tuple<string, string> batesNumbers = await this.QueryProductionBatesNumbersAsync(productionId).ConfigureAwait(false);
 			string expectedFirstBatesValue = FirstDocumentControlNumber;
 			string expectedLastBatesValue = SecondDocumentControlNumber;
 			Assert.That(batesNumbers.Item1, Is.EqualTo(expectedFirstBatesValue));
@@ -106,6 +109,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 				Assert.That(hasNativeField, Is.False);
 				int? relativityImageCount = GetInt32FieldValue(document, WellKnownFields.RelativityImageCount);
 				Assert.That(relativityImageCount, Is.Null);
+				string extractedText = GetStringFieldValue(document, WellKnownFields.ExtractedText);
+				Assert.That(extractedText, Is.Null);
 			}
 
 			// Assert that importing doesn't add a file record.
@@ -126,7 +131,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(productionSet, Is.Not.Null);
 			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job =
 				importApi.NewProductionImportJob(productionSet.ArtifactID);
-			this.ConfigureJobSettings(job);
+			this.ConfigureJobSettings(job, withExtractedText: false);
 			job.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
 			this.ConfigureJobEvents(job);
 			this.DataSource.Columns.AddRange(new[]
@@ -153,6 +158,24 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			this.DataSource.Rows.Add(row);
 			job.SourceData.SourceData = this.DataSource;
 			job.Execute();
+		}
+
+		private async Task<int> CreateProductionAsync(string productionName, string batesPrefix)
+		{
+			int artifactId = await ProductionHelper.CreateProductionAsync(this.TestParameters, productionName, batesPrefix).ConfigureAwait(false);
+			this.Logger.LogInformation(
+				"Successfully created production {ProductionName} - {ArtifactId}.",
+				productionName,
+				artifactId);
+			return artifactId;
+		}
+
+		private async Task<Tuple<string, string>> QueryProductionBatesNumbersAsync(int productionId)
+		{
+			var production = await ProductionHelper.QueryProductionAsync(this.TestParameters, productionId).ConfigureAwait(false);
+			Tuple<string, string> batesNumbers =
+				new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
+			return batesNumbers;
 		}
 	}
 }

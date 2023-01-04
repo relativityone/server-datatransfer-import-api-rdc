@@ -8,9 +8,6 @@ namespace Relativity.DataExchange.Io
 {
 	using System;
 	using System.IO;
-	using System.Runtime.Remoting;
-	using System.Security;
-	using System.Text;
 
 	/// <summary>
 	/// Represents an abstract wrapper for the <see cref="T:System.IO.StreamWriter"/> class.
@@ -18,18 +15,6 @@ namespace Relativity.DataExchange.Io
 	[CLSCompliant(false)]
 	public interface IStreamWriter : IDisposable
 	{
-		/// <summary>
-		/// Gets or sets a value indicating whether the <see cref="T:System.IO.StreamWriter" /> will flush its buffer to the underlying stream after every call to <see cref="M:System.IO.StreamWriter.Write(System.Char)" />.
-		/// </summary>
-		/// <returns>
-		/// <see langword="true" /> to force <see cref="T:System.IO.StreamWriter" /> to flush its buffer; otherwise, <see langword="false" />.
-		/// </returns>
-		bool AutoFlush
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Gets the underlying stream that interfaces with a backing store.
 		/// </summary>
@@ -42,58 +27,12 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <summary>
-		/// Gets the <see cref="T:System.Text.Encoding" /> in which the output is written.
-		/// </summary>
-		/// <returns>
-		/// The <see cref="T:System.Text.Encoding" /> specified in the constructor for the current instance, or <see cref="T:System.Text.UTF8Encoding" /> if an encoding was not specified.
-		/// </returns>
-		Encoding Encoding
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Gets an object that controls formatting.
-		/// </summary>
-		/// <returns>
-		/// The <see cref="IFormatProvider"/> instance.
-		/// </returns>
-		IFormatProvider FormatProvider
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Gets or sets the line terminator string used by the current TextWriter.
-		/// </summary>
-		/// <returns>
-		/// The string.
-		/// </returns>
-		string NewLine
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Closes the current <see langword="StreamWriter" /> object and the underlying stream.
 		/// </summary>
 		/// <exception cref="T:System.Text.EncoderFallbackException">
 		/// The current encoding does not support displaying half of a Unicode surrogate pair.
 		/// </exception>
 		void Close();
-
-		/// <summary>
-		/// Creates an object that contains all the relevant information required to generate a proxy used to communicate with a remote object.
-		/// </summary>
-		/// <param name="requestedType">
-		/// The Type of the object that the new ObjRef will reference.
-		/// </param>
-		/// <returns>
-		/// Information required to generate a proxy.
-		/// </returns>
-		[SecurityCritical]
-		ObjRef CreateObjRef(Type requestedType);
 
 		/// <summary>
 		/// Clears all buffers for the current writer and causes any buffered data to be written to the underlying stream.
@@ -438,5 +377,22 @@ namespace Relativity.DataExchange.Io
 		/// <paramref name="format" /> is not a valid composite format string.-or- The index of a format item is less than 0 (zero), or greater than or equal to the length of the <paramref name="arg" /> array.
 		/// </exception>
 		void WriteLine(string format, params object[] arg);
+
+		/// <summary>
+		/// Writes out a string and a new line.
+		/// </summary>
+		/// <param name="value">
+		/// A composite format string (see Remarks).
+		/// </param>
+		/// <exception cref="T:System.ArgumentNullException">
+		/// A string or object is passed in as <see langword="null" />.
+		/// </exception>
+		/// <exception cref="T:System.ObjectDisposedException">
+		/// The <see cref="T:System.IO.TextWriter" /> is closed.
+		/// </exception>
+		/// <exception cref="T:System.IO.IOException">
+		/// An I/O error occurs.
+		/// </exception>
+		void WriteLine(string value);
 	}
 }

@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents a test that imports native documents with folders and validates the results.
@@ -22,6 +23,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	/// </remarks>
 	[TestFixture(false)]
 	[TestFixture(true)]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
 	public class DocImportFolderTests : DocImportTestsBase
 	{
 		/// <summary>
@@ -40,18 +43,9 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			this.serverSideFolders = serverSideFolders;
 		}
 
-		[Test]
 		[Category(TestCategories.Folder)]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
-		[TestCase("00-te/st")]
-		[TestCase("01-te:st")]
-		[TestCase("02-te?st")]
-		[TestCase("03-te<st")]
-		[TestCase("04-te>st")]
-		[TestCase("05-te\"st")]
-		[TestCase("06-te|st")]
-		[TestCase("07-te*st")]
+		[IdentifiedTestCase("70d5c71e-3785-43d3-8c1e-3c66f8e3b828", "00-t/e:s?t<s")]
+		[IdentifiedTestCase("70d5c71e-3785-43d3-8c1e-3c66f8e3b828", "01-t>e\"s|t*s")]
 		public void ShouldImportTheDocWhenTheFolderContainsInvalidChars(string invalidFolder)
 		{
 			// Arrange
@@ -73,17 +67,11 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(actualFolders.Count, Is.EqualTo(expectedDocCount));
 		}
 
-		[Test]
 		[Category(TestCategories.Folder)]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
-		[TestCase("\\case-root1")]
-		[TestCase("\\case-root1\\")]
-		[TestCase("\\case-root1\\case-root2")]
-		[TestCase("\\case-root1\\case-Root2")]
-		[TestCase("\\case-ROOT1\\case-root2")]
-		[TestCase("\\case-ROOT1\\case-Root2")]
-		[TestCase("\\case-ROOT1\\case-ROOT2")]
+		[IdentifiedTestCase("0dc14fcc-5e93-4fa0-8641-e1b63e88c637", "\\case-root1")]
+		[IdentifiedTestCase("4e1659d0-42cd-4976-9daf-0266622fbe00", "\\case-root1\\")]
+		[IdentifiedTestCase("ac0ee7bb-155d-435d-88bb-4a5e6cae423f", "\\case-root1\\case-ROOT2")]
+		[IdentifiedTestCase("312ee185-8cbd-4ac0-8a2b-ba9f9d6bc447", "\\case-ROOT1\\case-Root2")]
 		public void ShouldNotDuplicateFoldersDueToCaseSensitivity(string folder)
 		{
 			// Arrange
@@ -109,12 +97,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			}
 		}
 
-		[Test]
-		[Category(TestCategories.Integration)]
-		[Category(TestCategories.ImportDoc)]
-		[TestCase(10)]
-		[TestCase(25)]
-		[TestCase(50)]
+		[IdentifiedTestCase("95c100db-21ef-4ec2-ae4c-a1615cdf4329", 50)]
 		public void ShouldSupportTheMaxFolderDepth(int maxDepth)
 		{
 			// Arrange

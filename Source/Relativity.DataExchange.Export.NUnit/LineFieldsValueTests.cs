@@ -21,7 +21,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class LineFieldsValueTests
@@ -51,9 +50,9 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._fieldLookupService.Object,
 				this._longTextHandler.Object,
 				new LongTextHelper(null, null, null),
-				new NonTextFieldHandler(this._fieldLookupService.Object, new DelimitedCellFormatter(exportSettings), exportSettings, new NullLogger()),
+				new NonTextFieldHandler(this._fieldLookupService.Object, new DelimitedCellFormatter(exportSettings), exportSettings, new TestNullLogger()),
 				exportSettings,
-				new NullLogger());
+				new TestNullLogger());
 		}
 
 		[Test]

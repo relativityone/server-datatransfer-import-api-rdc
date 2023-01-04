@@ -12,11 +12,10 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
 	using Relativity.DataExchange.Process;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class MessagesHandlerTests
@@ -32,29 +31,43 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._status = new Mock<IStatus>();
 			this._tapiBridge = new Mock<ITapiBridge>();
 
-			this._instance = new MessagesHandler(this._status.Object, new NullLogger());
+			this._instance = new MessagesHandler(this._status.Object, new TestNullLogger());
 		}
 
-		[Test]
-		public void ItShouldWriteErrorMessage()
-		{
-			const string message = "error_message";
+        [Test]
+        public void ItShouldWriteErrorMessage()
+        {
+            const string message = "error_message";
 
-			this._instance.Attach(this._tapiBridge.Object);
+            this._instance.Subscribe(this._tapiBridge.Object);
 
-			// ACT
-			this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
+            // ACT
+            this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));
 
-			// ASSERT
-			this._status.Verify(x => x.WriteError(message), Times.Once);
+            // ASSERT
+            this._status.Verify(x => x.WriteError(message), Times.Once);
 		}
+
+        [Test]
+        public void ItShouldWriteConstErrorMessageForMalware()
+        {
+            const string message = "error_message_with_some_malware";
+
+            this._instance.Subscribe(this._tapiBridge.Object);
+
+            // ACT
+            this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0, isMalwareError: true));
+
+            // ASSERT
+            this._status.Verify(x => x.WriteError("Malware Exception for line 0"), Times.Once);
+        }
 
 		[Test]
 		public void ItShouldWriteWarningMessage()
 		{
 			const string message = "warning_message";
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiWarningMessage += null, new TapiMessageEventArgs(message, 0));
@@ -68,7 +81,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string message = "fatal_message";
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiFatalError += null, new TapiMessageEventArgs(message, 0));
@@ -82,7 +95,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string message = "status_message";
 
-			this._instance.Attach(this._tapiBridge.Object);
+			this._instance.Subscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiStatusMessage += null, new TapiMessageEventArgs(message, 0));
@@ -96,8 +109,8 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			const string message = "message";
 
-			this._instance.Attach(this._tapiBridge.Object);
-			this._instance.Detach();
+			this._instance.Subscribe(this._tapiBridge.Object);
+			this._instance.Unsubscribe(this._tapiBridge.Object);
 
 			// ACT
 			this._tapiBridge.Raise(x => x.TapiErrorMessage += null, new TapiMessageEventArgs(message, 0));

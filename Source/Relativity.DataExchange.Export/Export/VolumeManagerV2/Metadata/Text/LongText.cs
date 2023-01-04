@@ -10,17 +10,24 @@
 		protected string LongTextValue { get; private set; }
 
 		public LongTextExportRequest ExportRequest { get; private set; }
-		public bool HasBeenDownloaded { get; set; }
+		public bool TransferCompleted { get; set; }
 		public string Location { get; private set; }
 		public bool RequireDeletion { get; private set; }
 		public int ArtifactId { get; private set; }
 		public int FieldArtifactId { get; private set; }
 		public Encoding SourceEncoding { get; set; }
 		public Encoding DestinationEncoding { get; private set; }
+		public long Length { get; private set; }
 
 		public abstract TextReader GetLongText();
 
-		public static LongText CreateFromMissingFile(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest, Encoding sourceEncoding, Encoding destinationEncoding)
+		public static LongText CreateFromMissingFile(
+			int artifactId,
+			int fieldArtifactId,
+			LongTextExportRequest exportRequest,
+			Encoding sourceEncoding,
+			Encoding destinationEncoding,
+			long length)
 		{
 			return new LongTextInFile
 			{
@@ -31,11 +38,17 @@
 				RequireDeletion = false,
 				SourceEncoding = sourceEncoding,
 				DestinationEncoding = destinationEncoding,
-				HasBeenDownloaded = false
+				TransferCompleted = false,
+				Length = length
 			};
 		}
 
-		public static LongText CreateFromMissingValue(int artifactId, int fieldArtifactId, LongTextExportRequest exportRequest, Encoding encoding)
+		public static LongText CreateFromMissingValue(
+			int artifactId,
+			int fieldArtifactId,
+			LongTextExportRequest exportRequest,
+			Encoding encoding,
+			long length)
 		{
 			return new LongTextInFile
 			{
@@ -47,11 +60,17 @@
 				RequireDeletion = true,
 				SourceEncoding = encoding,
 				DestinationEncoding = encoding,
-				HasBeenDownloaded = false
+				TransferCompleted = false,
+				Length = length
 			};
 		}
 
-		public static LongText CreateFromExistingFile(int artifactId, int fieldArtifactId, string location, Encoding encoding)
+		public static LongText CreateFromExistingFile(
+			int artifactId,
+			int fieldArtifactId,
+			string location,
+			Encoding encoding,
+			long length)
 		{
 			return new LongTextInFile
 			{
@@ -61,7 +80,8 @@
 				RequireDeletion = false,
 				SourceEncoding = encoding,
 				DestinationEncoding = encoding,
-				HasBeenDownloaded = true
+				TransferCompleted = true,
+				Length = length
 			};
 		}
 
@@ -75,7 +95,8 @@
 				RequireDeletion = false,
 				SourceEncoding = Encoding.Default,
 				DestinationEncoding = Encoding.Default,
-				HasBeenDownloaded = true
+				TransferCompleted = true,
+				Length = text?.Length ?? 0
 			};
 		}
 	}

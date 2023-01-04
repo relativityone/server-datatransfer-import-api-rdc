@@ -19,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class MultiPageMetadataForArtifactBuilderTests : ImageLoadFileMetadataForArtifactBuilderTests
@@ -30,7 +30,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			IImageLoadFileEntry imageLoadFileEntry,
 			IFullTextLoadFileEntry fullTextLoadFileEntry)
 		{
-			return new MultiPageOpticonMetadataForArtifactBuilder(exportSettings, filePathTransformer, imageLoadFileEntry, fullTextLoadFileEntry, new NullLogger());
+			return new MultiPageOpticonMetadataForArtifactBuilder(exportSettings, filePathTransformer, imageLoadFileEntry, fullTextLoadFileEntry, new TestNullLogger());
 		}
 
 		[Test]

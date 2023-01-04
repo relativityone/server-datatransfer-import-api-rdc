@@ -1,4 +1,6 @@
+Imports System.Net.Configuration
 Imports System.Threading
+Imports kCura.Relativity.DataReaderClient
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
@@ -8,39 +10,47 @@ Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImageImporter
 		Inherits kCura.WinEDDS.BulkImageFileImporter
 
-		Private _sourceTable As System.Data.DataTable
+		Private _reader As IDataReader
+		Private _imageSettings As ImageSettings
 
-		Public Sub New(ByVal folderId As Int32, _
-		               ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile, _
-		               ByVal context As ProcessContext, _
-		               ByVal ioReporterInstance As IIoReporter, 
-		               ByVal logger As ILog, _
-		               ByVal processID As System.Guid, _
-		               ByVal sourceDataReader As System.Data.DataTable, _
-		               ByVal enforceDocumentLimit As Boolean, _
-		               ByVal tokenSource As CancellationTokenSource,
-		               Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
-			MyBase.New(folderId, _
-			           imageLoadFile, _
-			           context, _
-			           ioReporterInstance, _
-			           logger, _
-			           processID, _
-			           False, _
-			           enforceDocumentLimit, _
-			           tokenSource, _
-			           executionSource)
-			_sourceTable = sourceDataReader
+		Public Sub New(ByVal folderId As Int32,
+					   ByVal imageLoadFile As kCura.WinEDDS.ImageLoadFile,
+					   ByVal context As ProcessContext,
+					   ByVal ioReporterInstance As IIoReporter,
+					   ByVal logger As ILog,
+					   ByVal processID As System.Guid,
+					   ByVal tokenSource As CancellationTokenSource,
+					   ByVal reader As IDataReader,
+					   ByVal imageSettings As ImageSettings,
+					   ByVal correlationIdFunc As Func(Of String),
+					   Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+			MyBase.New(folderId,
+					   imageLoadFile,
+					   context,
+					   ioReporterInstance,
+					   logger,
+					   processID,
+					   False,
+					   tokenSource,
+					   correlationIdFunc,
+					   executionSource)
+			_reader = reader
+			_imageSettings = imageSettings
 		End Sub
 
 		Public Overrides Function GetImageReader() As kCura.WinEDDS.Api.IImageReader
-			'Return New Datasource
-			Return New ImageDataTableReader(SourceData)
+			Return New ImageDataReader(Reader, _imageSettings)
 		End Function
 
-		Public ReadOnly Property SourceData() As System.Data.DataTable
+		Friend Overrides ReadOnly Property TotalRecords As Long
 			Get
-				Return _sourceTable
+				Return _imageReader.CountRecords.GetValueOrDefault()
+			End Get
+		End Property
+
+		Public ReadOnly Property Reader() As IDataReader
+			Get
+				Return _reader
 			End Get
 		End Property
 	End Class

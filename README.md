@@ -35,17 +35,23 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 
 ```bash
 # Builds the solution using a Release configuration, run the standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 Build,ExtendedCodeAnalysis
+.\build.ps1 Build
 ```
 
 ```bash
-# Rebuilds the solution using a Release configuration, runs standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 Build,ExtendedCodeAnalysis -Target Rebuild
+# Rebuilds the solution using a Release configuration, runs standard + extended CA, and then StyleCop analyzer.
+.\build.ps1 Build -Target Rebuild
 ```
 
 ```bash
 # Rebuilds the solution using a Debug configuration, runs standard + extended CA checks, and then StyleCop analyzer.
-.\build.ps1 Build,ExtendedCodeAnalysis -Target Rebuild -Configuration Debug
+.\build.ps1 Build -Target Rebuild -Configuration Debug
+```
+
+```bash
+# Builds the solution, creates Relativity.DataExchange.Client.SDK.dll merged assembly and creates nuget package to be used locally e.g. Relativity.DataExchange.Client.SDK.version-branchName.nupkg.
+.\build.ps1 -ILMerge
+.\build.ps1 Build,BuildSdkPackages
 ```
 
 ### Visual Studio
@@ -63,27 +69,22 @@ The implementation details are as follows:
 
 * New build configurations added to drive overall build behavior
   * **Debug|Release**: Only project references used (no change in behavior)
-  * **Debug-ILMerge|Release-ILMerge**: Force assembly references and build a single SDK assembly
 * .\buildtools\Relativity.Build.DynamicReferences.targets
   * Dynamically switches project/assembly references via build configuration
   * Unit and integration tests import this custom targets file
 * .\Scripts\Invoke-ILMerge.ps1
   * Performs all ILMERGE functionality
   * The final assembly is stored in the .\Artifacts\binaries\sdk sub-folder
-* .\.paket\paket.template.relativity.dataexchange.client.sdk
+* .\.paket\Relativity.DataExchange.Client.SDK.nuspec
   * Represents the new SDK package template
   * References the ILMERGE'd assembly file
 * Relativity.DataExchange.Export.csproj
   * Post-build event calls Invoke-ILMerge.ps1
   * MSBUILD parameters are passed
   * **Debug|Release**: Do nothing; otherwise, execute ILMERGE
-* Master-ILMerge.sln
-  * The new solution was added to force **solution dependencies**
-  * **A 2nd solution file ensures project reference behavior is *not* impacted**
 * .\build.ps1
   * **-ILMerge** switch parameter drives build behavior
-  * Decides which solution file to use
-  * Decides whether to append "-ILMerge" to the specified build configuration
+  * Decides to merge all dlls into one or not.
 
 
 ***Note:** Master.sln should **not** be used to build/test the ILMERGE'd SDK assembly because it's configured for project references!*
@@ -134,6 +135,14 @@ The integration tests, by their very nature, perform "deeper" operations and tak
 .\build.ps1 IntegrationTests,TestReports
 ```
 
+### UI automation tests
+[How to run RDC UI Automation](https://einstein.kcura.com/display/DTV/How+to+run+RDC+UI+Automation)
+
+```bash
+# Run the UI automation tests using either environment variables or modified app.config setting for all UI test parameters.
+.\build.ps1 UIAutomationTests
+```
+
 ### TestVM support
 The build scripts make it very easy to run *all* integration tests with a TestVM.
 
@@ -158,8 +167,8 @@ The build scripts extend the testing framework to include code coverage using th
 ```
 
 ```bash
-# Same as above but use The hyper-v internal test environment for all integration test parameters.
-.\build.ps1 CodeCoverageReport -TestEnvironment "hyperv"
+# Same as above but use The Hopper internal test environment for all integration test parameters.
+.\build.ps1 CodeCoverageReport -TestEnvironment "Hopper"
 ```
 
 ### Test categories
@@ -183,29 +192,38 @@ The majority of integration tests require a Relativity instance to work properly
 #### App.Config and environment variables
 The following table outlines all available `App.Config` and environment variable test parameters.
 
-|Application Setting         |Environment Variable                          |Description                                                        |Example                                              |
-|:---------------------------|:---------------------------------------------|:------------------------------------------------------------------|:----------------------------------------------------|
-|RelativityUrl               | IAPI_INTEGRATION_RELATIVITYURL               | The Relativity instance URL.                                      | https://hostname.mycompany.corp                     |
-|RelativityRestUrl           | IAPI_INTEGRATION_RELATIVITYRESTURL           | The Relativity Rest API URL.                                      | https://hostname.mycompany.corp/relativity.rest/api |
-|RelativityServicesUrl       | IAPI_INTEGRATION_RELATIVITYSERVICEURL        | The Relativity Services API URL.                                  | https://hostname.mycompany.corp/relativity.services |
-|RelativityWebApiUrl         | IAPI_INTEGRATION_RELATIVITYWEBAPIURL         | The Relativity Web API URL.	                                    | https://hostname.mycompany.corp/relativitywebapi    |
-|RelativityUserName          | IAPI_INTEGRATION_RELATIVITYUSERNAME          | The Relativity login user name.                                   | email@company.com                                   |
-|RelativityPassword          | IAPI_INTEGRATION_RELATIVITYPASSWORD          | The Relativity login password.                                    | SomePassword!                                       |
-|ServerCertificateValidation | IAPI_INTEGRATION_SERVERCERTIFICATEVALIDATION | Specify whether to enforce server certificate validation errors.  | false                                               |
-|SkipAsperaModeTests         | IAPI_INTEGRATION_SKIPASPERAMODETESTS         | Skips any tests that require Aspera mode.                         | true                                                |
-|SkipDirectModeTests         | IAPI_INTEGRATION_SKIPDIRECTMODETESTS         | Skips any tests that require Direct mode.                         | false                                               |
-|SkipIntegrationTests        | IAPI_INTEGRATION_SKIPINTEGRATIONTESTS        | Skips running all integration tests.                              | false                                               |
-|SqlDropWorkspaceDatabase    | IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE    | Specify whether to drop the SQL database when the test completes. | true                                                |
-|SqlInstanceName             | IAPI_INTEGRATION_SQLINSTANCENAME             | The SQL instance where the workspace databases are stored.        | hostname.mycompany.corp\EDDSINSTANCE001             |
-|SqlAdminUserName            | IAPI_INTEGRATION_SQLADMINUSERNAME            | The SQL system administrator user name.                           | sa                                                  |
-|SqlAdminPassword            | IAPI_INTEGRATION_SQLADMINPASSWORD            | The SQL system administrator password.                            | SomePassword!                                       |
-|WorkspaceTemplate           | IAPI_INTEGRATION_WORKSPACETEMPLATE           | The workspace template used to create the test workspace.         |	Relativity Starter Template                       |
+|Application Setting                   |Environment Variable                                    |Description                                                        |Example                                                                          |
+|:-------------------------------------|:-------------------------------------------------------|:------------------------------------------------------------------|:--------------------------------------------------------------------------------|
+|DeleteWorkspaceAfterTest              | IAPI_DELETEWORKSPACEAFTERTEST                          | Specify whether to delete workspace after test       .            | true                                                                            |
+|RelativityUrl                         | IAPI_INTEGRATION_RELATIVITYURL                         | The Relativity instance URL.                                      | https://hostname.mycompany.corp                                                 |
+|RelativityRestUrl                     | IAPI_INTEGRATION_RELATIVITYRESTURL                     | The Relativity Rest API URL.                                      | https://hostname.mycompany.corp/relativity.rest/api                             |
+|RelativityServicesUrl                 | IAPI_INTEGRATION_RELATIVITYSERVICEURL                  | The Relativity Services API URL.                                  | https://hostname.mycompany.corp/relativity.services                             |
+|RelativityWebApiUrl                   | IAPI_INTEGRATION_RELATIVITYWEBAPIURL                   | The Relativity Web API URL.	                                    | https://hostname.mycompany.corp/relativitywebapi                                |
+|RelativityUserName                    | IAPI_INTEGRATION_RELATIVITYUSERNAME                    | The Relativity login user name.                                   | email@company.com                                                               |
+|RelativityPassword                    | IAPI_INTEGRATION_RELATIVITYPASSWORD                    | The Relativity login password.                                    | SomePassword!                                                                   |
+|ServerCertificateValidation           | IAPI_INTEGRATION_SERVERCERTIFICATEVALIDATION           | Specify whether to enforce server certificate validation errors.  | false                                                                           |
+|SkipAsperaModeTests                   | IAPI_INTEGRATION_SKIPASPERAMODETESTS                   | Skips any tests that require Aspera mode.                         | true                                                                            |
+|SkipDirectModeTests                   | IAPI_INTEGRATION_SKIPDIRECTMODETESTS                   | Skips any tests that require Direct mode.                         | false                                                                           |
+|SkipIntegrationTests                  | IAPI_INTEGRATION_SKIPINTEGRATIONTESTS                  | Skips running all integration tests.                              | false                                                                           |
+|SqlDropWorkspaceDatabase              | IAPI_INTEGRATION_SQLDROPWORKSPACEDATABASE              | Specify whether to drop the SQL database when the test completes. | true                                                                            |
+|SqlCaptureProfiling                   | IAPI_INTEGRATION_SQLCAPTUREPROFILING                   | Specify whether to execute SQL profiling.                         | true                                                                            |
+|SqlProfilingReportsOutputPath         | IAPI_INTEGRATION_SQLPROFILINGREPORTSOUTPUTPATH         | Location where profiling report is created.                       | C:\SqlProfiling                                                                 |
+|SqlComparerEnabled                    | IAPI_INTEGRATION_SQLCOMPARERENABLED                    | Specify whether input for SQLComparer is generated.               | true                                                                            |
+|SqlComparerOutputPath                 | IAPI_INTEGRATION_SQLCOMPAREROUTPUTPATH                 | Location where input for SQLComparer is saved.                    | C:\SqlComparer                                                                  |
+|SqlInstanceName                       | IAPI_INTEGRATION_SQLINSTANCENAME                       | The SQL instance where the workspace databases are stored.        | hostname.mycompany.corp\EDDSINSTANCE001                                         |
+|SqlAdminUserName                      | IAPI_INTEGRATION_SQLADMINUSERNAME                      | The SQL system administrator user name.                           | sa                                                                              |
+|SqlAdminPassword                      | IAPI_INTEGRATION_SQLADMINPASSWORD                      | The SQL system administrator password.                            | SomePassword!                                                                   |
+|TestOnWorkspaceWithNonDefaultCollation| IAPI_INTEGRATION_TESTONWORKSPACEWITHNONDEFAULTCOLLATION| Specify whether to run tests on non-default collation workspace   | false                                                                           |
+|WorkspaceTemplate                     | IAPI_INTEGRATION_WORKSPACETEMPLATE                     | The workspace template used to create the test workspace.         | Relativity Starter Template                                                     |
+|EnableDataGrid                        | IAPI_INTEGRATION_ENABLEDATAGRID                        | Specify whether enable DataGrid property in created workspace     | false                                                                           |
+|RDCPath                               | IAPI_INTEGRATION_RDCPATH                               | Relativity Desktop Client path used in UI tests                   | ..\\..\\..\\Relativity.Desktop.Client.Legacy\\bin\\Relativity.Desktop.Client.exe|
 
 #### JSON File
 The same test parameters described above can also be used in JSON.
 
 ```json
 {
+	"DeleteWorkspaceAfterTest": "True",
 	"RelativityUrl" : "https://hostname.mycompany.corp",
 	"RelativityRestUrl" : "https://hostname.mycompany.corp/relativity.rest/api",
 	"RelativityServicesUrl" : "https://hostname.mycompany.corp/relativity.services",
@@ -213,14 +231,21 @@ The same test parameters described above can also be used in JSON.
 	"RelativityUserName" : "email@company.com",
 	"RelativityPassword" : "SomePassword!",
 	"ServerCertificateValidation" : "False",
+	"WriteLogsToConsole": "True",
 	"SkipAsperaModeTests" : "False",
 	"SkipDirectModeTests" : "False",
 	"SkipIntegrationTests" : "False",
 	"SqlDropWorkspaceDatabase" : "True",
+	"SqlCaptureProfiling": "False",
+	"SqlProfilingReportsOutputPath" : "C:\\SqlProfiling",
+	"SqlComparerEnabled": "False",
+	"SqlComparerOutputPath": "C:\\SqlComparer",
 	"SqlInstanceName" : "hostname.mycompany.corp\\EDDSINSTANCE001",
 	"SqlAdminUserName" : "sa",
 	"SqlAdminPassword" : "SomePassword!",
-	"WorkspaceTemplate" : "Relativity Starter Template"
+	"WorkspaceTemplate" : "Relativity Starter Template",
+	"EnableDataGrid" : "false"
+	"RDCPath" : "..\\..\\..\\Relativity.Desktop.Client.Legacy\\bin\\Relativity.Desktop.Client.exe"
 }
 ```
 
@@ -238,7 +263,7 @@ Given the ability to use a JSON-based test parameters file, the repo includes te
 
 ```bash
 # Runs the integration tests using the Hyper-V test environment
-.\build.ps1 IntegrationTests -TestEnvironment hyperv
+.\build.ps1 IntegrationTests -TestEnvironment Hopper
 ```
 
 ### AssemblySetup
@@ -269,11 +294,10 @@ The project structure is similar to other repos. Important folders and files are
 ├───Scripts
 │   │
 │   │   Find-ChangedMigratedFiles.ps1
-│   │   Invoke-ExtendedCodeAnalysis.ps1
 │   │   Local.runsettings
 │   │   Local_x64.runsettings
 │   │   Test-PackageUpgrade.ps1
-│   │   test-parameters-hyperv.json
+│   │   test-parameters-hopper.json
 │   │   test-parameters-sample.json
 │   │   TestParameters-Template.reg
 ├───Source
@@ -302,7 +326,6 @@ The project structure is similar to other repos. Important folders and files are
 │   │   Installers.sln
 │   │   Master.sln
 │   │   Master.sln.DotSettings
-│   │   Master-ILMerge.sln
 ├───Vendor
 │   │
 │   │   iTextSharp
@@ -364,7 +387,14 @@ All `C#` and `VB.NET` projects contained within the master solution link in one 
 * `AssemblySharedInfo.cs`
 * `AssemblySharedInfo.vb`
 
-The main build script supports an optional `UpdateAssemblyInfo` task which, when specified, uses `GitVersion` to automatically apply semantic versioning info to both of these shared source files.
+The main build script supports an optional `UpdateAssemblyInfo` task which, when specified, uses powershell to automatically apply versioning info to both of these shared source files.
+The version numbers are as follows:
+* `<Major>.<Minor>.<CommitsSinceTag>`
+* `<Major>.<Minor>` comes from the Git tag, and should be updated accordingly
+On non-release branches, for versioning of the package names, the following is done:
+* `Hotfix branches are postfixed with "-hotfixN" where N is the hotfix number`
+* `The dev branch is postfixed with "-dev"`
+* `Hotfix branches are postfixed with "-<something_that_looks_loke_branch_name>"`
 
 ***Note:** Only Jenkins pipeline builds execute this task to avoid modifying source-controlled files during DEV builds.*
 
@@ -390,8 +420,6 @@ The `StyleCop.Analyzers` Roslyn-based analyzer is the de-facto replacement for t
 ***Note:** The `AllErrors.ruleset` enforces virtually all SC rules and is configured for all public facing projects.*
 
 #### Resharper Code Analysis (PowerShell only)
-Over the last few years, improper async/await usage caused `ASP.NET` applications to "hang" and resulted in PD alerts. After some investigation, the Resharper community developed an extension to identify this type of violation. Not only does the extension write a "squiggly" on the offending line, but it can be invoked using the Resharper CLI tools.
-
-The `.\Scripts\Invoke-ExtendedCodeAnalysis.ps1` PS script scans the solution and identifies all violations. The PSake-based build scripts are designed to fail the build for a single violation.
+Over the last few years, improper async/await usage caused `ASP.NET` applications to "hang" and resulted in PD alerts. After some investigation, the Resharper community developed an extension to identify this type of violation. This extension decorated offending code with squirrly red lines and crashes the build.
 
 ***Note:** The extension is limited to C# projects.*

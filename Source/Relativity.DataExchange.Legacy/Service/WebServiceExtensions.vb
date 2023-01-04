@@ -1,9 +1,9 @@
-Imports System.Web.Services.Protocols
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 
 Namespace kCura.WinEDDS.Service
 	Public Module WebServiceExtensions
-		Private _logger As Global.Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
+		Private _logger As Global.Relativity.Logging.ILog = RelativityLogger.Instance
 
 		<System.Runtime.CompilerServices.Extension>
 		Public Function RetryOnReLoginException(Of T)(ByVal input As System.Web.Services.Protocols.SoapHttpClientProtocol, serviceCall As Func(Of T), Optional ByVal retryOnFailure As Boolean = True) As T
@@ -70,12 +70,12 @@ Namespace kCura.WinEDDS.Service
                     message + " Currently on attempt {tries} out of {maxRetries}, using token {token}",
                     tries,
                     maxRetries,
-                    token)
+                    token.Secure())
             Else
                 _logger.LogError(
                     exception,
                     message + " Will not retry, using token {token}",
-                    token)
+                    token.Secure())
             End If
         End Sub
 

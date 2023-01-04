@@ -12,7 +12,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		Public Sub New(ByVal userManager As kCura.WinEDDS.Service.UserManager, ByVal caseContextID As Int32)
+		Public Sub New(ByVal userManager As kCura.WinEDDS.Service.Replacement.IUserManager, ByVal caseContextID As Int32)
 			_ht = New System.Collections.Hashtable
 			Dim dr As System.Data.DataRow
 			For Each dr In userManager.RetrieveAllAssignableInCase(caseContextID).Tables(0).Rows

@@ -11,420 +11,374 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 {
 	using System;
 	using System.Collections;
-	using System.Data;
-	using System.Diagnostics;
-	using System.Globalization;
+	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
 	using kCura.Relativity.DataReaderClient;
-	using kCura.Relativity.ImportAPI;
+
+	using Newtonsoft.Json.Linq;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.Import.JobExecutionContext;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
+	using Relativity.DataExchange.TestFramework.RelativityVersions;
+	using Relativity.DataExchange.Transfer;
+	using Relativity.Services.Interfaces.Field;
+	using Relativity.Services.Interfaces.Field.Models;
+	using Relativity.Services.Interfaces.Shared.Models;
 
-	/// <summary>
-	/// Represents an abstract load-file base class.
-	/// </summary>
-	public abstract class ImportJobTestBase : TestBase
+	public abstract class ImportJobTestBase<TJobExecutionContext> : IDisposable
+		where TJobExecutionContext : class, IDisposable, new()
 	{
-		/// <summary>
-		/// The minimum test file length [1KB].
-		/// </summary>
-		internal const int MinTestFileLength = 1024;
+		private const int MaxLoggedErrors = 100;
 
-		/// <summary>
-		/// The maximum test file length [10KB].
-		/// </summary>
-		internal const int MaxTestFileLength = 10 * MinTestFileLength;
-
-		/// <summary>
-		/// The thread synchronization backing.
-		/// </summary>
-		private static readonly object SyncRoot = new object();
-
-		/// <summary>
-		/// The job messages.
-		/// </summary>
-		private readonly System.Collections.Generic.List<string> jobMessages = new global::System.Collections.Generic.List<string>();
-
-		/// <summary>
-		/// The job fatal exceptions.
-		/// </summary>
-		private readonly System.Collections.Generic.List<Exception> jobFatalExceptions = new global::System.Collections.Generic.List<Exception>();
-
-		/// <summary>
-		/// The error rows.
-		/// </summary>
-		private readonly System.Collections.Generic.List<IDictionary> errorRows = new global::System.Collections.Generic.List<IDictionary>();
-
-		/// <summary>
-		/// The progress completed rows.
-		/// </summary>
-		private readonly System.Collections.Generic.List<long> progressCompletedRows = new global::System.Collections.Generic.List<long>();
-
-		/// <summary>
-		/// The import job.
-		/// </summary>
-		private ImportBulkArtifactJob importJob;
-
-		/// <summary>
-		/// The completed job report.
-		/// </summary>
-		private JobReport completedJobReport;
-
-		/// <summary>
-		/// Gets or sets source data.
-		/// </summary>
-		/// <value>
-		/// The <see cref="DataTable"/> instance.
-		/// </value>
-		protected DataTable SourceData
+		protected ImportJobTestBase()
+			: this(AssemblySetup.TestParameters)
 		{
-			get;
-			set;
 		}
 
-		/// <summary>
-		/// The test setup.
-		/// </summary>
-		protected override void OnSetup()
+		private ImportJobTestBase(IntegrationTestParameters testParameters)
 		{
-			base.OnSetup();
-			this.SourceData = new DataTable { Locale = CultureInfo.InvariantCulture };
-			this.SourceData.Columns.Add(WellKnownFields.ControlNumber, typeof(string));
-			this.SourceData.Columns.Add(WellKnownFields.FilePath, typeof(string));
-			this.jobMessages.Clear();
-			this.jobFatalExceptions.Clear();
-			this.errorRows.Clear();
-			this.progressCompletedRows.Clear();
-			this.importJob = null;
-			this.completedJobReport = null;
+			this.SetTestParameters(testParameters);
+
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls
+																			 | SecurityProtocolType.Tls11
+																			 | SecurityProtocolType.Tls12;
 		}
 
-		/// <summary>
-		/// The test tear down.
-		/// </summary>
-		protected override void OnTearDown()
+		protected IntegrationTestParameters TestParameters { get; private set; }
+
+		protected TJobExecutionContext JobExecutionContext { get; private set; }
+
+		protected TempDirectory2 TempDirectory { get; private set; }
+
+		[SetUp]
+		public async Task SetupAsync()
 		{
-			this.SourceData?.Dispose();
-			if (this.importJob != null)
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Started");
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(TestParameters);
+			await this.OnSetUpAsync().ConfigureAwait(false);
+			kCura.WinEDDS.Config.ConfigSettings["BadPathErrorsRetry"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["TapiMaxJobRetryAttempts"] = 1;
+			AppSettings.Instance.TapiMaxJobParallelism = 1;
+			kCura.WinEDDS.Config.ConfigSettings["TapiLogEnabled"] = true;
+			AppSettings.Instance.TapiSubmitApmMetrics = false;
+			kCura.WinEDDS.Config.ConfigSettings["UsePipeliningForFileIdAndCopy"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["DisableNativeLocationValidation"] = false;
+			kCura.WinEDDS.Config.ConfigSettings["DisableNativeValidation"] = false;
+			AppSettings.Instance.IoErrorWaitTimeInSeconds = 0;
+			AppSettings.Instance.IoErrorNumberOfRetries = 0;
+
+			this.TempDirectory = new TempDirectory2();
+			this.TempDirectory.Create();
+
+			this.JobExecutionContext = new TJobExecutionContext();
+		}
+
+		[TearDown]
+		public void Teardown()
+		{
+			if (this.TempDirectory != null)
 			{
-				this.importJob.OnError -= this.ImportJob_OnError;
-				this.importJob.OnFatalException -= this.ImportJob_OnFatalException;
-				this.importJob.OnMessage -= this.ImportJob_OnMessage;
-				this.importJob.OnComplete -= this.ImportJob_OnComplete;
-				this.importJob.OnProgress -= this.ImportJob_OnProgress;
+				this.TempDirectory.ClearReadOnlyAttributes = true;
+				this.TempDirectory.Dispose();
+				this.TempDirectory = null;
 			}
 
-			base.OnTearDown();
+			this.JobExecutionContext?.Dispose();
+			this.JobExecutionContext = null;
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Finished");
 		}
 
-		/// <summary>
-		/// Given the dataset path to import.
-		/// </summary>
-		/// <param name="file">
-		/// The file to import.
-		/// </param>
-		protected void GivenTheDatasetPathToImport(string file)
+		public void Dispose()
 		{
-			var controlId = Path.GetFileName(file) + " - " + this.Timestamp.Ticks;
-			this.SourceData.Rows.Add(controlId + " " + 1, file);
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
-		/// <summary>
-		/// Given the source files are locked.
-		/// </summary>
-		/// <param name="index">
-		/// Specify the zero-based index.
-		/// </param>
-		protected void GivenTheSourceFileIsLocked(int index)
+		public async Task ResetContextAsync()
 		{
-			var filePath = this.SourceData.Rows[index][1].ToString();
-			ChangeFileFullPermissions(filePath, false);
+			IntegrationTestParameters newParameters = await AssemblySetup.ResetContextAsync().ConfigureAwait(false);
+			this.SetTestParameters(newParameters);
 		}
 
-		/// <summary>
-		/// Given the import job.
-		/// </summary>
-		protected void GivenTheImportJob()
+		protected static void ThenTheErrorRowsHaveCorrectMessage(
+			IEnumerable<IDictionary> errorRows,
+			string expectedMessage)
 		{
-			var iapi = new ImportAPI(
-				this.TestParameters.RelativityUserName,
-				this.TestParameters.RelativityPassword,
-				this.TestParameters.RelativityWebApiUrl.ToString());
-			this.importJob = iapi.NewNativeDocumentImportJob();
-			this.importJob.Settings.WebServiceURL = this.TestParameters.RelativityWebApiUrl.ToString();
-			this.importJob.Settings.CaseArtifactId = this.TestParameters.WorkspaceId;
-			this.importJob.Settings.ArtifactTypeId = 10;
-			this.importJob.Settings.ExtractedTextFieldContainsFilePath = false;
-			this.importJob.Settings.NativeFilePathSourceFieldName = WellKnownFields.FilePath;
-			this.importJob.Settings.SelectedIdentifierFieldName = WellKnownFields.ControlNumber;
-			this.importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			this.importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
-			this.importJob.Settings.OIFileIdMapped = true;
-			this.importJob.Settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
-			this.importJob.Settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
-			this.importJob.Settings.ExtractedTextEncoding = Encoding.Unicode;
-			this.importJob.Settings.FileSizeMapped = true;
-			this.importJob.Settings.FileSizeColumn = WellKnownFields.NativeFileSize;
-			this.importJob.SourceData.SourceData = this.SourceData.CreateDataReader();
-			this.importJob.OnError += this.ImportJob_OnError;
-			this.importJob.OnFatalException += this.ImportJob_OnFatalException;
-			this.importJob.OnMessage += this.ImportJob_OnMessage;
-			this.importJob.OnComplete += this.ImportJob_OnComplete;
-			this.importJob.OnProgress += this.ImportJob_OnProgress;
+			ThenCheckCorrectMessage(errorRows, expectedMessage, StringAssert.AreEqualIgnoringCase);
 		}
 
-		/// <summary>
-		/// When executing the import job.
-		/// </summary>
-		protected void WhenExecutingTheJob()
+		protected static void ThenTheErrorRowsContainsCorrectMessage(
+			IEnumerable<IDictionary> errorRows,
+			string expectedMessage)
 		{
-			var sw = Stopwatch.StartNew();
-			this.importJob.Execute();
-			sw.Stop();
-			Console.WriteLine("Import API elapsed time: {0}", sw.Elapsed);
+			ThenCheckCorrectMessage(errorRows, expectedMessage, StringAssert.Contains);
 		}
 
-		/// <summary>
-		/// Then the import job is successful.
-		/// </summary>
-		protected void ThenTheImportJobIsSuccessful()
+		protected static void ThenTheJobCompletedInCorrectTransferMode(
+			ImportTestJobResult testJobResult,
+			TapiClient expectedClient)
 		{
-			Assert.That(this.errorRows.Count, Is.EqualTo(0));
-			Assert.That(this.jobFatalExceptions.Count, Is.EqualTo(0));
-			Assert.That(this.completedJobReport, Is.Not.Null);
-			Assert.That(this.completedJobReport.ErrorRows.Count, Is.EqualTo(0));
-			Assert.That(this.completedJobReport.FatalException, Is.Null);
-			Assert.That(this.completedJobReport.TotalRows, Is.EqualTo(this.SourceData.Rows.Count));
-		}
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
 
-		/// <summary>
-		/// Then the import job is successful.
-		/// </summary>
-		/// <param name="expectedErrorRows">
-		/// The expected number of error rows.
-		/// </param>
-		/// <param name="expectedTotalRows">
-		/// The expected number of total rows.
-		/// </param>
-		/// <param name="fatalExceptions">
-		/// Specify whether fatal exceptions are expected.
-		/// </param>
-		protected void ThenTheImportJobIsNotSuccessful(int expectedErrorRows, int expectedTotalRows, bool fatalExceptions)
-		{
-			Assert.That(this.errorRows.Count, Is.EqualTo(expectedErrorRows));
-			if (fatalExceptions)
+			if (expectedClient == TapiClient.None)
 			{
-				Assert.That(this.jobFatalExceptions.Count, Is.GreaterThan(0));
-				Assert.That(this.completedJobReport.FatalException, Is.Not.Null);
+				return;
+			}
 
-				// Note: the exact number of expected rows can vary over a range when expecting an error.
-				Assert.That(this.completedJobReport.TotalRows, Is.AtLeast(1).And.LessThanOrEqualTo(expectedTotalRows));
+			Assert.That(
+				testJobResult.SwitchedToWebMode,
+				Is.False,
+				$"Job was expected to run in {expectedClient} mode but switched to Web mode");
+		}
+
+		protected static IEnumerable<string> GetControlNumberEnumerable(
+			OverwriteModeEnum overwriteMode,
+			int numberOfDocumentsToAppend,
+			string nameSuffix)
+		{
+			IEnumerable<string> controlNumber =
+				(overwriteMode == OverwriteModeEnum.Overlay || overwriteMode == OverwriteModeEnum.AppendOverlay)
+					? TestData.SampleDocFiles.Select(Path.GetFileName)
+					: Enumerable.Empty<string>();
+
+			if (overwriteMode == OverwriteModeEnum.Append || overwriteMode == OverwriteModeEnum.AppendOverlay)
+			{
+				controlNumber = controlNumber.Concat(GetIdentifiersEnumerable(numberOfDocumentsToAppend, nameSuffix));
+			}
+
+			return controlNumber;
+		}
+
+		protected static IEnumerable<string> GetIdentifiersEnumerable(
+			int numberOfDocumentsToAppend,
+			string nameSuffix)
+		{
+			return Enumerable.Range(1, numberOfDocumentsToAppend).Select(p => $"{p}-{nameSuffix}");
+		}
+
+		protected virtual Task OnSetUpAsync()
+		{
+			return Task.CompletedTask;
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				this.Teardown();
+			}
+		}
+
+		protected async Task<int> CreateObjectInWorkspaceAsync()
+		{
+			string objectName = Guid.NewGuid().ToString();
+
+			var objectId = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectName).ConfigureAwait(false);
+			await FieldHelper
+				.CreateFileFieldAsync(this.TestParameters, WellKnownFields.FilePath, objectId).ConfigureAwait(false);
+
+			int artifactId =
+				FieldHelper.QueryIdentifierFieldId(this.TestParameters, objectName);
+
+			if (RelativityVersionChecker.VersionIsLowerThan(this.TestParameters, RelativityVersion.Goatsbeard))
+			{
+				await this.UpdateFixedLengthFieldUsingHttpClientAsync(objectName, artifactId).ConfigureAwait(false);
 			}
 			else
 			{
-				Assert.That(this.jobFatalExceptions.Count, Is.EqualTo(0));
-				Assert.That(this.completedJobReport.FatalException, Is.Null);
-				Assert.That(this.completedJobReport.TotalRows, Is.EqualTo(expectedTotalRows));
+				await this.UpdateFixedLengthFieldUsingKeplerAsync(objectName, artifactId).ConfigureAwait(false);
 			}
 
-			Assert.That(this.completedJobReport, Is.Not.Null);
-			Assert.That(this.completedJobReport.ErrorRows.Count, Is.EqualTo(expectedErrorRows));
+			return objectId;
 		}
 
-		/// <summary>
-		/// Then the import progress events are raised.
-		/// </summary>
-		protected void ThenTheImportProgressEventsAreRaised()
+		protected void
+			ThenTheImportJobIsSuccessful(
+				ImportTestJobResult testJobResult,
+				int expectedTotalRows) // TODO create extension method for that
 		{
-			this.ThenTheImportProgressEventsCountShouldEqual(this.SourceData.Rows.Count);
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			this.ValidateFatalExceptionsNotExist(testJobResult);
+			this.ValidateTotalRowsCount(testJobResult, expectedTotalRows);
+			this.ValidateErrorRowsCount(testJobResult, 0);
 		}
 
-		/// <summary>
-		/// Then the import progress events count should equal the specified value.
-		/// </summary>
-		/// <param name="expected">
-		/// The expected count.
-		/// </param>
-		protected void ThenTheImportProgressEventsCountShouldEqual(int expected)
+		protected void ThenTheImportJobFailedWithFatalError(
+			ImportTestJobResult testJobResult,
+			int expectedErrorRows,
+			int expectedTotalRows)
 		{
-			Assert.That(this.progressCompletedRows.Count, Is.EqualTo(expected));
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			// Note: the exact number of expected rows can vary over a range when expecting an error.
+			Assert.That(testJobResult.JobReportTotalRows, Is.Positive.And.LessThanOrEqualTo(expectedTotalRows));
+			this.ValidateErrorRowsCount(testJobResult, expectedErrorRows);
+			Assert.That(testJobResult.JobFatalExceptions, Has.Count.Positive);
+			Assert.That(testJobResult.FatalException, Is.Not.Null);
 		}
 
-		/// <summary>
-		/// Then the import progress events count should be greater than zero.
-		/// </summary>
-		protected void ThenTheImportProgressEventsCountIsNonZero()
+		protected void ThenTheImportJobCompletedWithErrors(
+			ImportTestJobResult testJobResult,
+			int expectedErrorRows,
+			int expectedTotalRows)
 		{
-			Assert.That(this.progressCompletedRows.Count, Is.GreaterThan(0));
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			this.ValidateFatalExceptionsNotExist(testJobResult);
+			this.ValidateTotalRowsCount(testJobResult, expectedTotalRows);
+			this.ValidateErrorRowsCount(testJobResult, expectedErrorRows);
 		}
 
-		/// <summary>
-		/// Then the import message count is non zero.
-		/// </summary>
-		protected void ThenTheImportMessageCountIsNonZero()
+		protected virtual void ValidateTotalRowsCount(ImportTestJobResult testJobResult, int expectedTotalRows)
 		{
-			Assert.That(this.jobMessages.Count, Is.GreaterThan(0));
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			Assert.That(testJobResult.JobReportTotalRows, Is.EqualTo(expectedTotalRows));
 		}
 
-		/// <summary>
-		/// Then the import messages contains the specified message.
-		/// </summary>
-		/// <param name="message">
-		/// The message to check.
-		/// </param>
-		protected void ThenTheImportMessagesContains(string message)
+		protected virtual void ValidateJobMessagesContainsText(ImportTestJobResult testJobResult, string text)
 		{
-			Assert.That(this.jobMessages.Any(x => x.Contains(message)), Is.True);
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			Assert.That(testJobResult.JobMessages, Has.Some.Contains(text));
 		}
 
-		/// <summary>
-		/// Creates the unique control identifier.
-		/// </summary>
-		/// <param name="file">
-		/// The full path to the source file.
-		/// </param>
-		/// <returns>
-		/// The control identifier.
-		/// </returns>
-		protected string CreateUniqueControlId(string file)
+		protected virtual void ValidateErrorRowsCount(ImportTestJobResult testJobResult, int expectedErrorRows)
 		{
-			return Path.GetFileName(file) + " - " + this.Timestamp.Ticks;
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			Assert.That(testJobResult.JobReportErrorsCount, Is.EqualTo(expectedErrorRows), () => this.GetFailureMessageIfNumberOfErrorsDifferentThanExpected(testJobResult));
+			Assert.That(testJobResult.ErrorRows.Count, Is.EqualTo(expectedErrorRows), () => this.GetFailureMessageIfNumberOfErrorsDifferentThanExpected(testJobResult));
 		}
 
-		/// <summary>
-		/// Given the dataset is auto-generated by the number of specified files.
-		/// </summary>
-		/// <param name="maxFiles">
-		/// The file limit.
-		/// </param>
-		/// <param name="includeReadOnlyFiles">
-		/// Specify whether to include read-only files in the dataset.
-		/// </param>
-		protected void GivenTheAutoGeneratedDatasetToImport(int maxFiles, bool includeReadOnlyFiles)
+		protected string GetFailureMessageIfNumberOfErrorsDifferentThanExpected(ImportTestJobResult testJobResult)
 		{
-			for (var i = 0; i < maxFiles; i++)
+			var builder = new StringBuilder();
+			builder.AppendLine("Number of errors was different than expected.");
+
+			if (testJobResult?.ErrorRows?.Count() > 0)
 			{
-				RandomHelper.NextTextFile(
-					MinTestFileLength,
-					MaxTestFileLength,
-					this.TempDirectory.Directory,
-					includeReadOnlyFiles && i % 2 == 0);
-			}
-
-			this.GivenTheDatasetPathToImport(this.TempDirectory.Directory, "*", SearchOption.AllDirectories);
-		}
-
-		/// <summary>
-		/// Given the dataset path to import.
-		/// </summary>
-		/// <param name="path">
-		/// The dataset path to import.
-		/// </param>
-		/// <param name="searchPattern">
-		/// Specify the search pattern.
-		/// </param>
-		/// <param name="searchOption">
-		/// Specify the search option.
-		/// </param>
-		protected void GivenTheDatasetPathToImport(string path, string searchPattern, SearchOption searchOption)
-		{
-			var number = 1;
-			foreach (var file in Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories))
-			{
-				var controlId = this.CreateUniqueControlId(file);
-				this.SourceData.Rows.Add(controlId + " " + number, file);
-			}
-		}
-
-		/// <summary>
-		/// The import job complete handler.
-		/// </summary>
-		/// <param name="jobReport">
-		/// The job report.
-		/// </param>
-		private void ImportJob_OnComplete(JobReport jobReport)
-		{
-			lock (SyncRoot)
-			{
-				this.completedJobReport = jobReport;
-				Console.WriteLine("[Job Complete]");
-			}
-		}
-
-		/// <summary>
-		/// The import job progress handler.
-		/// </summary>
-		/// <param name="completedRow">
-		/// The completed row.
-		/// </param>
-		private void ImportJob_OnProgress(long completedRow)
-		{
-			lock (SyncRoot)
-			{
-				this.progressCompletedRows.Add(completedRow);
-				Console.WriteLine("[Job Progress]: " + completedRow);
-			}
-		}
-
-		/// <summary>
-		/// The import job message handler.
-		/// </summary>
-		/// <param name="status">
-		/// The status.
-		/// </param>
-		private void ImportJob_OnMessage(Status status)
-		{
-			lock (SyncRoot)
-			{
-				this.jobMessages.Add(status.Message);
-				Console.WriteLine("[Job Message]: " + status.Message);
-			}
-		}
-
-		/// <summary>
-		/// The import job fatal exception handler.
-		/// </summary>
-		/// <param name="jobReport">
-		/// The job report.
-		/// </param>
-		private void ImportJob_OnFatalException(JobReport jobReport)
-		{
-			lock (SyncRoot)
-			{
-				this.jobFatalExceptions.Add(jobReport.FatalException);
-				Console.WriteLine("[Job Fatal Exception]: " + jobReport.FatalException);
-			}
-		}
-
-		/// <summary>
-		/// The import job error handler.
-		/// </summary>
-		/// <param name="row">
-		/// The row.
-		/// </param>
-		private void ImportJob_OnError(IDictionary row)
-		{
-			lock (SyncRoot)
-			{
-				this.errorRows.Add(row);
-				StringBuilder rowMetaData = new StringBuilder();
-				foreach (string key in row.Keys)
+				foreach (var errorRow in testJobResult.ErrorRows.Take(MaxLoggedErrors))
 				{
-					if (rowMetaData.Length > 0)
-					{
-						rowMetaData.Append(",");
-					}
-
-					rowMetaData.AppendFormat("{0}={1}", key, row[key]);
+					builder.AppendLine(string.Join(string.Empty, errorRow.Values.OfType<string>()));
 				}
-
-				Console.WriteLine("[Job Error Metadata]: " + rowMetaData);
 			}
+
+			return builder.ToString();
+		}
+
+		protected virtual void ValidateFatalExceptionsNotExist(ImportTestJobResult testJobResult)
+		{
+			testJobResult = testJobResult ?? throw new ArgumentNullException(nameof(testJobResult));
+
+			Assert.That(
+				testJobResult.FatalException,
+				Is.Null,
+				$"Import was aborted due to the fatal exception: {testJobResult.FatalException}.");
+
+			StringBuilder allExceptions = new StringBuilder();
+			foreach (Exception ex in testJobResult.JobFatalExceptions)
+			{
+				allExceptions.AppendLine(ex?.ToString());
+			}
+
+			Assert.That(
+				testJobResult.JobFatalExceptions,
+				Has.Count.Zero,
+				$"{testJobResult.JobFatalExceptions.Count} fatal exceptions were thrown during import : {allExceptions}");
+		}
+
+		private static void ThenCheckCorrectMessage(
+			IEnumerable<IDictionary> errorRows,
+			string expectedMessage,
+			Action<string, string> validationAction)
+		{
+			errorRows = errorRows ?? throw new ArgumentNullException(nameof(errorRows));
+
+			foreach (var row in errorRows)
+			{
+				string actualMessage = (string)row["Message"];
+				validationAction(expectedMessage, actualMessage);
+			}
+		}
+
+		private static async Task<string> PrepareUpdateFixedLengthFieldRequestAsync(IntegrationTestParameters testParameters, string objectName, int artifactId)
+		{
+			var url =
+				$"{testParameters.RelativityRestUrl.AbsoluteUri}/Relativity.Fields/workspace/{testParameters.WorkspaceId}/fields/{artifactId}";
+
+			JObject objectData = JObject.Parse(await HttpClientHelper.GetAsync(testParameters, new Uri(url)).ConfigureAwait(false));
+
+			var updateFixedLengthField = ResourceFileHelper.GetResourceFolderPath("UpdateFixedLengthTextFieldRequest.json");
+			JObject request = JObject.Parse(File.ReadAllText(updateFixedLengthField));
+
+			request["fieldRequest"]["Name"] = WellKnownFields.ControlNumber;
+			request["fieldRequest"]["ObjectType"]["Name"] = objectName;
+			request["fieldRequest"]["ObjectType"]["ArtifactID"] = objectData["ObjectType"]["ArtifactID"];
+			request["fieldRequest"]["ObjectType"]["ArtifactTypeID"] = objectData["ObjectType"]["ArtifactTypeID"];
+
+			return request.ToString();
+		}
+
+		private void SetTestParameters(IntegrationTestParameters testParameters)
+		{
+			this.TestParameters = testParameters ?? throw new ArgumentNullException(nameof(testParameters));
+			Assume.That(
+				testParameters.WorkspaceId,
+				Is.Positive,
+				"The test workspace must be created or specified in order to run this integration test. One possible reason for this error is that Skip Integration Tests is set to true.");
+		}
+
+		private async Task UpdateFixedLengthFieldUsingKeplerAsync(string objectName, int queryFieldId)
+		{
+			var controlNumberFieldRequest = new FixedLengthFieldRequest()
+			{
+				Name = WellKnownFields.ControlNumber,
+				ObjectType = new ObjectTypeIdentifier() { Name = objectName },
+				Length = 255,
+				IsRequired = true,
+				IncludeInTextIndex = true,
+				FilterType = FilterType.TextBox,
+				AllowSortTally = true,
+				AllowGroupBy = false,
+				AllowPivot = false,
+				HasUnicode = true,
+				OpenToAssociations = false,
+				IsRelational = false,
+				AllowHtml = false,
+				IsLinked = true,
+				Wrapping = true,
+			};
+
+			using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(this.TestParameters))
+			{
+				await fieldManager.UpdateFixedLengthFieldAsync(
+					this.TestParameters.WorkspaceId,
+					queryFieldId,
+					controlNumberFieldRequest).ConfigureAwait(false);
+			}
+		}
+
+		private async Task UpdateFixedLengthFieldUsingHttpClientAsync(string objectName, int artifactId)
+		{
+			string request =
+				await PrepareUpdateFixedLengthFieldRequestAsync(this.TestParameters, objectName, artifactId)
+					.ConfigureAwait(false);
+
+			var url =
+				$"{this.TestParameters.RelativityRestUrl.AbsoluteUri}/relativity.fields/workspace/{this.TestParameters.WorkspaceId}/fixedlengthfields/{artifactId}";
+
+			await HttpClientHelper.PutAsync(this.TestParameters, new Uri(url), request.ToString())
+							 .ConfigureAwait(false);
 		}
 	}
 }

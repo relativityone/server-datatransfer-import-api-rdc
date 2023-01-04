@@ -120,6 +120,12 @@
   <data name="RetryJobMessage" xml:space="preserve">
     <value>Retrying transfer job - attempt {0} of {1}.</value>
   </data>
+  <data name="TransferFileDownloadWarningNoRetryMessage" xml:space="preserve">
+    <value>{0} download failed: {1} - This job is configured to skip this file-level issue.</value>
+  </data>
+  <data name="TransferFileUploadWarningNoRetryMessage" xml:space="preserve">
+    <value>{0} upload failed: {1} - This job is configured to skip this file-level issue.</value>
+  </data>
   <data name="TransferFileDownloadWarningMessage" xml:space="preserve">
     <value>{0} download failed: {1} - Retrying in {2} seconds. {3} tries left.</value>
   </data>
@@ -141,14 +147,35 @@
   <data name="TransferJobNullExceptionMessage" xml:space="preserve">
     <value>This operation cannot be performed because the file transfer job hasn't been created.</value>
   </data>
+  <data name="TransferPathArgumentDownloadSourcePathExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid server-side source path and suggests a problem with the artifact data.</value>
+  </data>
+  <data name="TransferPathArgumentDownloadTargetPathExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid client-side target path and suggests an export configuration issue.</value>
+  </data>
+  <data name="TransferPathArgumentUploadSourcePathExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid client-side source path and suggests a problem with the mapped source path.</value>
+  </data>
+  <data name="TransferPathArgumentUploadTargetPathExceptionMessage" xml:space="preserve">
+    <value>The transfer path must define a valid server-side target path and suggests an import configuration issue.</value>
+  </data>
   <data name="TransferJobStartedMessage" xml:space="preserve">
     <value>File transfer job started.</value>
   </data>
   <data name="WorkspaceExceptionMessage" xml:space="preserve">
     <value>The workspace artifact must be specified.</value>
   </data>
-  <data name="HttpFallbackExceptionMessage" xml:space="preserve">
-    <value>A serious error has occurred attempting to transfer files over HTTP.</value>
+  <data name="WebModeFallbackPermissionsFatalExceptionMessage" xml:space="preserve">
+    <value>A fatal file transfer error occurred due to insufficient permissions and cannot be resolved by switching to web mode. Error: {0}</value>
+  </data>
+  <data name="WebModeFallbackAlreadyWebModeFatalExceptionMessage" xml:space="preserve">
+    <value>A fatal file transfer error occurred and an attempt has already been made to resolve the issue by switching to web mode. Check the logs for more details or contact your system administrator for assistance if this problem persists.</value>
+  </data>
+  <data name="WebModeFallbackNoErrorWarningMessage" xml:space="preserve">
+    <value>Switching to web mode due to a serious error within the '{0}' transfer job.</value>
+  </data>
+  <data name="WebModeFallbackWarningMessage" xml:space="preserve">
+    <value>Switching to web mode due to a serious error within the '{0}' transfer job. Error: {1}</value>
   </data>
   <data name="ClientInitializing" xml:space="preserve">
     <value>Initializing</value>
@@ -180,17 +207,17 @@
   <data name="TransferFileUploadFatalMessage" xml:space="preserve">
     <value>Error uploading file: {0}</value>
   </data>
-  <data name="CompleteJobExceptionMessage" xml:space="preserve">
-    <value>An unexpected error has occurred attempting to wait for the transfer job to complete.</value>
+  <data name="TransferTransferDownloadFileWarningMessage" xml:space="preserve">
+    <value>{0} download file issue: {1}</value>
   </data>
-  <data name="TransferJobDownloadWarningMessage" xml:space="preserve">
-    <value>{0} download job issue: {1} - Retrying in {2} seconds - {3} tries left.</value>
+  <data name="TransferTransferDownloadJobWarningMessage" xml:space="preserve">
+    <value>{0} download transfer job issue: {1}</value>
   </data>
-  <data name="TransferJobUploadWarningMessage" xml:space="preserve">
-    <value>{0} upload job issue: {1} - Retrying in {2} seconds - {3} tries left.</value>
+  <data name="TransferTransferUploadFileWarningMessage" xml:space="preserve">
+    <value>{0} upload file issue: {1}</value>
   </data>
-  <data name="HttpFallbackWarningMessage" xml:space="preserve">
-    <value>Switching to the HTTP client due to a serious error within the '{0}' transfer client. Error: {1}</value>
+  <data name="TransferTransferUploadJobWarningMessage" xml:space="preserve">
+    <value>{0} upload transfer job issue: {1}</value>
   </data>
   <data name="IoReporterWarningMessageWithException" xml:space="preserve">
     <value>Import error - Retrying in {0} seconds. Error: {1}</value>
@@ -277,7 +304,7 @@
     <value>Input length exceeds maximum set length of {0} for the {1} field.</value>
   </data>
   <data name="StringImporterMaxLengthExWithFieldErrorAdditionalInfo" xml:space="preserve">
-    <value>The input value from the {0} source field has a length of {1} character(s). This exceeds the limit for the {0} destination field, which is currently set to {2} character(s).</value>
+    <value>There was an error attempting to import this record due to the length of a metadata field not being large enough. The maximum length of the "{0}" field is currently set to {2} characters, but the records metadata's length is {1} characters. Increase the maximum length of the "{0}" field to at least {1} characters and retry.</value>
   </data>
   <data name="ImporterStandardFieldError" xml:space="preserve">
     <value>Error in row {0}, field "{1}". {2}</value>
@@ -372,5 +399,32 @@ Detail: {4}</value>
   </data>
   <data name="ImportExportWebApiVersionInvalidNoAppNameExceptionMessage" xml:space="preserve">
     <value>This application can’t be used with this Relativity instance because the import/export web-services version is invalid. Contact your system administrator for assistance if this problem persists.</value>
+  </data>
+  <data name="WorkspaceNullExceptionMessage" xml:space="preserve">
+    <value>This operation cannot be performed because the workspace '{0}' doesn't exist. Retry or contact your system administrator for assistance if this problem persists.</value>
+  </data>
+  <data name="FileTransferStatusTextModePrefix" xml:space="preserve">
+    <value>File Transfer Mode: {0}</value>
+  </data>
+  <data name="FileTransferStatusTextMetadataPrefix" xml:space="preserve">
+    <value>Metadata: {0}</value>
+  </data>
+  <data name="FileTransferModeDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="FileTransferModePending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="RetryIssueAppendMessage" xml:space="preserve">
+    <value>Retrying in {0} second(s) - {1} retry(s) left.</value>
+  </data>
+  <data name="RetryIssueNoAttemptsLeftAppendMessage" xml:space="preserve">
+    <value>No more retry attempts left.</value>
+  </data>
+  <data name="WebServiceNotFatalRetryMessage" xml:space="preserve">
+    <value>A non-fatal issue occurred attempting to call the '{0}' web service: {1}.</value>
+  </data>
+  <data name="TransferFallbackWarningMessage" xml:space="preserve">
+    <value>Switching transfer mode to '{0}' due to a serious error within the '{1}' transfer job. Error: {2}</value>
   </data>
 </root>

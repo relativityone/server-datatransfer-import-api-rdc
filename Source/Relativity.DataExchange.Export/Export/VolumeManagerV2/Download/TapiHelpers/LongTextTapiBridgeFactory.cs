@@ -1,39 +1,67 @@
-﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
+﻿using System.Threading;
+
+using Relativity.DataExchange.Transfer;
+using Relativity.Logging;
+
+namespace Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers
 {
-	using System.Threading;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
-	using Relativity.Logging;
+	using System;
 
-	public class LongTextTapiBridgeFactory : ILongTextTapiBridgeFactory
+	using kCura.WinEDDS.Service.Kepler;
+
+	using Relativity.DataExchange.Service;
+
+	public class LongTextTapiBridgeFactory : ITapiBridgeFactory
 	{
-		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
-		private readonly LongTextEncodingConverterFactory _converterFactory;
-		private readonly DownloadProgressManager _downloadProgressManager;
-		private readonly IMessagesHandler _messageHandler;
-		private readonly MetadataStatistics _metadataStatistics;
 		private readonly ILog _logger;
+		private readonly TapiBridgeParametersFactory _tapiBridgeParametersFactory;
+		private readonly IAppSettings _settings;
+		private readonly CancellationToken _token;
 
-		public LongTextTapiBridgeFactory(TapiBridgeParametersFactory tapiBridgeParametersFactory, LongTextEncodingConverterFactory converterFactory,
-			DownloadProgressManager downloadProgressManager, IMessagesHandler messageHandler, MetadataStatistics metadataStatistics, ILog logger)
+		private Func<string> _getCorrelationId;
+
+		public LongTextTapiBridgeFactory(
+			TapiBridgeParametersFactory tapiBridgeParametersFactory,
+			ILog logger,
+			CancellationToken token,
+			Func<string> getCorrelationId)
+			: this(tapiBridgeParametersFactory, logger, AppSettings.Instance, token)
 		{
-			_tapiBridgeParametersFactory = tapiBridgeParametersFactory;
-			_converterFactory = converterFactory;
-			_downloadProgressManager = downloadProgressManager;
-			_messageHandler = messageHandler;
-			_metadataStatistics = metadataStatistics;
-			_logger = logger;
+			_getCorrelationId = getCorrelationId;
 		}
 
-		public IDownloadTapiBridge Create(CancellationToken token)
+		public LongTextTapiBridgeFactory(
+			TapiBridgeParametersFactory tapiBridgeParametersFactory,
+			ILog logger,
+			IAppSettings settings,
+			CancellationToken token)
 		{
-			ITapiBridgeWrapperFactory tapiBridgeWrapperFactory = new LongTextTapiBridgeWrapperFactory(_tapiBridgeParametersFactory, _logger, token);
-			ITapiBridgeWrapper tapiBridgeWrapper = tapiBridgeWrapperFactory.Create();
-			var smartTapiBridge = new EmptyTapiBridge(tapiBridgeWrapper);
+			_tapiBridgeParametersFactory = tapiBridgeParametersFactory.ThrowIfNull(nameof(tapiBridgeParametersFactory));
+			_logger = logger.ThrowIfNull(nameof(logger));
+			_settings = settings.ThrowIfNull(nameof(settings));
+			_token = token;
+		}
 
-			LongTextEncodingConverter longTextEncodingConverter = _converterFactory.Create(token);
-			return new DownloadTapiBridgeWithEncodingConversion(smartTapiBridge, new LongTextProgressHandler(_downloadProgressManager, _logger), _messageHandler, _metadataStatistics,
-				longTextEncodingConverter, _logger);
+
+		public ITapiBridge Create()
+		{
+			DownloadTapiBridgeParameters2 parameters = _tapiBridgeParametersFactory.CreateTapiBridgeParametersFromConfiguration();
+			parameters.ForceAsperaClient = false;
+			parameters.ForceClientCandidates = string.Empty;
+			parameters.ForceFileShareClient = false;
+			parameters.ForceHttpClient = true;
+
+			// REL-345129: For large extracted text files, override with a more specialized timeout.
+			parameters.TimeoutSeconds = _settings.HttpExtractedTextTimeoutSeconds;
+
+			DownloadTapiBridge2 downloadTapiBridge = TapiBridgeFactory.CreateDownloadBridge(
+				parameters,
+				this._logger,
+				this._token,
+				this._getCorrelationId,
+				new WebApiVsKeplerFactory(this._logger),
+				new RelativityManagerServiceFactory());
+			return downloadTapiBridge;
 		}
 	}
 }

@@ -50,6 +50,12 @@
     <Property Id="AppProcessName"
               Value="$(var.ProcessName)"/>
 
+    <!-- Perform the proper upgrade checks -->
+    <Property Id="NEWERPRODUCTFOUND" Secure="yes" />
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.ProductVersion)" IncludeMinimum="yes" OnlyDetect="yes" Language="1033" Property="NEWERPRODUCTFOUND" />
+    </Upgrade>
+
     <!-- This represents whether the RDC is used for RelativityOne environments. -->
     <Property Id="RELATIVITYONE_ENV"
               Value="1" />
@@ -170,16 +176,457 @@
         File="Relativity.Desktop.Client.exe"
         Protocol="tcp"
         Name="Relativity Desktop Client TCP"
-        Port="*"
+        Port="33001"
         Scope="any"
         IgnoreFailure="no"
         Profile="all" />
       <fw:FirewallException
-        Id="RdcClientUDPInbound"
+        Id="RdcClientUDPInbound01"
         File="Relativity.Desktop.Client.exe"
         Protocol="udp"
-        Name="Relativity Desktop Client UDP"
-        Port="*"
+        Name="Relativity Desktop Client UDP 01"
+        Port="33001"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound02"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 02"
+        Port="33002"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound03"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 03"
+        Port="33003"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound04"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 04"
+        Port="33004"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound05"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 05"
+        Port="33005"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound06"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 06"
+        Port="33006"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound07"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 07"
+        Port="33007"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound08"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 08"
+        Port="33008"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound09"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 09"
+        Port="33009"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound10"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 10"
+        Port="33010"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound11"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 11"
+        Port="33011"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound12"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 12"
+        Port="33012"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound13"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 13"
+        Port="33013"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound14"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 14"
+        Port="33014"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound15"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 15"
+        Port="33015"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound16"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 16"
+        Port="33016"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound17"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 17"
+        Port="33017"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound18"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 18"
+        Port="33018"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound19"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 19"
+        Port="33019"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound20"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 20"
+        Port="33020"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound21"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 21"
+        Port="33021"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound22"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 22"
+        Port="33022"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound23"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 23"
+        Port="33023"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound24"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 24"
+        Port="33024"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound25"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 25"
+        Port="33025"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound26"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 26"
+        Port="33026"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound27"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 27"
+        Port="33027"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound28"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 28"
+        Port="33028"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound29"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 29"
+        Port="33029"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound30"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 30"
+        Port="33030"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound31"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 31"
+        Port="33031"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound32"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 32"
+        Port="33032"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound33"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 33"
+        Port="33033"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound34"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 34"
+        Port="33034"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound35"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 35"
+        Port="33035"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound36"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 36"
+        Port="33036"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound37"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 37"
+        Port="33037"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound38"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 38"
+        Port="33038"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound39"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 39"
+        Port="33039"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound40"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 40"
+        Port="33040"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound41"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 41"
+        Port="33041"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound42"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 42"
+        Port="33042"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound43"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 43"
+        Port="33043"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound44"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 44"
+        Port="33044"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound45"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 45"
+        Port="33045"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound46"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 46"
+        Port="33046"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound47"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 47"
+        Port="33047"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound48"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 48"
+        Port="33048"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound49"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 49"
+        Port="33049"
+        Scope="any"
+        IgnoreFailure="no"
+        Profile="all" />
+      <fw:FirewallException
+        Id="RdcClientUDPInbound50"
+        File="Relativity.Desktop.Client.exe"
+        Protocol="udp"
+        Name="Relativity Desktop Client UDP 50"
+        Port="33050"
         Scope="any"
         IgnoreFailure="no"
         Profile="all" />
@@ -191,15 +638,7 @@
       <File Id="Primary.itextsharp"
             Name="itextsharp.dll"
             DiskId="1"
-            Source="..\..\Vendor\iTextSharp\5.1.2\$(var.Platform)\itextsharp.dll" />
-      <File Id="Primary.FreeImageNET"
-            Name="FreeImageNET.dll"
-            DiskId="1"
-            Source="..\..\Vendor\FreeImage\3.18.0\$(var.Platform)\FreeImageNET.dll" />
-      <File Id="Primary.FreeImage"
-            Name="FreeImage.dll"
-            DiskId="1"
-            Source="..\..\Vendor\FreeImage\3.18.0\$(var.Platform)\FreeImage.dll" />
+            Source="..\..\Vendor\iTextSharp\5.5.13.1\$(var.Platform)\itextsharp.dll" />
     </Component>
     <Component Id="RegistryEntries"
                Directory="INSTALLFOLDER"
@@ -225,6 +664,20 @@
                        Value="[RELATIVITYONE_ENV]"
                        KeyPath="no" />
       </RegistryKey>
+    </Component>
+    <Component Id="BrowserRegistryEntry"
+               Directory="INSTALLFOLDER"
+               Guid='{144BCAC9-A367-42DD-82F5-D451C5E76EE6}'>
+	    <RegistryKey Root="HKLM"
+	                 Key="$(var.BrowserRegistryKey)"
+	                 ForceCreateOnInstall="yes"
+	                 ForceDeleteOnUninstall="no">
+		    <RegistryValue Action="write"
+		                   Type="integer"
+		                   Name="Relativity.Desktop.Client.exe"
+		                   Value='11000'
+		                   KeyPath="yes" />
+	    </RegistryKey>
     </Component>
     <Component Id="ImagesComponent"
                Directory="Images"
@@ -254,6 +707,7 @@
                Absent="disallow">
         <ComponentRef Id="NativeDependencies" />
         <ComponentRef Id="RegistryEntries" />
+        <ComponentRef Id="BrowserRegistryEntry" />
         <ComponentRef Id="Relativity.Desktop.Client.exe" />
         <ComponentRef Id="Relativity.Desktop.Client.Config" />
         <ComponentRef Id="AppStartMenuShortcut" />

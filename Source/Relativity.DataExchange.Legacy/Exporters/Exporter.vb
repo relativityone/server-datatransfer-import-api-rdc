@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.Concurrent
 Imports System.Collections.Generic
 Imports System.IO
+Imports System.Reflection
 Imports System.Threading
 Imports System.Threading.Tasks
 Imports Castle.Windsor
@@ -10,33 +11,39 @@ Imports kCura.WinEDDS.Exporters.Validator
 Imports kCura.WinEDDS.FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.Service.Export
+Imports kCura.WinEDDS.Service.Kepler
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
+Imports Relativity.DataExchange.Logging
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 Imports Relativity.DataExchange.Transfer
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class Exporter
 		Implements IExporter
 		Implements IStatus
+		Implements IServiceNotification
 
 #Region "Members"
 
-		Private _loadFileFormatterFactory As ILoadFileHeaderFormatterFactory
+		Private ReadOnly _logger As ILog
+		Private ReadOnly _loadFileFormatterFactory As ILoadFileHeaderFormatterFactory
 		Private ReadOnly _exportConfig As IExportConfig
-		Private _fieldProviderCache As IFieldProviderCache
-		Private _searchManager As Service.Export.ISearchManager
-		Private _productionManager As Service.Export.IProductionManager
-		Private _auditManager As Service.Export.IAuditManager
-		Private _fieldManager As Service.Export.IFieldManager
+		Private ReadOnly _fieldProviderCache As IFieldProviderCache
+		Private ReadOnly _searchManager As Service.Export.ISearchManager
+		Private ReadOnly _productionManager As Service.Export.IProductionManager
+		Private ReadOnly _auditManager As Service.Export.IAuditManager
+		Private ReadOnly _fieldManager As Service.Export.IFieldManager
+		Private ReadOnly _webApiVsKepler As IWebApiVsKepler
 		Public Property ExportManager As Service.Export.IExportManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
 		Public TotalExportArtifactCount As Int32
 		Private WithEvents _processContext As ProcessContext
-		Private _downloadHandler As Service.Export.IExportFileDownloader
 		Private WithEvents _downloadModeStatus As Service.Export.IExportFileDownloaderStatus
-		Private _volumeManager As VolumeManager
 		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom
 		Private _beginBatesColumn As String = ""
 		Private _timekeeper As New Timekeeper2
@@ -45,7 +52,7 @@ Namespace kCura.WinEDDS
 		Private _lastDocumentsExportedCountReported As Int32 = 0
 		Public Property Statistics As New kCura.WinEDDS.ExportStatistics
 		Private _lastStatisticsSnapshot As IDictionary
-		Private _start As System.DateTime
+		Private _stopwatch As System.Diagnostics.Stopwatch = New System.Diagnostics.Stopwatch()
 		Private _warningCount As Int32 = 0
 		Private _errorCount As Int32 = 0
 		Private _fileCount As Int64 = 0
@@ -53,13 +60,13 @@ Namespace kCura.WinEDDS
 		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo)
 		Private _productionPrecedenceIds As Int32()
 		Private _tryToNameNativesAndTextFilesAfterPrecedenceBegBates As Boolean = False
-		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry)
-		Private _linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String))
 		Protected FieldLookupService As IFieldLookupService
 		Private _errorFile As IErrorFile
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
 		Private _syncLock As Object = New Object
 		Private _originalFileNameProvider As OriginalFileNameProvider
+		Private _cancelledByUser As Boolean
+		Private _correlationIdFunc As Func(Of String)
 
 #End Region
 
@@ -104,14 +111,17 @@ Namespace kCura.WinEDDS
 
 		Public ReadOnly Property ErrorLogFileName() As String
 			Get
-				If UseOldExport Then
-					Return _volumeManager?.ErrorLogFileName
-				End If
 				If _errorFile?.IsErrorFileCreated() Then
 					Return _errorFile.Path()
 				Else
 					Return Nothing
 				End If
+			End Get
+		End Property
+
+		Friend ReadOnly Property IsCancelledByUser As Boolean
+			Get
+				Return _cancelledByUser
 			End Get
 		End Property
 
@@ -124,12 +134,6 @@ Namespace kCura.WinEDDS
 		Protected Overridable ReadOnly Property WaitTimeBetweenRetryAttempts() As Int32
 			Get
 				Return _exportConfig.ExportErrorWaitTime
-			End Get
-		End Property
-
-		Protected Overridable ReadOnly Property UseOldExport() As Boolean
-			Get
-				Return _exportConfig.UseOldExport
 			End Get
 		End Property
 
@@ -154,27 +158,49 @@ Namespace kCura.WinEDDS
 
 		Public Event ShutdownEvent()
 		Public Sub Shutdown()
+			_logger.LogError("Prematurely shutting down export due to a serious configuration or validation issue.")
 			RaiseEvent ShutdownEvent()
 		End Sub
 
 #Region "Constructors"
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal context As ProcessContext, loadFileFormatterFactory As ILoadFileHeaderFormatterFactory)
-			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig)
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
+					   context As ProcessContext,
+					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+					   correlationIdFunc As Func(Of String))
+			Me.New(exportFile, context, New Service.Export.WebApiServiceFactory(exportFile), loadFileFormatterFactory, New ExportConfig, RelativityLogger.Instance, CancellationToken.None, correlationIdFunc)
 		End Sub
 
-		Public Sub New(ByVal exportFile As kCura.WinEDDS.ExportFile, ByVal context As ProcessContext, serviceFactory As Service.Export.IServiceFactory,
-					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			_searchManager = serviceFactory.CreateSearchManager()
-			_downloadHandler = serviceFactory.CreateExportFileDownloader()
-			_downloadModeStatus = _downloadHandler
-			_productionManager = serviceFactory.CreateProductionManager()
-			_auditManager = serviceFactory.CreateAuditManager()
-			_fieldManager = serviceFactory.CreateFieldManager()
-			ExportManager = serviceFactory.CreateExportManager()
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
+					   context As ProcessContext,
+					   serviceFactory As Service.Export.IServiceFactory,
+					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+					   exportConfig As IExportConfig,
+					   correlationIdFunc As Func(Of String))
+			Me.New(exportFile, context, serviceFactory, loadFileFormatterFactory, exportConfig, RelativityLogger.Instance, CancellationToken.None, correlationIdFunc)
+		End Sub
 
-			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer)
-			_cancellationTokenSource = New CancellationTokenSource()
+		Public Sub New(exportFile As kCura.WinEDDS.ExportFile,
+					   context As ProcessContext,
+					   serviceFactory As Service.Export.IServiceFactory,
+					   loadFileFormatterFactory As ILoadFileHeaderFormatterFactory,
+					   exportConfig As IExportConfig,
+					   logger As ILog,
+					   cancellationToken As CancellationToken,
+					   correlationIdFunc As Func(Of String))
+			_searchManager = serviceFactory.CreateSearchManager(correlationIdFunc)
+			_productionManager = serviceFactory.CreateProductionManager(correlationIdFunc)
+			_auditManager = serviceFactory.CreateAuditManager(correlationIdFunc)
+			_fieldManager = serviceFactory.CreateFieldManager(correlationIdFunc)
+			ExportManager = serviceFactory.CreateExportManager(correlationIdFunc)
+
+			Dim webApiVsKeplerFactory As WebApiVsKeplerFactory = New WebApiVsKeplerFactory(logger)
+			_webApiVsKepler = webApiVsKeplerFactory.Create(New Uri(exportConfig.WebApiServiceUrl), exportFile.Credential, correlationIdFunc)
+
+			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer, correlationIdFunc)
+			_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
 			_processContext = context
 			DocumentsExported = 0
 			TotalExportArtifactCount = 1
@@ -182,12 +208,26 @@ Namespace kCura.WinEDDS
 			Settings.FolderPath = Me.Settings.FolderPath + "\"
 			ExportNativesToFileNamedFrom = exportFile.ExportNativesToFileNamedFrom
 			_loadFileFormatterFactory = loadFileFormatterFactory
+			_logger = If(logger, New NullLogger())
 			_exportConfig = exportConfig
+			_correlationIdFunc = correlationIdFunc
 		End Sub
 
 #End Region
 
 		Public Property DocumentsExported As Integer Implements IExporter.DocumentsExported
+			Get
+				SyncLock _syncLock
+					Return Me.Statistics.DocumentsCount
+				End SyncLock
+			End Get
+			Set
+				SyncLock _syncLock
+					Me.Statistics.DocumentsCount = value
+				End SyncLock
+			End Set
+		End Property
+
 		Private _interactionManager As IUserNotification = New Exporters.NullUserNotification
 		Public Property InteractionManager As Exporters.IUserNotification Implements IExporter.InteractionManager
 			Get
@@ -200,23 +240,22 @@ Namespace kCura.WinEDDS
 
 		Public Function ExportSearch() As Boolean Implements IExporter.ExportSearch
 			Try
-				_start = System.DateTime.Now
+				_stopwatch.Restart()
+				_logger.LogInformation("Preparing to execute the export search.")
 				Me.Search()
+				_logger.LogInformation("Successfully executed the export search.")
 			Catch ex As System.Exception
 				Me.WriteFatalError($"A fatal error occurred on document #{Me.DocumentsExported}", ex)
-				If Not _volumeManager Is Nothing Then
-					_volumeManager.Close()
-				End If
 			Finally
+				_stopwatch.Stop()
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.End, _lastStatisticsSnapshot, Statistics))
 			End Try
-			Return Me.ErrorLogFileName = ""
-		End Function
 
-		Protected Overridable Function GetHeaderColName(fieldInfo As ViewFieldInfo) As String
-			Return fieldInfo.DisplayName
+			Me.LogStatistics()
+			Dim result As Boolean = String.IsNullOrWhiteSpace(Me.ErrorLogFileName)
+			Me.LogExportSearchResults(result)
+			Return result
 		End Function
-
 
 		Private Function IsExtractedTextSelected() As Boolean
 			For Each vfi As ViewFieldInfo In Me.Settings.SelectedViewFields
@@ -231,6 +270,53 @@ Namespace kCura.WinEDDS
 			Next
 			Throw New System.Exception("Full text field somehow not in all fields")
 		End Function
+
+		Private Sub LogApiVersionInfo()
+			Dim dict As Dictionary(Of String, Object) = New Dictionary(Of String, Object) From
+				    {
+					    {"SDK", GetType(Global.Relativity.DataExchange.IAppSettings).Assembly.GetName().Version},
+					    {"TAPI", GetType(Global.Relativity.Transfer.ITransferClient).Assembly.GetName().Version}
+				    }
+			Me._logger.LogInformation("API Versions = @{ApiVersions}", dict)
+		End Sub
+
+		Private Sub LogExportSettings()
+			_logger.LogObjectAsDictionary("Export Settings = {@ExportConfiguration}", _exportConfig, AddressOf LogObjectAsDictionaryFilter)
+			_logger.LogObjectAsDictionary("Export File Settings = {@ExportFile}", _exportFile, AddressOf LogObjectAsDictionaryFilter)
+			_logger.LogObjectAsDictionary("Volume Info Settings = {@ExportFileVolumeInfo}", _exportFile.VolumeInfo, AddressOf LogObjectAsDictionaryFilter)
+		End Sub
+
+		Private Function LogObjectAsDictionaryFilter(info As PropertyInfo) As Boolean
+			' Reference types are intentionally limited due to size concerns.
+			Dim supported As Boolean = info.GetIndexParameters().Length = 0 AndAlso
+			                           Not String.Equals(info.Name, NameOf(_exportFile.FolderPath)) AndAlso
+			                           (info.PropertyType.IsValueType OrElse
+			                            Not Nullable.GetUnderlyingType(info.PropertyType) Is Nothing OrElse
+			                            info.PropertyType = GetType(String) OrElse
+			                            info.PropertyType = GetType(System.Text.Encoding))
+			Return supported
+		End Function
+
+		Private Sub LogWebApiServiceException(exception As Exception)
+			_logger.LogError(exception, "A serious error occurred calling a WebAPI service.")
+		End Sub
+
+		Private Sub LogStatistics()
+			Dim statisticsDict As IDictionary(Of String, Object) = Me.Statistics.ToDictionaryForLogs()
+			_logger.LogInformation("Export statistics: {@Statistics}", statisticsDict)
+		End Sub
+
+		Private Sub LogExportSearchResults(jobSuccessful As Boolean)
+			Dim results As Dictionary(Of String, Object) = New Dictionary(Of String, Object) From
+				{
+				    {"ElapsedTime", _stopwatch.Elapsed},
+				    {"Errors", Me._errorCount},
+				    {"JobSuccessful", jobSuccessful},
+				    {"JobCancelled", _cancellationTokenSource.IsCancellationRequested},
+				    {"Warnings", Me._warningCount}
+				}
+			_logger.LogInformation("Exporter search results: {@ExporterSearchResults}", results)
+		End Sub
 
 		Private Sub InitializeExportProcess()
 			_productionPrecedenceIds = (From p In If(Settings.ImagePrecedence, New Pair() {}) Where Not String.IsNullOrEmpty(p.Value) Select CInt(p.Value)).ToArray()
@@ -263,11 +349,12 @@ Namespace kCura.WinEDDS
 			Return allAvfIds
 		End Function
 
-		Private Function Search() As Boolean
+		Private Sub Search()
+			Me.LogApiVersionInfo()
+			Me.LogExportSettings()
 			InitializeExportProcess()
-			Dim tries As Int32 = 0
+			
 			Dim maxTries As Int32 = NumberOfRetries + 1
-
 			Dim typeOfExportDisplayString As String = ""
 			Dim errorOutputFilePath As String = _exportFile.FolderPath & "\" & _exportFile.LoadFilesPrefix & "_img_errors.txt"
 			If FileHelper.Exists(errorOutputFilePath) AndAlso _exportFile.Overwrite Then FileHelper.Delete(errorOutputFilePath)
@@ -278,29 +365,16 @@ Namespace kCura.WinEDDS
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo = Nothing
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-
-				tries = 0
-				While tries < maxTries
-					tries += 1
-					Try
-						production = _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID)
-						Exit While
-					Catch ex As System.Exception
-						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-							Me.WriteStatusLine(EventType2.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
-							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-						Else
-							Throw
-						End If
-					End Try
-				End While
+				_logger.LogVerbose("Preparing to retrieve the {ArtifactId} production from the {WorkspaceId} workspace.", Me.Settings.ArtifactID, Me.Settings.CaseArtifactID)
+				production = CallServerWithRetry(Function() _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID), maxTries)
+				_logger.LogVerbose("Successfully retrieved the {ArtifactId} production from the {WorkspaceId} workspace.", Me.Settings.ArtifactID, Me.Settings.CaseArtifactID)
 
 				_productionExportProduction = production
 			End If
 			Dim allAvfIds As List(Of Int32) = GetAvfIds()
 			Dim isFileNamePresent As Boolean = OriginalFileNameProvider.ExtendFieldRequestByFileNameIfNecessary(Me.Settings.AllExportableFields, allAvfIds)
 
-			tries = 0
+			_logger.LogInformation("Preparing to initialize the {TypeOfExport} export search.", Me.Settings.TypeOfExport)
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.ArtifactSearch
 					typeOfExportDisplayString = "search"
@@ -319,38 +393,39 @@ Namespace kCura.WinEDDS
 					exportInitializationArgs = CallServerWithRetry(Function() Me.ExportManager.InitializeProductionExport(_exportFile.CaseInfo.ArtifactID, Me.Settings.ArtifactID, allAvfIds.ToArray, Me.Settings.StartAtDocumentNumber + 1), maxTries)
 
 			End Select
+
+			_logger.LogInformation("Successfully initialized the {TypeOfExport} export search and returned {TotalArtifactCount} total artifacts and {RunId} run identifier.",
+			                       Me.Settings.TypeOfExport,
+			                       exportInitializationArgs.RowCount,
+			                       exportInitializationArgs.RunId)
 			Me.TotalExportArtifactCount = CType(exportInitializationArgs.RowCount, Int32)
 			If Me.TotalExportArtifactCount - 1 < Me.Settings.StartAtDocumentNumber Then
 				Dim msg As String = String.Format("The chosen start item number ({0}) exceeds the number of {2} items in the export ({1}).  Export halted.", Me.Settings.StartAtDocumentNumber + 1, Me.TotalExportArtifactCount, vbNewLine)
+				_logger.LogWarning(msg)
 				InteractionManager.AlertCriticalError(msg)
 				Me.Shutdown()
-				Return False
+				Return
 			End If
 
 			Me.TotalExportArtifactCount -= Me.Settings.StartAtDocumentNumber
 
-			Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
+			Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1))
 
-			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, UseOldExport, _loadFileFormatterFactory)
+			Using container As IWindsorContainer = ContainerFactoryProvider.ContainerFactory.Create(Me, exportInitializationArgs.ColumnNames, _loadFileFormatterFactory, _correlationIdFunc)
 				Dim batch As IBatch = Nothing
 				Dim objectExportableSize As IObjectExportableSize = Nothing
 
-				If UseOldExport Then
-					_volumeManager = New VolumeManager(Me.Settings, Me.TotalExportArtifactCount, Me, _downloadHandler, _timekeeper, exportInitializationArgs.ColumnNames, Statistics, FileHelper, DirectoryHelper, FileNameProvider)
-					FieldLookupService = _volumeManager
-					_volumeManager.ColumnHeaderString = columnHeaderString
-				Else
-					Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
-					If (Not validator.ValidateExport(Settings, TotalExportArtifactCount)) Then
-						Shutdown()
-						Return False
-					End If
-					objectExportableSize = container.Resolve(Of IObjectExportableSize)
-					FieldLookupService = container.Resolve(Of IFieldLookupService)
-					_errorFile = container.Resolve(Of IErrorFile)
-					batch = container.Resolve(Of IBatch)
-					_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
+				Dim validator As IExportValidation = container.Resolve(Of IExportValidation)
+				If (Not validator.ValidateExport(Settings, TotalExportArtifactCount)) Then
+					_logger.LogWarning("The export failed due to a validation failure.")
+					Shutdown()
+					Return
 				End If
+				objectExportableSize = container.Resolve(Of IObjectExportableSize)
+				FieldLookupService = container.Resolve(Of IFieldLookupService)
+				_errorFile = container.Resolve(Of IErrorFile)
+				batch = container.Resolve(Of IBatch)
+				_downloadModeStatus = container.Resolve(Of IExportFileDownloaderStatus)
 
 				CreateOriginalFileNameProviderInstance(isFileNamePresent)
 
@@ -362,16 +437,20 @@ Namespace kCura.WinEDDS
 				Me.WriteUpdate($"Data retrieved. Beginning {typeOfExportDisplayString} export...")
 
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.ResetStartTime, _lastStatisticsSnapshot, Statistics))
-				RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
+				RaiseEvent FileTransferMultiClientModeChangeEvent(Me, New TapiMultiClientEventArgs(_downloadModeStatus.TransferModes))
 
 				Dim records As Object() = Nothing
 				Dim nextRecordIndex As Int32 = 0
 				Dim lastRecordCount As Int32 = -1
+				Me.Statistics.BatchCount = 0
 				While lastRecordCount <> 0
 					_timekeeper.MarkStart("Exporter_GetDocumentBlock")
+					Me.Statistics.BatchCount += 1
 					startTicks = System.DateTime.Now.Ticks
 					Dim textPrecedenceAvfIds As Int32() = Nothing
 					If Not Me.Settings.SelectedTextFields Is Nothing AndAlso Me.Settings.SelectedTextFields.Count > 0 Then textPrecedenceAvfIds = Me.Settings.SelectedTextFields.Select(Of Int32)(Function(f As ViewFieldInfo) f.AvfId).ToArray
+
+					_logger.LogVerbose("Preparing to retrieve the next batch of artifacts for starting record index {NextRecordIndex} and batch {BatchNumber}.", nextRecordIndex, Me.Statistics.BatchCount)
 
 					If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockForProductionStartingFromIndex(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, Me.Settings.ArtifactID, nextRecordIndex), maxTries)
@@ -379,42 +458,59 @@ Namespace kCura.WinEDDS
 						records = CallServerWithRetry(Function() Me.ExportManager.RetrieveResultsBlockStartingFromIndex(Me.Settings.CaseInfo.ArtifactID, exportInitializationArgs.RunId, Me.Settings.ArtifactTypeID, allAvfIds.ToArray, _exportConfig.ExportBatchSize, Me.Settings.MulticodesAsNested, Me.Settings.MultiRecordDelimiter, Me.Settings.NestedValueDelimiter, textPrecedenceAvfIds, nextRecordIndex), maxTries)
 					End If
 
-					If records Is Nothing Then Exit While
+					If records Is Nothing Then
+						_logger.LogVerbose("Exiting the export batch loop because the export results block returned null for batch {BatchNumber}.", Me.Statistics.BatchCount)
+						Exit While
+					End If
+
+					_logger.LogVerbose("Successfully retrieved {TotalArtifactCount} artifacts for batch {BatchNumber}.", records.Length, Me.Statistics.BatchCount)
 					If Me.Settings.TypeOfExport = ExportFile.ExportType.Production AndAlso production IsNot Nothing AndAlso production.DocumentsHaveRedactions Then
 						WriteStatusLineWithoutDocCount(EventType2.Warning, "Please Note - Documents in this production were produced with redactions applied.  Ensure that you have exported text that was generated via OCR of the redacted documents.", True)
 					End If
+
 					lastRecordCount = records.Length
-					Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1)
+					Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - startTicks, 1))
 					_timekeeper.MarkEnd("Exporter_GetDocumentBlock")
 					Dim artifactIDs As New List(Of Int32)
 					Dim artifactIdOrdinal As Int32 = FieldLookupService.GetOrdinalIndex("ArtifactID")
+
 					If records.Length > 0 Then
 						For Each artifactMetadata As Object() In records
 							artifactIDs.Add(CType(artifactMetadata(artifactIdOrdinal), Int32))
 						Next
+
+						Dim batchStart As DateTime = DateTime.Now
+						_logger.LogInformation("Preparing to export {TotalArtifactCount} chunked artifacts for batch {BatchNumber}.", records.Length, Me.Statistics.BatchCount)
 						ExportChunk(artifactIDs.ToArray(), records, objectExportableSize, batch)
+						Dim batchTicks As Int64 = System.Math.Max(System.DateTime.Now.Ticks - batchStart.Ticks, 1)
+						_logger.LogInformation("Successfully exported {TotalArtifactCount} chunked artifacts for batch {BatchNumber} in {BatchTimeSpan}.", records.Length, Me.Statistics.BatchCount, TimeSpan.FromTicks(batchTicks))
 						nextRecordIndex += records.Length
 						artifactIDs.Clear()
 						records = Nothing
 					End If
-					If _cancellationTokenSource.IsCancellationRequested Then Exit While
+					If lastRecordCount = 0 Then
+						_logger.LogVerbose("Exiting the export batch loop because the next batch contains zero artifacts.")
+					End If
+
+					If _cancellationTokenSource.IsCancellationRequested Then
+						_logger.LogVerbose("Exiting the export batch loop because cancellation is requested.")
+						Exit While
+					End If
 				End While
 
 				' REL-292896: nextRecordIndex represents the total number of records and should match.
 				ValidateExportedRecordCount(nextRecordIndex, Me.TotalExportArtifactCount)
 
-				Me.WriteStatusLine(EventType2.Status, FileDownloader.TotalWebTime.ToString, True)
 				_timekeeper.GenerateCsvReportItemsAsRows()
 
-				If UseOldExport Then _volumeManager.Finish()
-
 				Me.AuditRun(True)
-				Return Nothing
+				Return
 			End Using
-		End Function
+		End Sub
 
 		Private Sub ValidateExportedRecordCount(actualExportedRecordsCount As Int32, expectedExportedRecordsCount As Long)
-			If actualExportedRecordsCount <> expectedExportedRecordsCount Then
+			' We don't want to display validation message on the cancelled job
+			If actualExportedRecordsCount <> expectedExportedRecordsCount AndAlso Not _cancellationTokenSource.IsCancellationRequested Then
 				WriteError($"Total items processed ({actualExportedRecordsCount}) is different than expected total records count ({expectedExportedRecordsCount}).")
 			End If
 		End Sub
@@ -434,7 +530,12 @@ Namespace kCura.WinEDDS
 		Private Function CallServerWithRetry(Of T)(f As Func(Of T), ByVal maxTries As Int32) As T
 			Dim tries As Integer
 			Dim records As T
+			' Retires are defined and executed inside Kepler Proxy
+			If _webApiVsKepler.UseKepler() Then
+				Return f()
+			End If
 
+			' Old WebAPI path will use retries
 			tries = 0
 			While tries < maxTries
 				tries += 1
@@ -442,6 +543,7 @@ Namespace kCura.WinEDDS
 					records = f()
 					Exit While
 				Catch ex As System.Exception
+					Me.LogWebApiServiceException(ex)
 					If TypeOf (ex) Is System.InvalidOperationException AndAlso ex.Message.Contains("empty response") Then
 						Throw New Exception("Communication with the WebAPI server has failed, possibly because values for MaximumLongTextSizeForExportInCell and/or MaximumTextVolumeForExportChunk are too large.  Please lower them and try again.", ex)
 					ElseIf tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
@@ -500,22 +602,25 @@ Namespace kCura.WinEDDS
 			Dim natives As New System.Data.DataView
 			Dim images As New System.Data.DataView
 			Dim productionImages As New System.Data.DataView
+			Dim pdfs As New System.Data.DataView
 			Dim i As Int32 = 0
 			Dim productionArtifactID As Int32 = 0
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then productionArtifactID = Settings.ArtifactID
 
-			Dim retrieveThreads As Task(Of System.Data.DataView)() = New Task(Of System.Data.DataView)(2) {}
+			Dim retrieveThreads As Task(Of System.Data.DataView)() = New Task(Of System.Data.DataView)(3) {}
 
 			retrieveThreads(0) = RetrieveNatives(natives, productionArtifactID, documentArtifactIDs, maxTries)
 			retrieveThreads(1) = RetrieveImages(images, documentArtifactIDs, maxTries)
 			retrieveThreads(2) = RetrieveProductions(productionImages, documentArtifactIDs, maxTries)
+			retrieveThreads(3) = RetrievePdfs(pdfs, documentArtifactIDs, maxTries)
 
 			Task.WaitAll(retrieveThreads)
 
 			natives = retrieveThreads(0).Result()
 			images = retrieveThreads(1).Result()
 			productionImages = retrieveThreads(2).Result()
+			pdfs = retrieveThreads(3).Result()
 
 			Dim beginBatesColumnIndex As Int32 = -1
 			If FieldLookupService.ContainsFieldName(_beginBatesColumn) Then
@@ -527,54 +632,22 @@ Namespace kCura.WinEDDS
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
 			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
 
-			_linesToWriteDat = New ConcurrentDictionary(Of Int32, ILoadFileEntry)
-			_linesToWriteOpt = New ConcurrentBag(Of KeyValuePair(Of String, String))
-
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
-
-			Dim threads As Task() = Nothing
-			If UseOldExport Then
-				Dim threadCount As Integer = _exportConfig.ExportThreadCount - 1
-				threads = New Task(threadCount) {}
-				For i = 0 To threadCount
-					threads(i) = Task.FromResult(0)
-				Next
-			End If
 
 			For i = 0 To documentArtifactIDs.Length - 1
 				Dim record As Object() = DirectCast(records(i), Object())
 				Dim nativeRow As System.Data.DataRowView = GetNativeRow(natives, documentArtifactIDs(i))
+				Dim pdfRow As System.Data.DataRowView = GetPdfRow(pdfs, documentArtifactIDs(i))
 				Dim prediction As VolumePredictions = New VolumePredictions()
-				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
+				Dim artifact As ObjectExportInfo = CreateArtifact(record, documentArtifactIDs(i), nativeRow, pdfRow, images, productionImages, beginBatesColumnIndex, identifierColumnIndex, lookup, prediction)
 
-				If UseOldExport Then
-					_volumeManager.FinalizeVolumeAndSubDirPredictions(prediction, artifact)
-				Else
-					objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
-				End If
-
+				objectExportableSize.FinalizeSizeCalculations(artifact, prediction)
 				volumePredictions(i) = prediction
-
 				artifacts(i) = artifact
 			Next
 
-			If UseOldExport Then
-				For i = 0 To documentArtifactIDs.Length - 1
-					If _cancellationTokenSource.IsCancellationRequested Then Exit For
-					Dim openThreadNumber As Integer = Task.WaitAny(threads, TimeSpan.FromDays(1))
-					Dim volumeNum As Integer = _volumeManager.GetCurrentVolumeNumber(volumePredictions(i))
-					Dim subDirNum As Integer = _volumeManager.GetCurrentSubDirectoryNumber(volumePredictions(i))
-					threads(openThreadNumber) = ExportArtifactAsync(artifacts(i), maxTries, i, documentArtifactIDs.Length, openThreadNumber, volumeNum, subDirNum)
-					DocumentsExported += 1
-				Next
-
-				Task.WaitAll(threads)
-				_volumeManager.WriteDatFile(_linesToWriteDat, artifacts)
-				_volumeManager.WriteOptFile(_linesToWriteOpt, artifacts)
-			Else
-				batch.Export(artifacts, volumePredictions, _cancellationTokenSource.Token)
-			End If
+			batch.ExportAsync(artifacts, volumePredictions, _cancellationTokenSource.Token).ConfigureAwait(False).GetAwaiter().GetResult()
 		End Sub
 
 		Private Async Function RetrieveNatives(ByVal natives As System.Data.DataView, ByVal productionArtifactID As Int32, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
@@ -596,7 +669,7 @@ Namespace kCura.WinEDDS
 									natives.Table = dt
 								End If
 							End If
-							Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+							Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 							_timekeeper.MarkEnd("Exporter_GetNativesForDocumentBlock")
 						End If
 						Return natives
@@ -612,9 +685,9 @@ Namespace kCura.WinEDDS
 						_timekeeper.MarkStart("Exporter_GetImagesForDocumentBlock")
 						start = System.DateTime.Now.Ticks
 
-						images.Table = CallServerWithRetry(Function() Me.RetrieveImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
+						images.Table = CallServerWithRetry(Function() Me.RetrieveImagesForDocuments(documentArtifactIDs), maxTries)
 
-						Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+						Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 						_timekeeper.MarkEnd("Exporter_GetImagesForDocumentBlock")
 					End If
 					Return images
@@ -632,7 +705,7 @@ Namespace kCura.WinEDDS
 
 						productionImages.Table = CallServerWithRetry(Function() Me.RetrieveProductionImagesForDocuments(documentArtifactIDs, Me.Settings.ImagePrecedence), maxTries)
 
-						Statistics.MetadataTime += System.Math.Max(System.DateTime.Now.Ticks - start, 1)
+						Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
 						_timekeeper.MarkEnd("Exporter_GetProductionsForDocumentBlock")
 					End If
 					Return productionImages
@@ -640,21 +713,21 @@ Namespace kCura.WinEDDS
 				)
 		End Function
 
-		Private Async Function ExportArtifactAsync(ByVal artifact As ObjectExportInfo, ByVal maxTries As Integer, ByVal docNum As Integer, ByVal numDocs As Integer, ByVal threadNumber As Integer, ByVal volumeNumber As Integer, ByVal subDirectoryNumber As Integer) As Task
-			Await Task.Run(
-				Sub()
-					_fileCount += CallServerWithRetry(Function()
-														  Dim retval As Long
-														  retval = _volumeManager.ExportArtifact(artifact, _linesToWriteDat, _linesToWriteOpt, threadNumber, volumeNumber, subDirectoryNumber)
-														  If retval >= 0 Then
-															  WriteUpdate("Exported document " & docNum + 1, docNum = numDocs - 1)
-															  UpdateStatisticsSnapshot(DateTime.Now)
-															  Return retval
-														  Else
-															  Return 0
-														  End If
-													  End Function, maxTries)
-				End Sub
+		Private Async Function RetrievePdfs(ByVal pdfs As System.Data.DataView, ByVal documentArtifactIDs As Int32(), ByVal maxTries As Integer) As Task(Of System.Data.DataView)
+			Return Await Task.Run(
+				Function() As System.Data.DataView
+					If Me.Settings.ExportPdf Then
+						_timekeeper.MarkStart("Exporter_GetPDFsForDocumentBlock")
+						Dim start As Int64
+						start = System.DateTime.Now.Ticks
+
+						pdfs.Table = CallServerWithRetry(Function() _searchManager.RetrievePdfForSearch(Me.Settings.CaseArtifactID, documentArtifactIDs.ToCsv()).Tables(0), maxTries)
+
+						Statistics.MetadataTransferDuration += New TimeSpan(System.Math.Max(System.DateTime.Now.Ticks - start, 1))
+						_timekeeper.MarkEnd("Exporter_GetPDFsForDocumentBlock")
+					End If
+					Return pdfs
+				End Function
 				)
 		End Function
 
@@ -662,7 +735,7 @@ Namespace kCura.WinEDDS
 			Return New ObjectExportInfo
 		End Function
 
-		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32,
+		Private Function CreateArtifact(ByVal record As Object(), ByVal documentArtifactID As Int32, ByVal nativeRow As System.Data.DataRowView, ByVal pdfRow As System.Data.DataRowView, ByVal images As System.Data.DataView, ByVal productionImages As System.Data.DataView, ByVal beginBatesColumnIndex As Int32,
 																		ByVal identifierColumnIndex As Int32, ByRef lookup As Lazy(Of Dictionary(Of Int32, List(Of BatesEntry))), ByRef prediction As VolumePredictions) As Exporters.ObjectExportInfo
 
 			Dim artifact As ObjectExportInfo = CreateObjectExportInfo()
@@ -671,12 +744,8 @@ Namespace kCura.WinEDDS
 				artifact.ProductionBeginBates = record(beginBatesColumnIndex).ToString
 			End If
 			artifact.IdentifierValue = record(identifierColumnIndex).ToString
-			artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactID, artifact.IdentifierValue, artifact, Me.Settings.ImagePrecedence, prediction)
-			If nativeRow Is Nothing Then
-				artifact.NativeFileGuid = ""
-				artifact.OriginalFileName = ""
-				artifact.NativeSourceLocation = ""
-			Else
+			artifact.Images = Me.PrepareImages(images, productionImages, documentArtifactID, artifact, Me.Settings.ImagePrecedence, prediction)
+			If Not nativeRow Is Nothing Then
 				artifact.OriginalFileName = _originalFileNameProvider.GetOriginalFileName(record, nativeRow)
 				artifact.NativeSourceLocation = nativeRow("Location").ToString
 				If Me.Settings.ArtifactTypeID = ArtifactType.Document Then
@@ -686,15 +755,20 @@ Namespace kCura.WinEDDS
 				End If
 			End If
 
-			If nativeRow Is Nothing Then
-				artifact.NativeExtension = ""
-			ElseIf nativeRow("Filename").ToString.IndexOf(".") <> -1 Then
-				artifact.NativeExtension = nativeRow("Filename").ToString.Substring(nativeRow("Filename").ToString.LastIndexOf(".") + 1)
-			Else
-				artifact.NativeExtension = ""
+			If Not nativeRow Is Nothing Then
+				Dim extension As String= Me.GetFileExtension(nativeRow("Filename").ToString, documentArtifactID)
+				If extension <> String.Empty Then
+					artifact.NativeExtension = extension
+				End If
 			End If
+
+			If Not pdfRow Is Nothing Then
+				artifact.PdfSourceLocation = pdfRow("Location").ToString()
+				artifact.PdfFileGuid = pdfRow("Guid").ToString
+			End If
+
 			artifact.ArtifactID = documentArtifactID
-			artifact.Metadata = DirectCast(record, Object())
+			artifact.Metadata = record
 			SetProductionBegBatesFileName(artifact, lookup)
 
 			prediction.NativeFileCount = artifact.NativeCount
@@ -703,6 +777,14 @@ Namespace kCura.WinEDDS
 				prediction.NativeFilesSize = CType(nativeRow("Size"), Long)
 			Else
 				prediction.NativeFilesSize = 0
+			End If
+
+			prediction.PdfFileCount = CLng(IIf(artifact.HasPdf, 1, 0))
+
+			If (prediction.PdfFileCount > 0 AndAlso pdfRow?.Row?.Table?.Columns?.Contains("Size")) Then
+				prediction.PdfFileSize = CLng(pdfRow("Size"))
+			Else
+				prediction.PdfFileSize = 0
 			End If
 
 			prediction.ImageFileCount = artifact.ImageCount
@@ -749,7 +831,7 @@ Namespace kCura.WinEDDS
 			End If
 		End Sub
 
-		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
+		Private Function PrepareImagesForProduction(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			Dim matchingRows As DataRow() = imagesView.Table.Select("DocumentArtifactID = " & documentArtifactID.ToString)
@@ -769,10 +851,7 @@ Namespace kCura.WinEDDS
 					image.PageOffset = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(dr("ByteRange"))
 					image.BatesNumber = dr("BatesNumber").ToString
 					image.SourceLocation = dr("Location").ToString
-					Dim filenameExtension As String = ""
-					If image.FileName.IndexOf(".") <> -1 Then
-						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
-					End If
+					Dim filenameExtension As String = Me.GetFileExtensionWithDot(image.FileName, documentArtifactID)
 					Dim filename As String = image.BatesNumber
 					If i = 0 Then
 						firstImageFileName = filename
@@ -805,18 +884,18 @@ Namespace kCura.WinEDDS
 			Return Not production Is Nothing AndAlso production.BatesNumbering = False AndAlso production.UseDocumentLevelNumbering AndAlso Not production.IncludeImageLevelNumberingForDocumentLevelNumbering
 		End Function
 
-		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo,
+		Private Function PrepareImages(ByVal imagesView As System.Data.DataView, ByVal productionImagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal artifact As Exporters.ObjectExportInfo,
 																	 ByVal productionOrderList As Pair(), ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
 				productionImagesView.Sort = "DocumentArtifactID ASC, PageID ASC"
-				Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, batesBase, artifact, prediction)
+				Return Me.PrepareImagesForProduction(productionImagesView, documentArtifactID, prediction)
 			End If
 			Dim item As Pair
 			For Each item In productionOrderList
 				If item.Value = "-1" Then
-					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, batesBase, artifact, prediction)
+					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, artifact, prediction)
 				Else
 					productionImagesView.RowFilter = String.Format("DocumentArtifactID = {0} AND ProductionArtifactID = {1}", documentArtifactID, item.Value)
 					Dim firstImageFileName As String = Nothing
@@ -831,10 +910,7 @@ Namespace kCura.WinEDDS
 								image.ArtifactID = documentArtifactID
 								image.BatesNumber = drv("BatesNumber").ToString
 								image.PageOffset = NullableTypesHelper.DBNullConvertToNullable(Of Int32)(drv("ByteRange"))
-								Dim filenameExtension As String = ""
-								If image.FileName.IndexOf(".") <> -1 Then
-									filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
-								End If
+								Dim filenameExtension As String = Me.GetFileExtensionWithDot(image.FileName, documentArtifactID)
 								Dim filename As String = image.BatesNumber
 								If i = 0 Then
 									firstImageFileName = filename
@@ -855,7 +931,7 @@ Namespace kCura.WinEDDS
 			Return retval
 		End Function
 
-		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal batesBase As String, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
+		Private Function PrepareOriginalImages(ByVal imagesView As System.Data.DataView, ByVal documentArtifactID As Int32, ByVal artifact As Exporters.ObjectExportInfo, ByRef prediction As VolumePredictions) As System.Collections.ArrayList
 			Dim retval As New System.Collections.ArrayList
 			If Not Me.Settings.ExportImages Then Return retval
 			imagesView.RowFilter = "DocumentArtifactID = " & documentArtifactID.ToString
@@ -877,10 +953,7 @@ Namespace kCura.WinEDDS
 						End If
 					End If
 					'image.BatesNumber = drv("Identifier").ToString
-					Dim filenameExtension As String = ""
-					If image.FileName.IndexOf(".") <> -1 Then
-						filenameExtension = "." & image.FileName.Substring(image.FileName.LastIndexOf(".") + 1)
-					End If
+					Dim filenameExtension As String = Me.GetFileExtensionWithDot(image.FileName, documentArtifactID)
 					image.FileName = Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(image.BatesNumber.ToString & filenameExtension)
 					image.SourceLocation = drv("Location").ToString
 					retval.Add(image)
@@ -898,6 +971,16 @@ Namespace kCura.WinEDDS
 			Else
 				dv.RowFilter = "ObjectArtifactID = " & artifactID.ToString
 			End If
+			If dv.Count > 0 Then
+				Return dv(0)
+			Else
+				Return Nothing
+			End If
+		End Function
+
+		Private Function GetPdfRow(ByVal dv As System.Data.DataView, ByVal artifactID As Int32) As System.Data.DataRowView
+			If Not Me.Settings.ExportPdf Then Return Nothing
+			dv.RowFilter = "DocumentArtifactID = " & artifactID.ToString
 			If dv.Count > 0 Then
 				Return dv(0)
 			Else
@@ -942,7 +1025,7 @@ Namespace kCura.WinEDDS
 			Return header
 		End Function
 
-		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32(), ByVal productionOrderList As Pair()) As System.Data.DataTable
+		Private Function RetrieveImagesForDocuments(ByVal documentArtifactIDs As Int32()) As System.Data.DataTable
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.Production
 					Return Nothing
@@ -1032,7 +1115,8 @@ Namespace kCura.WinEDDS
 			End If
 			Try
 				args.FileExportCount = CType(_fileCount, Int32)
-			Catch
+			Catch ex As System.Exception
+				_logger.LogWarning(ex, "Failed to retrieve the file export count.")
 			End Try
 			Select Case Me.Settings.TypeOfExportedFilePath
 				Case ExportFile.ExportedFilePathType.Absolute
@@ -1079,13 +1163,14 @@ Namespace kCura.WinEDDS
 			Else
 				args.ExportImages = False
 			End If
+			args.ExportSearchablePDFs = Me.Settings.ExportPdf
 			args.OverwriteFiles = Me.Settings.Overwrite
 			Dim preclist As New System.Collections.ArrayList
 			For Each pair As WinEDDS.Pair In Me.Settings.ImagePrecedence
 				preclist.Add(Int32.Parse(pair.Value))
 			Next
 			args.ProductionPrecedence = DirectCast(preclist.ToArray(GetType(Int32)), Int32())
-			args.RunTimeInMilliseconds = CType(System.Math.Min(System.DateTime.Now.Subtract(_start).TotalMilliseconds, Int32.MaxValue), Int32)
+			args.RunTimeInMilliseconds = CType(System.Math.Min(_stopwatch.ElapsedMilliseconds, Int32.MaxValue), Int32)
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.AncestorSearch OrElse Me.Settings.TypeOfExport = ExportFile.ExportType.ParentSearch Then
 				args.SourceRootFolderID = Me.Settings.ArtifactID
 			End If
@@ -1094,6 +1179,7 @@ Namespace kCura.WinEDDS
 			args.SubdirectoryNativePrefix = Me.Settings.VolumeInfo.SubdirectoryNativePrefix(False)
 			args.SubdirectoryStartNumber = Me.Settings.VolumeInfo.SubdirectoryStartNumber
 			args.SubdirectoryTextPrefix = Me.Settings.VolumeInfo.SubdirectoryFullTextPrefix(False)
+			args.SubdirectoryPDFPrefix = Me.Settings.VolumeInfo.SubdirectoryPdfPrefix(False)
 			'args.TextAndNativeFilesNamedAfterFieldID = Me.ExportNativesToFileNamedFrom
 			If Me.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier Then
 				For Each field As ViewFieldInfo In Me.Settings.AllExportableFields
@@ -1110,8 +1196,8 @@ Namespace kCura.WinEDDS
 					End If
 				Next
 			End If
-			args.TotalFileBytesExported = Statistics.FileBytes
-			args.TotalMetadataBytesExported = Statistics.MetadataBytes
+			args.TotalFileBytesExported = Statistics.FileTransferredBytes
+			args.TotalMetadataBytesExported = Statistics.MetadataTransferredBytes
 			Select Case Me.Settings.TypeOfExport
 				Case ExportFile.ExportType.AncestorSearch
 					args.Type = "Folder and Subfolders"
@@ -1130,20 +1216,39 @@ Namespace kCura.WinEDDS
 			args.WarningCount = _warningCount
 			Try
 				_auditManager.AuditExport(Me.Settings.CaseInfo.ArtifactID, Not success, args)
-			Catch
+			Catch ex As System.Exception
+				Me.LogWebApiServiceException(ex)
 			End Try
 		End Sub
 
 		Friend Sub WriteFatalError(ByVal line As String, ByVal ex As System.Exception)
 			Me.AuditRun(False)
+			_logger.LogFatal(ex, "Export experienced a fatal error. Line: {Line}", line)
 			RaiseEvent FatalErrorEvent(line, ex)
+		End Sub
+
+		Private Sub LogStatusLine(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean)
+			Select Case e
+				Case EventType2.Warning
+					_logger.LogWarning(line)
+				Case EventType2.Error
+					_logger.LogError(line)
+				Case EventType2.Statistics
+					_logger.LogInformation(line)
+				Case Else
+					If isEssential Then
+						_logger.LogInformation(line)
+					Else
+						_logger.LogVerbose(line)
+					End If
+			End Select
 		End Sub
 
 		Friend Sub WriteStatusLine(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean, ByVal showNumberOfExportedDocuments As Boolean)
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
-				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
+				If now - _lastStatusMessageTs > TimeSpan.TicksPerSecond OrElse isEssential Then
 					_lastStatusMessageTs = now
 					Dim appendString As String = ""
 					If showNumberOfExportedDocuments Then
@@ -1152,25 +1257,27 @@ Namespace kCura.WinEDDS
 					End If
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line & appendString, e, _lastStatisticsSnapshot, Statistics))
 				End If
-			End SyncLock
 
+				Me.LogStatusLine(e, line, isEssential)
+			End SyncLock
 		End Sub
 
 		Friend Sub WriteStatusLine(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLine
 			WriteStatusLine(e, line, isEssential, True)
 		End Sub
 
-		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean)
+		Friend Sub WriteStatusLineWithoutDocCount(ByVal e As EventType2, ByVal line As String, ByVal isEssential As Boolean) Implements IStatus.WriteStatusLineWithoutDocCount
 			Dim now As Long = System.DateTime.Now.Ticks
 
 			SyncLock _syncLock
-				If now - _lastStatusMessageTs > 10000000 OrElse isEssential Then
+				If now - _lastStatusMessageTs > TimeSpan.TicksPerSecond OrElse isEssential Then
 					_lastStatusMessageTs = now
 					_lastDocumentsExportedCountReported = Me.DocumentsExported
 					RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, line, e, _lastStatisticsSnapshot, Statistics))
 				End If
-			End SyncLock
 
+				Me.LogStatusLine(e, line, isEssential)
+			End SyncLock
 		End Sub
 
 		Friend Sub WriteError(ByVal line As String) Implements IStatus.WriteError
@@ -1198,9 +1305,21 @@ Namespace kCura.WinEDDS
 			WriteStatusLine(EventType2.Warning, line, True, False)
 		End Sub
 
+		Friend Sub UpdateFilesExportedCount(nativeCount As Int32, pdfCount As Int32, imageCount As Int32, longTextCount As Int32) Implements IStatus.UpdateFilesExportedCount
+			Statistics.ExportedNativeCount = nativeCount
+			Statistics.ExportedPdfCount = pdfCount
+			Statistics.ExportedImageCount = imageCount
+			Statistics.ExportedLongTextCount = longTextCount
+		End Sub
+
 		Friend Sub WriteWarning(ByVal line As String) Implements IStatus.WriteWarning
 			Interlocked.Increment(_warningCount)
 			WriteStatusLine(EventType2.Warning, line, True)
+		End Sub
+
+		Friend Sub WriteWarningWithoutDocCount(ByVal line As String) Implements IStatus.WriteWarningWithoutDocCount
+			Interlocked.Increment(_warningCount)
+			WriteStatusLineWithoutDocCount(EventType2.Warning, line, True)
 		End Sub
 
 		Friend Sub WriteUpdate(ByVal line As String, Optional ByVal isEssential As Boolean = True) Implements IStatus.WriteUpdate
@@ -1209,9 +1328,9 @@ Namespace kCura.WinEDDS
 
 		Dim _statisticsLastUpdated As Date
 		Protected Sub UpdateStatisticsSnapshot(time As System.DateTime)
-			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > 10000000
+			Dim updateCurrentStats As Boolean = (time.Ticks - _statisticsLastUpdated.Ticks) > TimeSpan.TicksPerSecond
 			If updateCurrentStats Then
-				_lastStatisticsSnapshot = Statistics.ToDictionary()
+				_lastStatisticsSnapshot = Statistics.ToDictionaryForProgress()
 				_statisticsLastUpdated = time
 				RaiseEvent StatusMessage(New ExportEventArgs(Me.DocumentsExported, Me.TotalExportArtifactCount, "", EventType2.Statistics, _lastStatisticsSnapshot, Statistics))
 			End If
@@ -1222,41 +1341,47 @@ Namespace kCura.WinEDDS
 			UpdateStatisticsSnapshot(DateTime.Now)
 		End Sub
 
+		Sub NotifyError(message As String) Implements IServiceNotification.NotifyError
+			Me.WriteError(message)
+		End Sub
+
+		Sub NotifyStatus(message As String) Implements IServiceNotification.NotifyStatus
+			Me.WriteStatusLineWithoutDocCount(EventType2.Status, message, True)
+		End Sub
+
+		Sub NotifyWarning(message As String) Implements IServiceNotification.NotifyWarning
+			Me.WriteWarningWithoutDocCount(message)
+		End Sub
+
 #End Region
 
 #Region "Public Events"
 
 		Public Event FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Implements IExporterStatusNotification.FatalErrorEvent
 		Public Event StatusMessage(ByVal exportArgs As ExportEventArgs) Implements IExporterStatusNotification.StatusMessage
-		Public Event FileTransferModeChangeEvent(ByVal mode As String) Implements IExporterStatusNotification.FileTransferModeChangeEvent
-		Public Event DisableCloseButton()
-		Public Event EnableCloseButton()
+		Public Event FileTransferMultiClientModeChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs) Implements IExporterStatusNotification.FileTransferMultiClientModeChangeEvent
 
 #End Region
 
-		Private Sub _processContext_HaltProcessEvent(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
+        Private Sub _processContext_OnCancellationRequest(ByVal sender As Object, ByVal e As CancellationRequestEventArgs) Handles _processContext.CancellationRequest
 			_cancellationTokenSource.Cancel()
-			If Not _volumeManager Is Nothing Then _volumeManager.Halt = True
+	        _cancelledByUser = e.RequestByUser
+			If e.RequestByUser Then
+				_logger.LogInformation("The export cancellation request event has been raised by the user.")
+			Else
+				_logger.LogVerbose("The export cancellation request event has been raised by the search process to perform standard cleanup.")
+			End If
 		End Sub
 
 		Private Sub _processContext_OnExportServerErrors(ByVal sender As Object, e As ExportErrorEventArgs) Handles _processContext.ExportServerErrors
-			Dim sourcePath As String
-			If UseOldExport Then
-				sourcePath = _volumeManager.ErrorDestinationPath
-			Else
-				sourcePath = _errorFile.Path()
-			End If
+			Dim sourcePath As String = _errorFile.Path()
 			Dim destinationPath As String = Path.Combine(e.Path, $"{Settings.LoadFilesPrefix}_errors.csv")
 			FileHelper.Move(sourcePath, destinationPath)
 		End Sub
 
-		Public Event UploadModeChangeEvent(ByVal mode As String)
-
-		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal tapiClient As TapiClient) Handles _downloadModeStatus.UploadModeChangeEvent
-			RaiseEvent FileTransferModeChangeEvent(_downloadModeStatus.UploaderType.ToString)
-		End Sub
-
-
+		Private Sub _downloadModeStatus_UploadModeChangeEvent(ByVal sender As Object, ByVal args As TapiMultiClientEventArgs) Handles _downloadModeStatus.TransferModesChangeEvent
+			RaiseEvent FileTransferMultiClientModeChangeEvent(Me, args)
+        End Sub
 
 		Private Function BuildFileNameProvider() As IFileNameProvider
 			Dim identifierExportFileNameProvider As IFileNameProvider = New IdentifierExportFileNameProvider(Settings)
@@ -1271,5 +1396,30 @@ Namespace kCura.WinEDDS
 
 			Return New FileNameProviderContainer(Settings, fileNameProvidersDictionary)
 		End Function
-	End Class
+
+		Private Function GetFileExtension(fileName As String, documentArtifactId As Int32) As String
+			Dim extension As String = String.Empty
+			If fileName.IndexOf(".") <> -1 Then
+				extension = fileName.Substring(fileName.LastIndexOf(".") + 1)
+				extension = SanitizeFileExtension(extension, documentArtifactID)
+			End If
+			Return extension
+		End Function
+
+		Private Function GetFileExtensionWithDot(fileName As String, documentArtifactId As Int32) As String
+			Dim extension As String = GetFileExtension(fileName, documentArtifactId)
+			If extension <> String.Empty Then
+				extension = "." & extension
+			End If
+			Return extension
+		End Function
+
+		Private Function SanitizeFileExtension(extension As String, documentArtifactId As Int32) As String
+			Dim sanitizedExtension As String = extension.TrimEnd()
+			If sanitizedExtension <> extension Then
+				Me._logger.LogWarning("Filename column contains trailing whitespaces. Document: {documentArtifactID}", documentArtifactId)
+			End If
+			Return sanitizedExtension
+		End Function
+		End Class
 End Namespace

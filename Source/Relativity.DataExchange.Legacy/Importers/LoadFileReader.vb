@@ -14,26 +14,20 @@ Namespace kCura.WinEDDS
 
 #Region "Members"
 
-		Protected _columnsAreInitialized As Boolean
 		Protected _columnHeaders As String()
 		Protected _filePathColumn As String
 		Protected _filePathColumnIndex As Int32
 		Protected _firstLineContainsColumnNames As Boolean
 		Protected _docFields As DocumentField()
 		Protected _multiValueSeparator As Char()
-		Protected _allCodes As SqlDataView
-		Protected _allCodeTypes As SqlDataView
 		Protected _folderID As Int32
 		Protected _caseSystemID As Int32
 		Protected _caseArtifactID As Int32
-		Protected _timeZoneOffset As Int32
-		Protected _autoDetect As Boolean
 		Protected _uploadFiles As Boolean
 		Protected _fieldMap As LoadFileFieldMap
 		Protected _createFolderStructure As Boolean
 		Protected _destinationFolder As String
 		Protected _fullTextColumnMapsToFileLocation As Boolean
-		Private _users As UserCollection
 		Protected _sourceFileEncoding As System.Text.Encoding
 		Protected _extractedTextFileEncoding As System.Text.Encoding
 		Protected _extractedTextFileEncodingName As String
@@ -43,23 +37,25 @@ Namespace kCura.WinEDDS
 		Protected _previewCodeCount As New System.Collections.Specialized.HybridDictionary
 		Protected _startLineNumber As Int64
 		Protected _keyFieldID As Int32
-		Protected _settings As kCura.WinEDDS.LoadFile
-		Private _codeValidator As CodeValidator.Base
-		Private _codesCreated As Int32 = 0
-		Private _errorLogFileName As String = ""
-		Private _errorLogWriter As System.IO.StreamWriter
 		Private WithEvents _loadFilePreProcessor As kCura.WinEDDS.LoadFilePreProcessor
 		Private _recordCount As Int64 = -1
 		Private _genericTimestamp As System.DateTime
 		Private _trackErrorsInFieldValues As Boolean
 		Protected _executionSource As ExecutionSource
+		Private _currentIdentifier As String
+		Private _correlationIdFunc As Func(Of String)
+
+		Protected ReadOnly _settings As kCura.WinEDDS.LoadFile
+		Private ReadOnly _identifierFieldMapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem
+
 #End Region
 
 #Region " Constructors "
 
-		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
+		Public Sub New(ByVal args As LoadFile, ByVal trackErrorsAsFieldValues As Boolean, correlationIdFunc As Func(Of String), ByVal Optional executionSource As ExecutionSource = ExecutionSource.Unknown)
 			MyBase.New(args.RecordDelimiter, args.QuoteDelimiter, args.NewlineDelimiter, True)
 			_settings = args
+			_identifierFieldMapItem = args.FieldMap.Identifier
 			_trackErrorsInFieldValues = trackErrorsAsFieldValues
 			_docFields = args.FieldMap.DocumentFields
 			_filePathColumn = args.NativeFilePathColumn
@@ -82,6 +78,7 @@ Namespace kCura.WinEDDS
 			_previewCodeCount = args.PreviewCodeCount
 			_startLineNumber = args.StartLineNumber
 			_executionSource = executionSource
+			_correlationIdFunc = correlationIdFunc
 			MulticodeMatrix = New System.Collections.Hashtable
 			If _keyFieldID > 0 AndAlso args.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower Then
 				_keyFieldID = -1
@@ -163,22 +160,6 @@ Namespace kCura.WinEDDS
 			Return sb.ToString
 		End Function
 
-		Private Sub LogErrorLine(ByVal values As String())
-			If values Is Nothing Then Exit Sub
-			If _errorLogFileName = "" Then
-				_errorLogFileName = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix)
-				_errorLogWriter = New System.IO.StreamWriter(_errorLogFileName, False, _sourceFileEncoding)
-				_errorLogWriter.WriteLine(Me.ToDelimetedLine(_columnHeaders))
-			End If
-			_errorLogWriter.WriteLine(Me.ToDelimetedLine(values))
-		End Sub
-
-		Public ReadOnly Property ErrorLogFileName() As String
-			Get
-				Return _errorLogFileName
-			End Get
-		End Property
-
 #End Region
 
 #Region " Status Communication "
@@ -252,9 +233,11 @@ Namespace kCura.WinEDDS
 			Return _columnHeaders
 		End Function
 
+		Public Sub ValidateColumnNames(invalidNameAction As Action(Of String)) Implements IArtifactReader.ValidateColumnNames
+		End Sub
+
 		Public Function SourceIdentifierValue() As String Implements IArtifactReader.SourceIdentifierValue
-			Return String.Empty
-			' not implemented here.  Really only for the import api.
+			Return If(_currentIdentifier, String.Empty)
 		End Function
 
 		Public Sub AdvanceRecord() Implements Api.IArtifactReader.AdvanceRecord
@@ -263,12 +246,6 @@ Namespace kCura.WinEDDS
 
 		Public Sub Close1() Implements Api.IArtifactReader.Close
 			Me.Close()
-			If _errorLogWriter IsNot Nothing Then
-				Try
-					_errorLogWriter.Close()
-				Catch ex As System.Exception
-				End Try
-			End If
 		End Sub
 
 		Public ReadOnly Property CurrentLineNumber1() As Integer Implements Api.IArtifactReader.CurrentLineNumber
@@ -296,12 +273,11 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-
 		Protected Overrides Function ParseNullableDecimal(ByVal value As String) As Nullable(Of Decimal)
 			If _executionSource = ExecutionSource.Rdc
 				Return NullableTypesHelper.ToNullableDecimalUsingCurrentCulture(value)
 			Else
-				Return NullableTypesHelper.ToNullableDecimal(value) 
+				Return NullableTypesHelper.ToNullableDecimal(value)
 			End If
 		End Function
 
@@ -309,8 +285,8 @@ Namespace kCura.WinEDDS
 			Me.Context.RetryOptions = RetryOptions.None
 		End Sub
 
-		Public Function CountRecords() As Int64 Implements Api.IArtifactReader.CountRecords
-			_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues)
+		Public Function CountRecords() As Long? Implements Api.IArtifactReader.CountRecords
+			_loadFilePreProcessor = New kCura.WinEDDS.LoadFilePreProcessor(_settings, _trackErrorsInFieldValues, _correlationIdFunc)
 			_loadFilePreProcessor.CountLines()
 			Return _recordCount
 		End Function
@@ -400,18 +376,24 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Public Function ReadArtifact() As Api.ArtifactFieldCollection Implements Api.IArtifactReader.ReadArtifact
+			_currentIdentifier = String.Empty
 			Dim collection As New Api.ArtifactFieldCollection
 			Dim line As String() = Me.GetLine
 			If line.Length <> _columnHeaders.Length Then Throw New BulkLoadFileImporter.ColumnCountMismatchException(Me.CurrentLineNumber, _columnHeaders.Length, line.Length)
+
+			'' We need to parse identifier first, so we can write value of it to error report when other column in that line is invalid
+			If _identifierFieldMapItem IsNot Nothing Then
+				Dim identifierFieldValue As Api.ArtifactField = ParseFieldValueAndAddToCollection(collection, line, _identifierFieldMapItem)
+				_currentIdentifier = identifierFieldValue.ValueAsString
+			End If
+
 			For Each mapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _settings.FieldMap
 				If Not mapItem.DocumentField Is Nothing Then
-					Dim field As New Api.ArtifactField(mapItem.DocumentField)
-					If mapItem.NativeFileColumnIndex < 0 OrElse mapItem.NativeFileColumnIndex > line.Length - 1 Then
-						Me.SetFieldValue(field, String.Empty, mapItem.NativeFileColumnIndex)
-					Else
-						Me.SetFieldValue(field, line(mapItem.NativeFileColumnIndex), mapItem.NativeFileColumnIndex)
+					If mapItem.DocumentField.FieldCategory = FieldCategory.Identifier Then
+						Continue For 'Identifier was already read
 					End If
-					collection.Add(field)
+
+					ParseFieldValueAndAddToCollection(collection, line, mapItem)
 				End If
 			Next
 			If _settings.LoadNativeFiles AndAlso Not _settings.NativeFilePathColumn Is Nothing AndAlso Not _settings.NativeFilePathColumn = String.Empty AndAlso collection.FileField Is Nothing Then
@@ -440,6 +422,17 @@ Namespace kCura.WinEDDS
 #End Region
 
 #Region "Helpers"
+
+		Private Function ParseFieldValueAndAddToCollection(collection As ArtifactFieldCollection, line() As String, mapItem As LoadFileFieldMap.LoadFileFieldMapItem) As Api.ArtifactField
+			Dim field As New Api.ArtifactField(mapItem.DocumentField)
+			If mapItem.NativeFileColumnIndex < 0 OrElse mapItem.NativeFileColumnIndex > line.Length - 1 Then
+				Me.SetFieldValue(field, String.Empty, mapItem.NativeFileColumnIndex)
+			Else
+				Me.SetFieldValue(field, line(mapItem.NativeFileColumnIndex), mapItem.NativeFileColumnIndex)
+			End If
+			collection.Add(field)
+			Return field
+		End Function
 
 #End Region
 

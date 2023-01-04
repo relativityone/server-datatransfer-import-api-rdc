@@ -1,0 +1,18 @@
+{
+    "Artifact Type Name":"Field",
+    "Parent Artifact":{
+       "Artifact ID":1003663
+    },
+    "Name":"Multiple Object Field",
+    "Object Type":{
+        "Descriptor Artifact Type ID":10
+    },
+    "Field Type ID":13,
+    "Is Required":false,
+    "Width":"",
+    "Allow Group By":false,
+    "Allow Pivot":false,
+    "Associative Object Type":{
+        "Descriptor Artifact Type ID":1000046
+    }
+ }

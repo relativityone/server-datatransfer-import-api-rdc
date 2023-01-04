@@ -14,11 +14,14 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents a test that imports native documents and validates the results.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.MainFlow]
 	public class DocImportTests : DocImportTestsBase
 	{
 		/// <summary>
@@ -36,18 +39,12 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 					new TestCaseData(SampleDocPdfFileName, null),
 					new TestCaseData(SampleDocWordFileName, string.Empty),
 					new TestCaseData(SampleDocExcelFileName, "\\doc-import-root1"),
-					new TestCaseData(SampleDocMsgFileName, "\\doc-import-root1"),
-					new TestCaseData(SampleDocHtmFileName, "\\doc-import-root1\\doc-import-root2"),
 					new TestCaseData(SampleDocEmfFileName, "\\doc-import-root1\\doc-import-root2"),
 					new TestCaseData(SampleDocPptFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3"),
-					new TestCaseData(SampleDocPngFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3"),
-					new TestCaseData(SampleDocTxtFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4"),
 					new TestCaseData(SampleDocWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4"),
 				};
 
-		[Test]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("142ab021-296d-4404-8d4d-2eecd9b99a8f")]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldImportTheDoc(string fileName, string folderPath)
 		{

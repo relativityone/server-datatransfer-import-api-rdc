@@ -8,6 +8,7 @@
 		private readonly string _subdirectoryImagePrefix;
 		private readonly string _subdirectoryNativePrefix;
 		private readonly string _subdirectoryTextPrefix;
+		private readonly string _subdirectoryPdfPrefix;
 
 		private readonly int _volumeLabelPaddingWidth;
 		private readonly int _subdirectoryPaddingWidth;
@@ -24,6 +25,7 @@
 			_subdirectoryImagePrefix = exportSettings.VolumeInfo.get_SubdirectoryImagePrefix();
 			_subdirectoryNativePrefix = exportSettings.VolumeInfo.get_SubdirectoryNativePrefix();
 			_subdirectoryTextPrefix = exportSettings.VolumeInfo.get_SubdirectoryFullTextPrefix();
+			_subdirectoryPdfPrefix = exportSettings.VolumeInfo.get_SubdirectoryPdfPrefix();
 
 			_volumeLabelPaddingWidth = exportSettings.VolumeDigitPadding;
 			_subdirectoryPaddingWidth = exportSettings.SubdirectoryDigitPadding;
@@ -47,6 +49,11 @@
 		public string GetCurrentTextSubdirectoryLabel()
 		{
 			return FormatLabel(_subdirectoryTextPrefix, _subdirectory.CurrentSubdirectoryNumber, _subdirectoryPaddingWidth);
+		}
+
+		public string GetCurrentPdfSubdirectoryLabel()
+		{
+			return FormatLabel(this._subdirectoryPdfPrefix, _subdirectory.CurrentSubdirectoryNumber, _subdirectoryPaddingWidth);
 		}
 
 		private string FormatLabel(string prefix, int number, int padding)

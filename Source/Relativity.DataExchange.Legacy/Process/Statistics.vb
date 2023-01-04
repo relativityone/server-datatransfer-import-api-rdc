@@ -1,205 +1,184 @@
+Imports Monitoring
+Imports Relativity.DataExchange
+
 Namespace kCura.WinEDDS
 	Public Class Statistics
-		Private _metadataBytes As Int64 = 0
-		Private _metadataTime As Int64 = 0
-		Private _metadataThroughput As Double = 0
-		Private _fileBytes As Int64 = 0
-		Private _fileTime As Int64 = 0
-		Private _fileThroughput As Double = 0
-		Private _fileWaitTime As Int64 = 0
-		Private _metadataWaitTime As Int64 = 0
-		Private _sqlTime As Int64 = 0
-		Private _docCount As Int64 = 0
-		Private _lastAccessed As System.DateTime
-		Private _documentsCreated As Int32 = 0
-		Private _documentsUpdated As Int32 = 0
-		Private _filesProcessed As Int32 = 0
+		Public Const BatchSizeKey As String = "BatchSize"
+		Public Const BatchCountKey As String = "Batches"
+		Public Const DocsCountKey As String = "Docs"
+		Public Const MetadataBytesKey As String = "MetadataBytes"
+		Public Const MetadataFilesTransferredKey As String = "MetadataFilesTransferred"
+		Public Const MetadataThroughputKey As String = "MetadataThroughput"
+		Public Const MetadataTimeKey As String = "MetadataTime"
+		Public Const NativeFileBytesKey As String = "NativeFileBytes"
+		Public Const NativeFileThroughputKey As String = "NativeFileThroughput"
+		Public Const NativeFileTimeKey As String = "NativeFileTime"
+		Public Const NativeFilesTransferredKey As String = "NativeFilesTransferred"
+		Public Const DocsErrorsCountKey As String = "DocsErrorsCount"
 
-		Public Property BatchSize As Int32 = 0
+		Public Const FileTransferRateKey As String = "Average file transfer rate"
+		Public Const MetadataTransferRateKey As String = "Average metadata transfer rate"
+		Public Const SqlProcessRateKey As String = "Average SQL process rate"
+		Public Const CurrentBatchSizeKey As String = "Current batch size"
 
-		Public Property MetadataBytes() As Int64
-			Get
-				Return _metadataBytes
-			End Get
-			Set(ByVal value As Int64)
-				_lastAccessed = System.DateTime.Now
-				_metadataBytes = value
-			End Set
-		End Property
+		''' <summary>
+		''' Gets or sets the total number of import or export batches.
+		''' </summary>
+		''' <value>The total number of batches.</value>
+		Public Property BatchCount As Integer = 0
+		
+		''' <summary>
+		''' Gets or sets the maximum number of documents or objects before the metadata is imported.
+		''' </summary>
+		''' <value>The maximum number of documents or objects in batch.</value>
+		Public Property BatchSize As Integer = 0
 
-		Public Property MetadataTime() As Int64
-			Get
-				Return _metadataTime
-			End Get
-			Set(ByVal value As Int64)
-				_lastAccessed = System.DateTime.Now
-				_metadataTime = value
-			End Set
-		End Property
+		''' <summary>
+		''' Gets or sets number of documents processed with errors.
+		''' </summary>
+		''' <value>The total number of records with errors.</value>
+		Public Property DocsErrorsCount As Integer = 0
 
-		Public Property MetadataThroughput() As Double
-			Get
-				Return _metadataThroughput
-			End Get
-			Set(ByVal value As Double)
-				_lastAccessed = System.DateTime.Now
-				_metadataThroughput = value
-			End Set
-		End Property
+		''' <summary>
+		''' Gets or sets the total number of metadata load and extracted text files transferred for import and export respectively.
+		''' </summary>
+		''' <value>The total number of files.</value>
+		Public Property MetadataFilesTransferredCount As Integer = 0
 
-		Public Property FileBytes() As Int64
-			Get
-				Return _fileBytes
-			End Get
-			Set(ByVal value As Int64)
-				_lastAccessed = System.DateTime.Now
-				_fileBytes = value
-			End Set
-		End Property
+		''' <summary>
+		'''  Gets or sets transferred metadata bytes.
+		''' </summary>
+		''' <value>Transferred metadata bytes.</value>
+		Public Property MetadataTransferredBytes As Long = 0
 
-		Public Property FileTime() As Int64
-			Get
-				Return _fileTime
-			End Get
-			Set(ByVal value As Int64)
-				_lastAccessed = System.DateTime.Now
-				_fileTime = value
-			End Set
-		End Property
+		''' <summary>
+		''' Gets or sets metadata transfer duration.
+		''' </summary>
+		''' <value>Metadata transfer duration.</value>
+		Public Property MetadataTransferDuration As New TimeSpan
 
-		Public Property FileThroughput() As Double
-			Get
-				Return _fileThroughput
-			End Get
-			Set(ByVal value As Double)
-				_lastAccessed = System.DateTime.Now
-				_fileThroughput = value
-			End Set
-		End Property
+		Public Property MetadataWaitDuration As New TimeSpan
 
-		Public Property FileWaitTime() As Int64
-			Get
-				Return _fileWaitTime
-			End Get
-			Set(ByVal value As Int64)
-				_lastAccessed = System.DateTime.Now
-				_fileWaitTime = value
-			End Set
-		End Property
+		''' <summary>
+		''' Gets or sets metadata transfer rate in bytes per second.
+		''' </summary>
+		''' <value>Metadata transfer rate in bytes per second.</value>
+		Public Property MetadataTransferThroughput As Double = 0
 
-		Public Property MetadataWaitTime() As Int64
-			Get
-				Return _metadataWaitTime
-			End Get
-			Set(ByVal value As Int64)
-				_lastAccessed = System.DateTime.Now
-				_metadataWaitTime = value
-			End Set
-		End Property
+		''' <summary>
+		''' Gets or sets the total number of native files transferred for both import and export.
+		''' </summary>
+		''' <value>The total number of files.</value>
+		Public Property NativeFilesTransferredCount As Integer = 0
 
-		Public Property SqlTime() As Int64
-			Get
-				Return _sqlTime
-			End Get
-			Set(ByVal value As Int64)
-				_lastAccessed = System.DateTime.Now
-				_sqlTime = value
-			End Set
-		End Property
+		''' <summary>
+		'''  Gets or sets transferred file bytes.
+		''' </summary>
+		''' <value>Transferred file bytes.</value>
+		Public Property FileTransferredBytes As Long = 0
 
-		Public Property DocCount() As Int64
-			Get
-				Return _docCount
-			End Get
-			Set(ByVal value As Int64)
-				_lastAccessed = System.DateTime.Now
-				_docCount = value
-			End Set
-		End Property
+		''' <summary>
+		''' Gets or sets file transfer duration.
+		''' </summary>
+		''' <value>File transfer duration.</value>
+		Public Property FileTransferDuration As New TimeSpan
 
-		Public ReadOnly Property LastAccessed() As System.DateTime
-			Get
-				Return _lastAccessed
-			End Get
-		End Property
+		Public Property FileWaitDuration As New TimeSpan
 
-		Public Function ToFileSizeSpecification(ByVal value As Double) As String
-			Dim prefix As String = Nothing
-			Dim k As Int32
-			If value <= 0 Then
-				k = 0
-			Else
-				k = CType(System.Math.Floor(System.Math.Log(value, 1000)), Int32)
-			End If
-			Select Case k
-				Case 0
-					prefix = ""
-				Case 1
-					prefix = "K"
-				Case 2
-					prefix = "M"
-				Case 3
-					prefix = "G"
-				Case 4
-					prefix = "T"
-				Case 5
-					prefix = "P"
-				Case 6
-					prefix = "E"
-				Case 7
-					prefix = "B"
-				Case 8
-					prefix = "Y"
-			End Select
-			Return (value / Math.Pow(1000, k)).ToString("N2") & " " & prefix & "B"
+		''' <summary>
+		''' Gets or sets file transfer rate in bytes per second.
+		''' </summary>
+		''' <value>File transfer rate in bytes per second.</value>
+		Public Property FileTransferThroughput As Double = 0
+
+		''' <summary>
+		''' Gets or sets client side duration of mass import operation.
+		''' </summary>
+		''' <value>Client side duration of mass import operation.</value>
+		Public Property MassImportDuration As New TimeSpan
+
+		Public Property DocumentsCount As Integer = 0
+		
+
+		''' <summary>
+		''' General function calculating throughput in units per second.
+		''' </summary>
+		''' <param name="size">Size in any unit.</param>
+		''' <param name="timeSeconds">Time in seconds.</param>
+		''' <returns>Throughput in units per second if timeSeconds is not equal to zero; Zero otherwise.</returns>
+		Public Shared Function CalculateThroughput(size As Long, timeSeconds As Double) As Double
+			Return CDbl(IIf(timeSeconds.Equals(0.0), 0.0, size/timeSeconds))
 		End Function
 
-		Public ReadOnly Property DocumentsCreated() As Int32
-			Get
-				Return _documentsCreated
-			End Get
-		End Property
+		Friend Shared Function ToFileSizeSpecification(value As Double) As String
+			Return ByteSize.FromBytes(value).ToString("0.##")
+		End Function
 
-		Public ReadOnly Property DocumentsUpdated() As Int32
-			Get
-				Return _documentsUpdated
-			End Get
-		End Property
+		''' <summary>
+		''' This method provides correct value only for import job
+		''' </summary>
+		''' <returns></returns>
+		Public Overridable Function GetSqlProcessRate() As Double
+			Return 0
+		End Function
 
-		Public ReadOnly Property FilesProcessed() As Int32
-			Get
-				Return _filesProcessed
-			End Get
-		End Property
-
-		Public Sub ProcessRunResults(ByVal results As kCura.EDDS.WebAPI.BulkImportManagerBase.MassImportResults)
-			_documentsCreated += results.ArtifactsCreated
-			_documentsUpdated += results.ArtifactsUpdated
-			_filesProcessed += results.FilesProcessed
-		End Sub
-
-
-		Public Overridable Function ToDictionary() As IDictionary
+		''' <summary>
+		''' Converts this instance into a dictionary containing limited name/value pairs.
+		''' </summary>
+		''' <remarks>
+		''' The NV pairs are displayed in the RDC. Do NOT modify unless you intend to change the RDC display!
+		''' </remarks>
+		''' <returns>
+		''' The <see cref="IDictionary"/> instance.
+		''' </returns>
+		Public Overridable Function ToDictionaryForProgress() As IDictionary
 			Dim retval As New System.Collections.Specialized.HybridDictionary
-			If Not Me.FileTime = 0 Then
-				Dim fileTime As Int64 = Me.FileTime - Me.FileWaitTime
-				If fileTime < 0 Then
-					fileTime = Me.FileTime
+			If Not Me.FileTransferDuration.Equals(TimeSpan.Zero) Then
+				Dim fileDuration As TimeSpan = Me.FileTransferDuration - Me.FileWaitDuration
+				If fileDuration <= TimeSpan.Zero Then
+					fileDuration = Me.FileTransferDuration
 				End If
 
-				retval.Add("Average file transfer rate", ToFileSizeSpecification(Me.FileBytes / (fileTime / 10000000)) & "/sec")
+				retval.Add(FileTransferRateKey, ToFileSizeSpecification(Me.FileTransferredBytes / fileDuration.TotalSeconds) & "/sec")
 			End If
-			If Not Me.MetadataTime = 0 Then
-				Dim metadataTime As Int64 = Me.MetadataTime - Me.MetadataWaitTime
-				If metadataTime < 0 Then
-					metadataTime = Me.MetadataTime
+			If Not Me.MetadataTransferDuration.Equals(TimeSpan.Zero) Then
+				Dim metadataDuration As TimeSpan = Me.MetadataTransferDuration - Me.MetadataWaitDuration
+				If metadataDuration <= TimeSpan.Zero Then
+					metadataDuration = Me.MetadataTransferDuration
 				End If
 
-				retval.Add("Average metadata transfer rate", ToFileSizeSpecification(Me.MetadataBytes / (metadataTime / 10000000)) & "/sec")
+				retval.Add(MetadataTransferRateKey, ToFileSizeSpecification(Me.MetadataTransferredBytes / metadataDuration.TotalSeconds) & "/sec")
 			End If
-			If Not Me.SqlTime = 0 Then retval.Add("Average SQL process rate", (Me.DocCount / (Me.SqlTime / 10000000)).ToString("N0") & " Documents/sec")
-			If Not Me.BatchSize = 0 Then retval.Add("Current batch size", (Me.BatchSize).ToString("N0"))
+			If Not Me.MassImportDuration.Equals(TimeSpan.Zero) Then retval.Add(SqlProcessRateKey, (Me.DocumentsCount / Me.MassImportDuration.TotalSeconds).ToString("N0") & " Documents/sec")
+			If Not Me.BatchSize = 0 Then retval.Add(CurrentBatchSizeKey, (Me.BatchSize).ToString("N0"))
 			Return retval
+		End Function
+
+		''' <summary>
+		''' Converts this instance into a dictionary containing relevant name/value pairs for logging purposes.
+		''' </summary>
+		''' <returns>
+		''' The <see cref="IDictionary"/> instance.
+		''' </returns>
+		Public Overridable Function ToDictionaryForLogs() As System.Collections.Generic.IDictionary(Of String, Object)
+
+			Dim statisticsDict As System.Collections.Generic.Dictionary(Of String, Object) = New System.Collections.Generic.Dictionary(Of String, Object) From
+				    {
+						{DocsErrorsCountKey, Me.DocsErrorsCount},
+						{BatchSizeKey, Me.BatchSize},
+					    {BatchCountKey, Me.BatchCount},
+					    {DocsCountKey, Me.DocumentsCount},
+					    {MetadataBytesKey, Me.MetadataTransferredBytes},
+					    {MetadataFilesTransferredKey, Me.MetadataFilesTransferredCount},
+					    {MetadataThroughputKey, Me.MetadataTransferThroughput},
+					    {MetadataTimeKey, Me.MetadataTransferDuration},
+					    {NativeFileBytesKey, Me.FileTransferredBytes},
+					    {NativeFileThroughputKey, Me.FileTransferThroughput},
+					    {NativeFileTimeKey, Me.FileTransferDuration},
+					    {NativeFilesTransferredKey, Me.NativeFilesTransferredCount}
+				    }
+
+			Return statisticsDict
 		End Function
 	End Class
 End Namespace

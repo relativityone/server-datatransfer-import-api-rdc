@@ -13,12 +13,13 @@ namespace Relativity.DataExchange.Export.NUnit
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
+	using kCura.WinEDDS.Exporters;
 
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Paths;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ErrorFileWriterTests
@@ -45,29 +46,41 @@ namespace Relativity.DataExchange.Export.NUnit
 			destinationPath.Setup(x => x.Encoding).Returns(Encoding.Default);
 
 			this._status = new Mock<IStatus>();
-			this._instance = new ErrorFileWriter(streamFactory.Object, destinationPath.Object, this._status.Object, new NullLogger());
+			this._instance = new ErrorFileWriter(streamFactory.Object, destinationPath.Object, this._status.Object, new TestNullLogger());
 		}
 
 		[Test]
-		[TestCase(ErrorFileWriter.ExportFileType.Generic)]
-		[TestCase(ErrorFileWriter.ExportFileType.Image)]
-		[TestCase(ErrorFileWriter.ExportFileType.Native)]
-		public void ItShouldWriteError(ErrorFileWriter.ExportFileType type)
+		[TestCase(ErrorFileWriter.ExportFileType.Generic, true)]
+		[TestCase(ErrorFileWriter.ExportFileType.Image, true)]
+		[TestCase(ErrorFileWriter.ExportFileType.Native, true)]
+		[TestCase(ErrorFileWriter.ExportFileType.Generic, false)]
+		[TestCase(ErrorFileWriter.ExportFileType.Image, false)]
+		[TestCase(ErrorFileWriter.ExportFileType.Native, false)]
+		public void ItShouldWriteError(ErrorFileWriter.ExportFileType type, bool errorStatusAlreadySent)
 		{
 			const string recordIdentifier = "record_identifier";
 			const string fileLocation = "file_location";
 			const string errorText = "error_text";
 
 			// ACT
-			this._instance.Write(type, recordIdentifier, fileLocation, errorText);
-			this._instance.Write(type, recordIdentifier, fileLocation, errorText);
+			this._instance.Write(type, new ObjectExportInfo() { IdentifierValue = recordIdentifier, DocumentError = errorStatusAlreadySent }, fileLocation, errorText);
+			this._instance.Write(type, new ObjectExportInfo() { IdentifierValue = recordIdentifier, DocumentError = errorStatusAlreadySent }, fileLocation, errorText);
 
 			// ASSERT
 			string expectedText = $"{_HEADER}{Environment.NewLine}{string.Format(_ERROR_LINE, type)}{Environment.NewLine}{string.Format(_ERROR_LINE, type)}{Environment.NewLine}";
 			string writtenText = this.GetWrittenText();
 			Assert.That(writtenText, Is.EqualTo(expectedText));
 
-			this._status.Verify(x => x.WriteError($"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}"), Times.Exactly(2));
+			string message =
+				$"{type} - Document [{recordIdentifier}] - File [{fileLocation}] - Error: {Environment.NewLine}{errorText}";
+			if (errorStatusAlreadySent)
+			{
+				this._status.Verify(x => x.WriteWarning(message), Times.Exactly(2));
+			}
+			else
+			{
+				this._status.Verify(x => x.WriteError(message), Times.Exactly(2));
+			}
 		}
 
 		private string GetWrittenText()

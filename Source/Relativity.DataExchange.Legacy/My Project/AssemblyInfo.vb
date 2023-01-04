@@ -26,6 +26,8 @@ Imports System.Runtime.InteropServices
 <Assembly: InternalsVisibleTo("Relativity.DataExchange.Import.Legacy.NUnit")>
 <Assembly: InternalsVisibleTo("Relativity.DataExchange.Import.NUnit")>
 <Assembly: InternalsVisibleTo("Relativity.DataExchange.Import.NUnit.Integration")>
+<Assembly: InternalsVisibleTo("Relativity.DataExchange.Import.NUnit.LoadTests")>
 <Assembly: InternalsVisibleTo("Relativity.DataExchange.NUnit")>
 <Assembly: InternalsVisibleTo("Relativity.DataExchange.NUnit.Integration")>
+<Assembly: InternalsVisibleTo("Relativity.DataExchange.TestFramework")>
 <Assembly: InternalsVisibleTo("Relativity.Desktop.Client")>

@@ -17,6 +17,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Validation;
+	using Relativity.DataExchange.TestFramework;
 	using Relativity.Logging;
 
 	[TestFixture]
@@ -57,7 +58,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._userNotificationMock = new Mock<IUserNotification>();
 			this._userNotificationMock.Setup(x => x.AlertWarningSkippable(It.IsAny<string>())).Returns(false);
 
-			this._instance = new VolumeAndSubdirectoryValidator(new PaddingWarningValidator(), this._userNotificationMock.Object, new Mock<ILog>().Object);
+			this._instance = new VolumeAndSubdirectoryValidator(new PaddingWarningValidator(), this._userNotificationMock.Object, new TestNullLogger());
 		}
 
 		[Test]

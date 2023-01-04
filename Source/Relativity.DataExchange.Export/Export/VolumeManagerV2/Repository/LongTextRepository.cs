@@ -7,6 +7,7 @@
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class LongTextRepository : IClearable, ILongTextRepository
@@ -70,9 +71,16 @@
 
 		public bool AnyRequestForLocation(string destinationLocation)
 		{
+			if (string.IsNullOrWhiteSpace(destinationLocation))
+			{
+				return false;
+			}
+
 			lock (_syncLock)
 			{
-				return GetExportRequests().Any(x => x.DestinationLocation == destinationLocation);
+				return GetExportRequests().Any(
+					x => string.Compare(x.DestinationLocation, destinationLocation, StringComparison.OrdinalIgnoreCase)
+					     == 0);
 			}
 		}
 
@@ -102,14 +110,14 @@
 				{
 					if (longText.RequireDeletion)
 					{
-						_logger.LogInformation("Removing long text temp file {file}.", longText.Location);
+						_logger.LogInformation("Removing long text temp file {file}.", longText.Location.Secure());
 						try
 						{
 							_fileWrapper.Delete(longText.Location);
 						}
 						catch (Exception)
 						{
-							_logger.LogError("Failed to delete temp file {file} with LongText.", longText.Location);
+							_logger.LogError("Failed to delete temp file {file} with LongText.", longText.Location.Secure());
 						}
 					}
 				}

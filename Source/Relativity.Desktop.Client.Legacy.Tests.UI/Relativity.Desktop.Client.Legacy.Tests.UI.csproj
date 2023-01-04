@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F0B29F3E-F41F-4882-ADE6-5DAC07164992}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Relativity.Desktop.Client.Legacy.Tests.UI</RootNamespace>
+    <AssemblyName>Relativity.Desktop.Client.Legacy.Tests.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="oi\unmanaged\libchardet.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.exe">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.jar">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccca-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccch-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccda-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccex-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfa-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfi-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccind-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\scclo-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\wvcore-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <None Include="App.config" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="kCura.Relativity.Client">
+      <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler">
+      <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Appium\ButtonUIElement.cs" />
+    <Compile Include="Appium\CheckBoxUIElement.cs" />
+    <Compile Include="Appium\ComboBoxUIElement.cs" />
+    <Compile Include="Appium\DefaultTimeouts.cs" />
+    <Compile Include="Appium\EditUIElement.cs" />
+    <Compile Include="Appium\ElementClass.cs" />
+    <Compile Include="Appium\ElementType.cs" />
+    <Compile Include="Appium\GroupUIElement.cs" />
+    <Compile Include="Appium\ListItemUIElement.cs" />
+    <Compile Include="Appium\ListUIElement.cs" />
+    <Compile Include="Appium\MenuItemUIElement.cs" />
+    <Compile Include="Appium\PaneUIElement.cs" />
+    <Compile Include="Appium\SpinnerComboBoxUIElement.cs" />
+    <Compile Include="Appium\StatusBarUIElement.cs" />
+    <Compile Include="Appium\TabItemUIElement.cs" />
+    <Compile Include="Appium\TabsUIElement.cs" />
+    <Compile Include="Appium\TextUIElement.cs" />
+    <Compile Include="Appium\TreeUIElement.cs" />
+    <Compile Include="Appium\Wait.cs" />
+    <Compile Include="Appium\WindowDetails.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Windows\CaptureScreenshot.cs" />
+    <Compile Include="Windows\ImageImportWindow.cs" />
+    <Compile Include="Windows\Names\ImportWindowName.cs" />
+    <Compile Include="Windows\OpenSettingsDialog.cs" />
+    <Compile Include="Workflow\ExportMenuItems.cs" />
+    <Compile Include="Workflow\ExportProfile.cs" />
+    <Compile Include="ExportTests.cs" />
+    <Compile Include="RdcTestBase.cs" />
+    <Compile Include="SetupAllTests.cs" />
+    <Compile Include="TestPathsProvider.cs" />
+    <Compile Include="Windows\DialogWindow.cs" />
+    <Compile Include="Windows\IWindow.cs" />
+    <Compile Include="Windows\Names\ExportWindowName.cs" />
+    <Compile Include="Windows\Names\ProgressWindowName.cs" />
+    <Compile Include="Windows\UntrustedCertificateWindow.cs" />
+    <Compile Include="WinAppDriverRunner.cs" />
+    <Compile Include="Appium\UIElement.cs" />
+    <Compile Include="Windows\BrowseForFolderDialog.cs" />
+    <Compile Include="Windows\ChooseLoadFileDialog.cs" />
+    <Compile Include="Windows\ExportWindow.cs" />
+    <Compile Include="Workflow\ExportWindowSetupParameters.cs" />
+    <Compile Include="Windows\RdoImportWindow.cs" />
+    <Compile Include="ImportTests.cs" />
+    <Compile Include="Windows\ProgressWindow.cs" />
+    <Compile Include="Windows\LoginWindow.cs" />
+    <Compile Include="Windows\OpenSavedFieldMapDialog.cs" />
+    <Compile Include="Windows\PickTextPrecedenceDialog.cs" />
+    <Compile Include="Windows\RdcWindowBase.cs" />
+    <Compile Include="Windows\RdcWindowsManager.cs" />
+    <Compile Include="Windows\RelativityConfirmationDialog.cs" />
+    <Compile Include="Windows\RelativityDesktopClientWindow.cs" />
+    <Compile Include="Appium\WindowsDriverSessionFactory.cs" />
+    <Compile Include="Windows\SecurityAlertDialog.cs" />
+    <Compile Include="Windows\SelectViewDialog.cs" />
+    <Compile Include="Windows\WindowBase.cs" />
+    <Compile Include="Appium\WindowName.cs" />
+    <Compile Include="Windows\Names\RdcWindowName.cs" />
+    <Compile Include="Appium\WindowsManager.cs" />
+    <Compile Include="Windows\SelectWorkspaceWindow.cs" />
+    <Compile Include="Workflow\ImageImportProfile.cs" />
+    <Compile Include="Workflow\ImportMenuItems.cs" />
+    <Compile Include="Workflow\ImportProfile.cs" />
+    <Compile Include="Workflow\ImageImportWindowSetupParameters.cs" />
+    <Compile Include="Workflow\RdoImportProfile.cs" />
+    <Compile Include="Workflow\RdoImportWindowSetupParameters.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.DataExchange.Core\Relativity.DataExchange.Core.csproj">
+      <Project>{a91f3ccc-ccd1-46bb-a0f3-ad31f8853e31}</Project>
+      <Name>Relativity.DataExchange.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj">
+      <Project>{fed61746-80ec-40cb-998e-9299b804ce7d}</Project>
+      <Name>Relativity.DataExchange.TestFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.DynamicReferences.targets" />
+  <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="NUnitExtras.HierarchicalCategories">
+          <HintPath>..\..\packages\NUnitExtras.HierarchicalCategories\lib\net45\NUnitExtras.HierarchicalCategories.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging.Interfaces">
+          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\Relativity.OutsideIn\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Testing.Identification">
+          <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="appium-dotnet-driver">
+          <HintPath>..\..\packages\ui-automation\Appium.WebDriver\lib\net45\appium-dotnet-driver.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Castle.Core">
+          <HintPath>..\..\packages\ui-automation\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Newtonsoft.Json">
+          <HintPath>..\..\packages\ui-automation\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="WebDriver.Support">
+          <HintPath>..\..\packages\ui-automation\Selenium.Support\lib\net45\WebDriver.Support.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="WebDriver">
+          <HintPath>..\..\packages\ui-automation\Selenium.WebDriver\lib\net45\WebDriver.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" />
+</Project>

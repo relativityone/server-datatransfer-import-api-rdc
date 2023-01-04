@@ -21,12 +21,19 @@ Namespace kCura.WinEDDS.Exporters
 		Public Property NativeSourceLocation() As String = String.Empty
 		Public Property NativeTempLocation() As String = String.Empty
 		Public Property OriginalFileName() As String = String.Empty
+		'' ------------------- PDFs ----------------------------
+		Public Property PdfFileGuid() As String = String.Empty
+		Public Property PdfSourceLocation() As String = String.Empty
+		Public Property PdfDestinationLocation() As String = String.Empty
+		'' -----------------------------------------------------
 		Public Property ProductionBeginBates() As String = String.Empty
 		Public Property TotalFileSize() As Int64
 		Public Property TotalNumberOfFiles() As Int64
 		Public Property DestinationVolume() As String = String.Empty
 		Friend Property CoalescedProductionID As Int32? = Nothing
 		Public Property Filename() As String = String.Empty
+		Public Property DocumentError As Boolean = False
+		Public Property LongTextLength As Int64 = 0
 
 #End Region
 
@@ -61,6 +68,12 @@ Namespace kCura.WinEDDS.Exporters
 				Else
 					Return 1
 				End If
+			End Get
+		End Property
+
+		Public ReadOnly Property HasPdf() As Boolean
+			Get
+				Return Not String.IsNullOrEmpty(Me.PdfFileGuid)
 			End Get
 		End Property
 
@@ -109,6 +122,15 @@ Namespace kCura.WinEDDS.Exporters
 			Return Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(retval)
 		End Function
 
+		Public Overridable Function PdfFileName(ByVal name As String, ByVal appendToOriginal As Boolean) As String
+			Dim retval As String = name
+			If appendToOriginal Then
+				retval = AppendOriginalFileName(retval)
+			End If
+			retval = Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(retval)
+			Return AppendExtensionToPdfFile(retval)
+		End Function
+
 		Public Function FullTextFileName(ByVal nameFilesAfterIdentifier As Boolean, tryProductionBegBates As Boolean) As String
 			Return FullTextFileName(nameFilesAfterIdentifier, tryProductionBegBates, False)
 		End Function
@@ -127,6 +149,10 @@ Namespace kCura.WinEDDS.Exporters
 
 		Private Function AppendExtensionToFullTextFileName(retval As String) As String
 			Return FileNameHelper.AppendExtensionToFileWhenMissing(retval, ".txt")
+		End Function
+
+		Private Function AppendExtensionToPdfFile(name As String) As String
+			Return FileNameHelper.AppendExtensionToFileWhenMissing(name, ".pdf")
 		End Function
 
 		Private Function GetFullTextIdentifierFileNamePart(nameFilesAfterIdentifier As Boolean, tryProductionBegBates As Boolean) As String

@@ -12,7 +12,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class OpticonLoadFileEntryTests
@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			this._instance = new OpticonLoadFileEntry(new NullLogger());
+			this._instance = new OpticonLoadFileEntry(new TestNullLogger());
 		}
 
 		[Test]

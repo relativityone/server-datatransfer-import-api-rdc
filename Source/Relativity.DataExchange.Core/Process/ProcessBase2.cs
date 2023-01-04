@@ -10,6 +10,8 @@ namespace Relativity.DataExchange.Process
 	using System.Threading;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
+	using Relativity.Logging;
 
 	/// <summary>
 	/// Defines an abstract object that performs a runnable process.
@@ -34,12 +36,34 @@ namespace Relativity.DataExchange.Process
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProcessBase2"/> class.
 		/// </summary>
+		[Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")]
 		protected ProcessBase2()
-			: this(
-				Io.FileSystem.Instance,
-				DataExchange.AppSettings.Instance,
-				RelativityLogFactory.CreateLog(),
-				null)
+			: this(RelativityLogger.Instance)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProcessBase2"/> class.
+		/// </summary>
+		/// <param name="logger">
+		/// The logger instance.
+		/// </param>
+		protected ProcessBase2(ILog logger)
+			: this(logger, null)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ProcessBase2"/> class.
+		/// </summary>
+		/// <param name="logger">
+		/// The logger instance.
+		/// </param>
+		/// <param name="tokenSource">
+		/// The cancellation token source.
+		/// </param>
+		protected ProcessBase2(ILog logger, CancellationTokenSource tokenSource)
+			: this(Io.FileSystem.Instance, DataExchange.AppSettings.Instance, logger, tokenSource)
 		{
 		}
 
@@ -60,25 +84,10 @@ namespace Relativity.DataExchange.Process
 		/// </param>
 		protected ProcessBase2(IFileSystem fileSystem, IAppSettings settings, Relativity.Logging.ILog logger, CancellationTokenSource tokenSource)
 		{
-			if (fileSystem == null)
-			{
-				throw new ArgumentNullException(nameof(fileSystem));
-			}
-
-			if (settings == null)
-			{
-				throw new ArgumentNullException(nameof(settings));
-			}
-
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			this.AppSettings = settings;
+			this.AppSettings = settings.ThrowIfNull(nameof(settings));
 			this.CancellationTokenSource = tokenSource ?? new CancellationTokenSource();
-			this.FileSystem = fileSystem;
-			this.Logger = logger;
+			this.FileSystem = fileSystem.ThrowIfNull(nameof(fileSystem));
+			this.Logger = logger ?? new NullLogger();
 			this.processErrorWriter = new ProcessErrorWriter(fileSystem, logger);
 			this.processEventWriter = new ProcessEventWriter(fileSystem);
 			this.Context = new ProcessContext(this.processEventWriter, this.processErrorWriter, settings, logger);
@@ -176,7 +185,7 @@ namespace Relativity.DataExchange.Process
 					this.ProcessId);
 				this.OnExecute();
 				this.Logger.LogInformation(
-					"The runnable process {ProcessType}-{ProcessId} successfully started.",
+					"The runnable process {ProcessType}-{ProcessId} successfully completed.",
 					this.GetType(),
 					this.ProcessId);
 			}

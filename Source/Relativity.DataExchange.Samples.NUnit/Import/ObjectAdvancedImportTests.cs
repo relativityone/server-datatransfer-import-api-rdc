@@ -13,11 +13,14 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents a test that imports advanced objects containing single/multi-object fields and validates the results.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportRDOs]
+	[TestType.MainFlow]
 	public class ObjectAdvancedImportTests : ObjectImportTestsBase
 	{
 		/// <summary>
@@ -37,9 +40,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 					new TestCaseData("Advanced-Transfer-Large-2", "Advanced-Detail-6", "Advanced-DataSourceName-6", false),
 				};
 
-		[Test]
-		[Category(TestCategories.ImportObject)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("e308109b-39fd-46ae-af5d-ef309df9a991")]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldImportTheObject(
 			string name,

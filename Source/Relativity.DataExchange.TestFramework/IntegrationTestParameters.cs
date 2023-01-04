@@ -13,6 +13,8 @@ namespace Relativity.DataExchange.TestFramework
 	/// <summary>
 	/// Represents the parameters used by all integration tests.
 	/// </summary>
+	/// <remarks>This class needs to be serializable because it is used across AppDomains.</remarks>
+	[Serializable]
 	public class IntegrationTestParameters
 	{
 		/// <summary>
@@ -37,6 +39,9 @@ namespace Relativity.DataExchange.TestFramework
 			this.SkipDirectModeTests = false;
 			this.SkipIntegrationTests = false;
 			this.WorkspaceId = 0;
+			this.EnableDataGrid = false;
+			this.TestOnWorkspaceWithNonDefaultCollation = false;
+			this.PerformAdditionalWorkspaceSetup = false;
 		}
 
 		/// <summary>
@@ -66,8 +71,18 @@ namespace Relativity.DataExchange.TestFramework
 			this.SqlAdminPassword = copy.SqlAdminPassword;
 			this.SqlAdminUserName = copy.SqlAdminUserName;
 			this.SqlDropWorkspaceDatabase = copy.SqlDropWorkspaceDatabase;
+			this.SqlCaptureProfiling = copy.SqlCaptureProfiling;
+			this.SqlProfilingReportsOutputPath = copy.SqlProfilingReportsOutputPath;
+			this.SqlComparerEnabled = copy.SqlComparerEnabled;
+			this.SqlComparerOutputPath = copy.SqlComparerOutputPath;
 			this.SqlInstanceName = copy.SqlInstanceName;
 			this.WorkspaceId = copy.WorkspaceId;
+			this.WorkspaceName = copy.WorkspaceName;
+			this.EnableDataGrid = copy.EnableDataGrid;
+			this.TestOnWorkspaceWithNonDefaultCollation = copy.TestOnWorkspaceWithNonDefaultCollation;
+			this.PerformAdditionalWorkspaceSetup = copy.PerformAdditionalWorkspaceSetup;
+			this.DeleteWorkspaceAfterTest = copy.DeleteWorkspaceAfterTest;
+			this.RDCPath = copy.RDCPath;
 		}
 
 		/// <summary>
@@ -78,11 +93,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("FileShareUncPath")]
 		[IntegrationTestParameter(false)]
-		public string FileShareUncPath
-		{
-			get;
-			set;
-		}
+		public string FileShareUncPath { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Relativity password used to authenticate.
@@ -91,17 +102,8 @@ namespace Relativity.DataExchange.TestFramework
 		/// The password.
 		/// </value>
 		[JsonProperty("RelativityPassword")]
-#if DEBUG
-		[IntegrationTestParameter(true, false)]
-#else
-		[IntegrationTestParameter(true, true)]
-		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-#endif
-		public string RelativityPassword
-		{
-			get;
-			set;
-		}
+		[IntegrationTestParameter(true)]
+		public string RelativityPassword { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Relativity REST API URL.
@@ -111,11 +113,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("RelativityRestUrl")]
 		[IntegrationTestParameter(true)]
-		public Uri RelativityRestUrl
-		{
-			get;
-			set;
-		}
+		public Uri RelativityRestUrl { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Relativity services API URL.
@@ -125,11 +123,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("RelativityServicesUrl")]
 		[IntegrationTestParameter(true)]
-		public Uri RelativityServicesUrl
-		{
-			get;
-			set;
-		}
+		public Uri RelativityServicesUrl { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Relativity URL.
@@ -139,11 +133,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("RelativityUrl")]
 		[IntegrationTestParameter(true)]
-		public Uri RelativityUrl
-		{
-			get;
-			set;
-		}
+		public Uri RelativityUrl { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Relativity user name used to authenticate.
@@ -153,11 +143,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("RelativityUserName")]
 		[IntegrationTestParameter(true)]
-		public string RelativityUserName
-		{
-			get;
-			set;
-		}
+		public string RelativityUserName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Relativity WebAPI URL.
@@ -167,11 +153,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("RelativityWebApiUrl")]
 		[IntegrationTestParameter(true)]
-		public Uri RelativityWebApiUrl
-		{
-			get;
-			set;
-		}
+		public Uri RelativityWebApiUrl { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to enforce server certificate validation errors.
@@ -181,11 +163,17 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("ServerCertificateValidation")]
 		[IntegrationTestParameter(true)]
-		public bool ServerCertificateValidation
-		{
-			get;
-			set;
-		}
+		public bool ServerCertificateValidation { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to write logs to the console.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to write logs to the console; otherwise, <see langword="false" />.
+		/// </value>
+		[JsonProperty("WriteLogsToConsole")]
+		[IntegrationTestParameter(true)]
+		public bool WriteLogsToConsole { get; set; }
 
 		/// <summary>
 		/// Gets or sets the SQL admin password.
@@ -194,17 +182,8 @@ namespace Relativity.DataExchange.TestFramework
 		/// The password.
 		/// </value>
 		[JsonProperty("SqlAdminPassword")]
-#if DEBUG
-		[IntegrationTestParameter(true, false)]
-#else
-		[IntegrationTestParameter(true, true)]
-		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-#endif
-		public string SqlAdminPassword
-		{
-			get;
-			set;
-		}
+		[IntegrationTestParameter(true)]
+		public string SqlAdminPassword { get; set; }
 
 		/// <summary>
 		/// Gets or sets the SQL admin user name.
@@ -214,11 +193,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("SqlAdminUserName")]
 		[IntegrationTestParameter(true)]
-		public string SqlAdminUserName
-		{
-			get;
-			set;
-		}
+		public string SqlAdminUserName { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to drop the test workspace SQL database.
@@ -228,11 +203,35 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("SqlDropWorkspaceDatabase")]
 		[IntegrationTestParameter(true)]
-		public bool SqlDropWorkspaceDatabase
-		{
-			get;
-			set;
-		}
+		public bool SqlDropWorkspaceDatabase { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to drop the test workspace SQL database.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to drop the workspace SQL database; otherwise, <see langword="false" />.
+		/// </value>
+		[JsonProperty("SqlCaptureProfiling")]
+		[IntegrationTestParameter(true)]
+		public bool SqlCaptureProfiling { get; set; }
+
+		/// <summary>
+		/// Gets or sets a path where  SQL profiling reports are written.
+		/// </summary>
+		/// <value>
+		/// Path to SQL profiling output directory.
+		/// </value>
+		[JsonProperty("SqlProfilingReportsOutputPath")]
+		[IntegrationTestParameter(true)]
+		public string SqlProfilingReportsOutputPath { get; set; }
+
+		[JsonProperty("SqlComparerEnabled")]
+		[IntegrationTestParameter(true)]
+		public bool SqlComparerEnabled { get; set; }
+
+		[JsonProperty("SqlComparerOutputPath")]
+		[IntegrationTestParameter(true)]
+		public string SqlComparerOutputPath { get; set; }
 
 		/// <summary>
 		/// Gets or sets the SQL instance name.
@@ -242,11 +241,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("SqlInstanceName")]
 		[IntegrationTestParameter(true)]
-		public string SqlInstanceName
-		{
-			get;
-			set;
-		}
+		public string SqlInstanceName { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip tests that specify the <see cref="Relativity.Transfer.WellKnownTransferClient.Aspera"/> transfer client.
@@ -256,11 +251,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("SkipAsperaModeTests")]
 		[IntegrationTestParameter(true)]
-		public bool SkipAsperaModeTests
-		{
-			get;
-			set;
-		}
+		public bool SkipAsperaModeTests { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip tests that specify the <see cref="Relativity.Transfer.WellKnownTransferClient.FileShare"/> transfer client.
@@ -270,11 +261,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("SkipDirectModeTests")]
 		[IntegrationTestParameter(true)]
-		public bool SkipDirectModeTests
-		{
-			get;
-			set;
-		}
+		public bool SkipDirectModeTests { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to skip integration tests.
@@ -284,11 +271,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("SkipIntegrationTests")]
 		[IntegrationTestParameter(true)]
-		public bool SkipIntegrationTests
-		{
-			get;
-			set;
-		}
+		public bool SkipIntegrationTests { get; set; }
 
 		/// <summary>
 		/// Gets or sets the test workspace artifact identifier.
@@ -298,11 +281,17 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("WorkspaceId")]
 		[IntegrationTestParameter(false)]
-		public int WorkspaceId
-		{
-			get;
-			set;
-		}
+		public int WorkspaceId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the test workspace artifact name.
+		/// </summary>
+		/// <value>
+		/// The artifact name.
+		/// </value>
+		[JsonProperty("WorkspaceName")]
+		[IntegrationTestParameter(false)]
+		public string WorkspaceName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name of the workspace template used when creating a test workspace.
@@ -312,11 +301,52 @@ namespace Relativity.DataExchange.TestFramework
 		/// </value>
 		[JsonProperty("WorkspaceTemplate")]
 		[IntegrationTestParameter(true)]
-		public string WorkspaceTemplate
-		{
-			get;
-			set;
-		}
+		public string WorkspaceTemplate { get; set; }
+
+		/// <summary>
+		///  Gets or sets a value indicating whether DataGrid property should be enabled in created workspace.
+		/// </summary>
+		/// <value>
+		/// DataGrid enabled value.
+		/// </value>
+		[JsonProperty("EnableDataGrid")]
+		[IntegrationTestParameter(true)]
+		public bool EnableDataGrid { get; set; }
+
+		[JsonProperty("DeleteWorkspaceAfterTest")]
+		[IntegrationTestParameter(true)]
+		public bool DeleteWorkspaceAfterTest { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to use WorkspaceTemplate or another workspace template for non default collation.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to test on workspace with non-default collation; otherwise, <see langword="false" />.
+		/// </value>
+		[JsonProperty("TestOnWorkspaceWithNonDefaultCollation")]
+		[IntegrationTestParameter(true)]
+		public bool TestOnWorkspaceWithNonDefaultCollation { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to create all necessary fields and views before test execution.
+		/// This is required only when <see cref="WorkspaceTemplate"/> doesn't use <see cref="WellKnownFields"/>.
+		/// </summary>
+		/// <value>
+		/// <see langword="true" /> to perform additional setup; otherwise, <see langword="false" />.
+		/// </value>
+		[JsonProperty("PerformAdditionalWorkspaceSetup")]
+		[IntegrationTestParameter(true)]
+		public bool PerformAdditionalWorkspaceSetup { get; set; }
+
+		/// <summary>
+		/// Gets or sets the path where RelativityDesktopClient used in UI tests is installed.
+		/// </summary>
+		/// <value>
+		/// The template name.
+		/// </value>
+		[JsonProperty("RDCPath")]
+		[IntegrationTestParameter(true)]
+		public string RDCPath { get; set; }
 
 		/// <summary>
 		/// Performs a deep copy of this instance.
@@ -327,6 +357,16 @@ namespace Relativity.DataExchange.TestFramework
 		public IntegrationTestParameters DeepCopy()
 		{
 			return new IntegrationTestParameters(this);
+		}
+
+		/// <summary>
+		/// This methods clears all references to a test workspace.
+		/// </summary>
+		/// <remarks>It needs to be called when a test workspace was destroyed.</remarks>
+		internal void ResetWorkspaceInformation()
+		{
+			this.WorkspaceId = 0;
+			this.WorkspaceName = null;
 		}
 	}
 }

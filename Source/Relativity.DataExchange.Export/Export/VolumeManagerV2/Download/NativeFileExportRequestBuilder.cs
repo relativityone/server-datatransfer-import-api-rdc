@@ -12,8 +12,13 @@
 
 	public class NativeFileExportRequestBuilder : ExportRequestBuilder
 	{
-		public NativeFileExportRequestBuilder(NativeFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator validator,
-			IFileProcessingStatistics fileProcessingStatistics, ILog logger) : base(filePathProvider, fileNameProvider, validator, fileProcessingStatistics, logger)
+		public NativeFileExportRequestBuilder(
+			NativeFilePathProvider filePathProvider,
+			IFileNameProvider fileNameProvider,
+			IExportFileValidator validator,
+			IFileProcessingStatistics fileProcessingStatistics,
+			ILog logger)
+			: base(filePathProvider, fileNameProvider, validator, fileProcessingStatistics, logger)
 		{
 		}
 
@@ -26,19 +31,30 @@
 		/// <param name="fileProcessingStatistics"></param>
 		/// <param name="logger"></param>
 		[DoNotSelect]
-		public NativeFileExportRequestBuilder(IFilePathProvider filePathProvider, IFileNameProvider fileNameProvider, IExportFileValidator validator,
-			IFileProcessingStatistics fileProcessingStatistics, ILog logger) : base(filePathProvider, fileNameProvider, validator, fileProcessingStatistics, logger)
+		public NativeFileExportRequestBuilder(
+			IFilePathProvider filePathProvider,
+			IFileNameProvider fileNameProvider,
+			IExportFileValidator validator,
+			IFileProcessingStatistics fileProcessingStatistics,
+			ILog logger)
+			: base(filePathProvider, fileNameProvider, validator, fileProcessingStatistics, logger)
 		{
 		}
 
 		protected override ExportRequest CreateExportRequest(ObjectExportInfo artifact, string destinationLocation)
 		{
-			return new PhysicalFileExportRequest(artifact, destinationLocation);
+			return PhysicalFileExportRequest.CreateRequestForNative(artifact, destinationLocation);
 		}
 
 		protected override bool IsFileToExport(ObjectExportInfo artifact)
 		{
 			return !string.IsNullOrWhiteSpace(artifact.NativeFileGuid);
+		}
+
+		protected override string RetrieveFileNameAndDestinationLocation(ObjectExportInfo artifact)
+		{
+			artifact.Filename = GetFileName(artifact);
+			return base.RetrieveFileNameAndDestinationLocation(artifact);
 		}
 	}
 }

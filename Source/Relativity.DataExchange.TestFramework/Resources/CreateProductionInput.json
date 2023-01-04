@@ -1,0 +1,95 @@
+{
+  "workspaceArtifactID": 100000,
+  "Production": {
+    "Details": {
+        "DateProduced": "0001-01-01T00:00:00",
+        "EmailRecipients": "",
+        "BrandingFontSize": 10,
+        "ScaleBrandingFont": false,
+        "PlaceholderImageFormat": "Tiff"
+    },
+    "Numbering": {
+        "NumberingType": "DocumentLevel",
+        "AttachmentRelationalField": {
+            "ArtifactID": 0,
+            "ViewFieldID": 0,
+            "Guids": []
+        },
+        "BatesPrefix": "BATES",
+        "BatesSuffix": "",
+        "BatesStartNumber": 0,
+        "NumberOfDigitsForDocumentNumbering": 7,
+        "IncludePageNumbers": false,
+        "DocumentNumberPageNumberSeparator": "",
+        "NumberOfDigitsForPageNumbering": 0,
+        "StartNumberingOnSecondPage": false
+    },
+    "SortOrder": [],
+    "Headers": {
+        "LeftHeader": {
+            "Type": "None",
+            "Field": {
+                "ArtifactID": 0,
+                "ViewFieldID": 0,
+                "Guids": []
+            },
+            "FreeText": "",
+            "FriendlyName": "Left Header"
+        },
+        "RightHeader": {
+            "Type": "None",
+            "Field": {
+                "ArtifactID": 0,
+                "ViewFieldID": 0,
+                "Guids": []
+            },
+            "FreeText": "",
+            "FriendlyName": "Right Header"
+        },
+        "CenterHeader": {
+            "Type": "None",
+            "Field": {
+                "ArtifactID": 0,
+                "ViewFieldID": 0,
+                "Guids": []
+            },
+            "FreeText": "",
+            "FriendlyName": "Center Header"
+        }
+    },
+    "Footers": {
+        "LeftFooter": {
+            "Type": "None",
+            "Field": {
+                "ArtifactID": 0,
+                "ViewFieldID": 0,
+                "Guids": []
+            },
+            "FreeText": "",
+            "FriendlyName": "Left Footer"
+        },
+        "RightFooter": {
+            "Type": "None",
+            "Field": {
+                "ArtifactID": 0,
+                "ViewFieldID": 0,
+                "Guids": []
+            },
+            "FreeText": "",
+            "FriendlyName": "Right Footer"
+        },
+        "CenterFooter": {
+            "Type": "None",
+            "Field": {
+                "ArtifactID": 0,
+                "ViewFieldID": 0,
+                "Guids": []
+            },
+            "FreeText": "",
+            "FriendlyName": "Center Footer"
+        }
+    },
+    "ShouldCopyInstanceOnWorkspaceCreate": false,
+    "Name": "Name"
+  }
+}

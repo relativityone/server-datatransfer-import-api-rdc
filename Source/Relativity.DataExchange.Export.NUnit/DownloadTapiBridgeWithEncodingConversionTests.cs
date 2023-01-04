@@ -7,39 +7,37 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
+	using System.IO;
+	using System.Threading;
 
 	using global::NUnit.Framework;
 
 	using Moq;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.Transfer;
 	using Relativity.Transfer;
 
 	[TestFixture]
 	public class DownloadTapiBridgeWithEncodingConversionTests : DownloadTapiBridgeAdapterTests
 	{
-		private Mock<ILongTextEncodingConverter> _longTextEncodingConverter;
-
 		[SetUp]
 		public void SetUp()
 		{
 			this.SetUpMocks();
-
-			this._longTextEncodingConverter = new Mock<ILongTextEncodingConverter>();
+			var logger = new TestNullLogger();
 
 			this.Instance = new DownloadTapiBridgeWithEncodingConversion(
 				this.TapiBridge.Object,
 				this.ProgressHandler.Object,
 				this.MessagesHandler.Object,
 				this.TransferStatistics.Object,
-				this._longTextEncodingConverter.Object,
-				new NullLogger());
+				logger);
 		}
 
 		[Test]
-		public void ItShouldStartConverterAfterAddingFirstTransferPath()
+		public void ItShouldAddRequestToTransferBridgeQueue()
 		{
 			// ACT
 			this.Instance.QueueDownload(new TransferPath());
@@ -47,31 +45,66 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.Instance.QueueDownload(new TransferPath());
 
 			// ASSERT
-			this._longTextEncodingConverter.Verify(x => x.StartListening(this.TapiBridge.Object), Times.Once);
+			this.TapiBridge.Verify(item => item.AddPath(It.IsAny<TransferPath>()), Times.Exactly(3));
+		}
+
+		[Test]
+		public void ItShouldNotifySubscribersOnSuccessfulTransfer()
+		{
+			// ARRANGE
+			const string firstFile = "firstFile";
+			const string secondFile = "secondFile";
+
+			global::System.Collections.Generic.List<string> subscriber = new global::System.Collections.Generic.List<string>();
+			this.Instance.FileDownloaded.Subscribe(subscriber.Add);
+
+			// ACT
+			this.TapiBridge.Raise(
+				x => x.TapiProgress += null,
+				new TapiProgressEventArgs(firstFile, Path.Combine(@"C:\temp", firstFile), true, true, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+
+			// subscriber should not be notified on failed transfer
+			this.TapiBridge.Raise(
+				x => x.TapiProgress += null,
+				new TapiProgressEventArgs(secondFile, Path.Combine(@"C:\temp", secondFile), true, false, 1, 1, DateTime.MinValue, DateTime.MaxValue));
+
+			// ASSERT
+
+			// that is needed as the events are send as
+			Thread.Sleep(20);
+
+			Assert.That(subscriber.Count, Is.EqualTo(1));
+			Assert.That(subscriber.Contains(firstFile));
+			Assert.That(!subscriber.Contains(secondFile));
 		}
 
 		[Test]
 		public void ItShouldAlwaysStopConverterAfterDownloadFinished()
 		{
-			this.TapiBridge.Setup(x => x.WaitForTransferJob()).Throws<Exception>();
+			// ARRANGE
+			this.TapiBridge
+				.Setup(
+					x => x.WaitForTransfers(
+						It.IsAny<string>(),
+						It.IsAny<string>(),
+						It.IsAny<string>(),
+						It.IsAny<bool>())).Throws<Exception>();
 
 			// ACT
 			this.Instance.QueueDownload(new TransferPath());
-			Assert.Throws<Exception>(() => this.Instance.WaitForTransferJob());
-
-			// ASSERT
-			this._longTextEncodingConverter.Verify(x => x.StopListening(this.TapiBridge.Object), Times.Once);
+			Assert.Throws<Exception>(() => this.Instance.WaitForTransfers());
 		}
 
 		[Test]
-		public void ItShouldWaitForConversionToComplete()
+		public void ItShouldNotWaitForTapiTransfer()
 		{
+			// ARRANGE
+
 			// ACT
-			this.Instance.QueueDownload(new TransferPath());
-			this.Instance.WaitForTransferJob();
+			this.Instance.WaitForTransfers();
 
 			// ASSERT
-			this._longTextEncodingConverter.Verify(x => x.WaitForConversionCompletion(), Times.Once);
+			this.TapiBridge.Verify(item => item.WaitForTransfers(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
 		}
 	}
 }

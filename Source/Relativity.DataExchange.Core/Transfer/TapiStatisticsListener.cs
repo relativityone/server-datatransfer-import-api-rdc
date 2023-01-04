@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Transfer
 	using System.Globalization;
 	using System.Linq;
 
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -18,6 +19,11 @@ namespace Relativity.DataExchange.Transfer
 	/// </summary>
 	internal sealed class TapiStatisticsListener : TapiListenerBase
 	{
+		/// <summary>
+		/// Number of bytes in a megabit. Used for units conversion.
+		/// </summary>
+		private const double BytesPerMegabit = 125_000.0;
+
 		/// <summary>
 		/// The thread synchronization root backing.
 		/// </summary>
@@ -37,14 +43,14 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiStatisticsListener"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		public TapiStatisticsListener(ITransferLog log, TransferContext context)
-			: base(log, context)
+		public TapiStatisticsListener(ILog logger, TransferContext context)
+			: base(logger, context)
 		{
 		}
 
@@ -96,16 +102,15 @@ namespace Relativity.DataExchange.Transfer
 				this.totalStatistics[key] = e;
 			}
 
-			const int TicksPerSecond = 10000000;
 			var totalTransferredBytes = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredBytes);
 			var totalTransferredFiles = this.totalStatistics.Sum(x => x.Value.Statistics.TotalTransferredFiles);
 			var totalTransferTicks = TimeSpan
 				.FromSeconds(this.totalStatistics.Sum(x => x.Value.Statistics.TransferTimeSeconds)).Ticks;
-			var transferRateBytes = (e.Statistics.TransferRateMbps * 1000000) / 8.0;
-			var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks, transferRateBytes);
+			var transferRateBytesPerSecond = e.Statistics.TransferRateMbps * BytesPerMegabit;
+			var args = new TapiStatisticsEventArgs(totalTransferredBytes, totalTransferredFiles, totalTransferTicks, transferRateBytesPerSecond);
 			this.StatisticsEvent?.Invoke(this, args);
 
-			// Be careful with overly agressive statistics logging.
+			// Be careful with overly aggressive statistics logging.
 			const int LogStatisticsRateSeconds = 15;
 			var logTimestampCopy = this.LogTimestamp;
 			var logStatistics = logTimestampCopy == null
@@ -115,26 +120,26 @@ namespace Relativity.DataExchange.Transfer
 				return;
 			}
 
-			var totalSeconds = totalTransferTicks / TicksPerSecond;
+			var totalSeconds = totalTransferTicks / TimeSpan.TicksPerSecond;
 			if (totalSeconds > 0)
 			{
 				var aggregateDataRate = totalTransferredBytes / totalSeconds;
-				var aggregateMessage = string.Format(
-					CultureInfo.CurrentCulture,
-					"WinEDDS aggregate statistics: {0}/sec",
+				this.Logger.LogInformation(
+					"Aggregate job {TransferJobId} statistics: {TransferDataRate}/sec",
+					e.Request?.JobId,
 					ToFileSize(aggregateDataRate));
-				this.TransferLog.LogInformation2(e.Request, aggregateMessage);
 			}
 
 			var jobMessage = string.Format(
 				CultureInfo.CurrentCulture,
-				"WinEDDS job {0} statistics - Files: {1}/{2} - Progress: {3:0.00}% - Rate: {4:0.00}/sec",
+				"Job {0} statistics - Files: {1}/{2} - Files identified as malware {3} - Progress: {4:0.00}% - Rate: {5:0.00}/sec",
 				e.Request.JobId,
 				e.Statistics.TotalTransferredFiles,
 				e.Statistics.TotalRequestFiles,
+				e.Statistics.TotalFilesIdentifiedAsMalware,
 				e.Statistics.Progress,
-				ToFileSize(transferRateBytes));
-			this.TransferLog.LogInformation2(e.Request, jobMessage);
+				ToFileSize(transferRateBytesPerSecond));
+			this.Logger.LogInformation(jobMessage);
 			this.LogTimestamp = DateTime.Now;
 		}
 

@@ -1,8 +1,10 @@
 Imports System.Net
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 Imports Relativity.OAuth2Client.Exceptions
+Imports Relativity.Services.Exceptions
 
 Namespace Relativity.Desktop.Client
 	Public Class MainForm
@@ -430,6 +432,10 @@ Namespace Relativity.Desktop.Client
 					'' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
 					'' TODO: this shloud be rewritten to use simple while-like loop
 					Await CheckCertificateAsync()
+			    Case AppEvent.AppEventType.StartOfConnectionModeCheck
+			        Me.UpdateStatus("Connection Mode Check...")
+			    Case AppEvent.AppEventType.EndOfConnectionModeCheck
+			        Me.UpdateStatus("")
 			End Select
 		End Function
 
@@ -461,6 +467,7 @@ Namespace Relativity.Desktop.Client
 
 			ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
 			_mainWindowHandle = Me.Handle
+			Me.Text = Application.GetProductName()
 			LoadWindowSize()
 			Me.CenterToScreen()
 			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
@@ -486,6 +493,10 @@ Namespace Relativity.Desktop.Client
 				_application.HandleWebException(ex)
 			Catch ex As RelativityNotSupportedException
 				_application.HandleRelativityNotSupportedException(ex)
+			Catch ex As ServiceInfrastructureException
+				_application.HandleWebException(ex)
+			Catch ex As Exception
+				_application.HandleException(ex)
 			End Try
 
 		End Function
@@ -575,7 +586,7 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Function PopulateObjectTypeDropDown() As Task
-			Dim objectTypeManager As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync().ConfigureAwait(True), _application.CookieContainer)
+			Dim objectTypeManager As kCura.WinEDDS.Service.Replacement.IObjectTypeManager = ManagerFactory.CreateObjectTypeManager(Await _application.GetCredentialsAsync().ConfigureAwait(True), _application.CookieContainer, AddressOf _application.GetCorrelationId)
 			Dim uploadableObjectTypes As System.Data.DataRowCollection = objectTypeManager.RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 			Dim selectedObjectTypeID As Int32 = ArtifactType.Document
 			If _objectTypeDropDown.Items.Count > 0 Then

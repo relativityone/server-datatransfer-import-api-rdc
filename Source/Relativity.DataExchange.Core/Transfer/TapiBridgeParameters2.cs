@@ -4,6 +4,8 @@
 // </copyright>
 // <summary>
 //   Represents the generic parameters to setup a native file transfer.
+//   Download and Upload TapiBridgeParameters2 should be used, but to preserve legacy behaviour this class is using
+//   Import behaviour by default
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -25,33 +27,36 @@ namespace Relativity.DataExchange.Transfer
 		public TapiBridgeParameters2()
 		{
 			this.Application = null;
-			this.AsperaBcpRootFolder = null;
-			this.AsperaDocRootLevels = 1;
-			this.BadPathErrorsRetry = false;
+			this.AsperaBcpRootFolder = AppSettingsConstants.TapiAsperaBcpRootFolderDefaultValue;
+			this.AsperaDocRootLevels = AppSettingsConstants.TapiAsperaNativeDocRootLevelsDefaultValue;
+			this.AsperaDatagramSize = AppSettingsConstants.TapiAsperaDatagramSizeDefaultValue;
+			this.BadPathErrorsRetry = AppSettingsConstants.TapiBadPathErrorsRetryDefaultValue;
 			this.ClientRequestId = Guid.NewGuid();
 			this.Credentials = null;
-			this.FileNotFoundErrorsDisabled = false;
-			this.FileNotFoundErrorsRetry = true;
+			this.FileNotFoundErrorsDisabled = AppSettingsConstants.TapiFileNotFoundErrorsDisabledDefaultValue;
+			this.FileNotFoundErrorsRetry = AppSettingsConstants.TapiFileNotFoundErrorsRetryDefaultValue;
 			this.FileShare = null;
-			this.FileshareCredentials = null;
-			this.ForceAsperaClient = false;
-			this.ForceClientCandidates = null;
-			this.ForceHttpClient = false;
-			this.ForceFileShareClient = false;
-			this.LargeFileProgressEnabled = false;
+			this.ForceAsperaClient = AppSettingsConstants.TapiForceAsperaClientDefaultValue;
+			this.ForceClientCandidates = AppSettingsConstants.TapiForceClientCandidatesDefaultValue;
+			this.ForceHttpClient = AppSettingsConstants.TapiForceHttpClientDefaultValue;
+			this.ForceFileShareClient = AppSettingsConstants.TapiForceFileShareClientDefaultValue;
+			this.LargeFileProgressEnabled = AppSettingsConstants.TapiLargeFileProgressEnabledDefaultValue;
 			this.LogConfigFile = null;
-			this.MaxJobParallelism = 10;
+			this.MaxInactivitySeconds = AppSettingsConstants.TapiMaxInactivitySecondsDefaultValue;
+			this.MaxJobParallelism = AppSettingsConstants.TapiMaxJobParallelismDefaultValue;
 			this.MaxJobRetryAttempts = 3;
+			this.HttpErrorNumberOfRetries = AppSettingsConstants.HttpErrorNumberOfRetriesDefaultValue;
 			this.MinDataRateMbps = 0;
-			this.PermissionErrorsRetry = false;
-			this.PreserveFileTimestamps = false;
-			this.SubmitApmMetrics = true;
+			this.PermissionErrorsRetry = AppSettingsConstants.PermissionErrorsRetryDefaultValue;
+			this.PreserveFileTimestamps = AppSettingsConstants.TapiPreserveFileTimestampsDefaultValue;
+			this.SubmitApmMetrics = AppSettingsConstants.TapiSubmitApmMetricsDefaultValue;
 			this.SupportCheckPath = null;
-			this.TargetDataRateMbps = 100;
+			this.TargetDataRateMbps = AppSettingsConstants.TapiTargetDataRateMbpsDefaultValue;
 			this.TargetPath = null;
+			this.TransferCredential = null;
 			this.TransferLogDirectory = null;
-			this.TimeoutSeconds = 300;
-			this.WaitTimeBetweenRetryAttempts = 30;
+			this.TimeoutSeconds = AppSettingsConstants.HttpTimeoutSecondsDefaultValue;
+			this.WaitTimeBetweenRetryAttempts = AppSettingsConstants.IoErrorWaitTimeInSecondsDefaultValue;
 			this.WebServiceUrl = null;
 			this.WebCookieContainer = null;
 			this.WorkspaceId = 0;
@@ -73,13 +78,13 @@ namespace Relativity.DataExchange.Transfer
 			this.Application = copy.Application;
 			this.AsperaBcpRootFolder = copy.AsperaBcpRootFolder;
 			this.AsperaDocRootLevels = copy.AsperaDocRootLevels;
+			this.AsperaDatagramSize = copy.AsperaDatagramSize;
 			this.BadPathErrorsRetry = copy.BadPathErrorsRetry;
 			this.ClientRequestId = copy.ClientRequestId;
 			this.Credentials = copy.Credentials;
 			this.FileNotFoundErrorsRetry = copy.FileNotFoundErrorsRetry;
 			this.FileNotFoundErrorsDisabled = copy.FileNotFoundErrorsDisabled;
 			this.FileShare = copy.FileShare;
-			this.FileshareCredentials = copy.FileshareCredentials;
 			this.ForceAsperaClient = copy.ForceAsperaClient;
 			this.ForceClientCandidates = copy.ForceClientCandidates;
 			this.ForceHttpClient = copy.ForceHttpClient;
@@ -87,8 +92,10 @@ namespace Relativity.DataExchange.Transfer
 			this.LargeFileProgressEnabled = copy.LargeFileProgressEnabled;
 			this.TargetDataRateMbps = copy.TargetDataRateMbps;
 			this.LogConfigFile = copy.LogConfigFile;
+			this.MaxInactivitySeconds = copy.MaxInactivitySeconds;
 			this.MaxJobParallelism = copy.MaxJobParallelism;
 			this.MaxJobRetryAttempts = copy.MaxJobRetryAttempts;
+			this.HttpErrorNumberOfRetries = copy.HttpErrorNumberOfRetries;
 			this.MinDataRateMbps = copy.MinDataRateMbps;
 			this.PermissionErrorsRetry = copy.PermissionErrorsRetry;
 			this.PreserveFileTimestamps = copy.PreserveFileTimestamps;
@@ -96,6 +103,7 @@ namespace Relativity.DataExchange.Transfer
 			this.SupportCheckPath = copy.SupportCheckPath;
 			this.TargetPath = copy.TargetPath;
 			this.TimeoutSeconds = copy.TimeoutSeconds;
+			this.TransferCredential = copy.TransferCredential;
 			this.TransferLogDirectory = copy.TransferLogDirectory;
 			this.WaitTimeBetweenRetryAttempts = copy.WaitTimeBetweenRetryAttempts;
 			this.WebServiceUrl = copy.WebServiceUrl;
@@ -134,6 +142,15 @@ namespace Relativity.DataExchange.Transfer
 		/// The number of levels.
 		/// </value>
 		public int AsperaDocRootLevels
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the size of the largest datagram size that will be used by Aspera.
+		/// </summary>
+		public int AsperaDatagramSize
 		{
 			get;
 			set;
@@ -194,18 +211,6 @@ namespace Relativity.DataExchange.Transfer
 		/// <see langword="true" /> to retry missing file errors; otherwise, <see langword="false" />.
 		/// </value>
 		public bool FileNotFoundErrorsRetry
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the Aspera credentials.
-		/// </summary>
-		/// <value>
-		/// The <see cref="AsperaCredential"/> instance.
-		/// </value>
-		public AsperaCredential FileshareCredentials
 		{
 			get;
 			set;
@@ -296,6 +301,18 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
+		/// Gets or sets the maximum number of seconds to wait before considering a transfer where data isn't being written inactive.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		public int MaxInactivitySeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the max degree of parallelism when creating a job.
 		/// </summary>
 		/// <value>
@@ -314,6 +331,18 @@ namespace Relativity.DataExchange.Transfer
 		/// The max job retry count.
 		/// </value>
 		public int MaxJobRetryAttempts
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the max number of http retries.
+		/// </summary>
+		/// <value>
+		/// The max job retry count.
+		/// </value>
+		public int HttpErrorNumberOfRetries
 		{
 			get;
 			set;
@@ -407,9 +436,21 @@ namespace Relativity.DataExchange.Transfer
 		/// Gets or sets the timeout in seconds.
 		/// </summary>
 		/// <value>
-		/// The timeout.
+		/// The total number of seconds.
 		/// </value>
 		public int TimeoutSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the transfer credential.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Credential"/> instance.
+		/// </value>
+		public Credential TransferCredential
 		{
 			get;
 			set;
@@ -443,7 +484,7 @@ namespace Relativity.DataExchange.Transfer
 		/// Gets or sets the amount of time, in seconds, to wait wait between retry attempts.
 		/// </summary>
 		/// <value>
-		/// The wait time.
+		/// The total number of seconds.
 		/// </value>
 		public int WaitTimeBetweenRetryAttempts
 		{

@@ -6,10 +6,13 @@
 
 namespace Relativity.DataExchange.NUnit.Integration
 {
+	using System;
 	using System.Net;
 	using System.Threading;
 
 	using global::NUnit.Framework;
+
+	using kCura.WinEDDS.Service;
 
 	using Moq;
 
@@ -92,6 +95,8 @@ namespace Relativity.DataExchange.NUnit.Integration
 		[SetUp]
 		public void Setup()
 		{
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Started");
+
 			ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
@@ -111,7 +116,18 @@ namespace Relativity.DataExchange.NUnit.Integration
 				this.TestParameters.WorkspaceId,
 				Is.Positive,
 				() => "The test workspace must be created or specified in order to run this integration test.");
+
+			// We need to re-login to ensure that client is authenticated in the WebAPI/Distributed.
+			this.ReLogOn();
+
 			this.OnSetup();
+		}
+
+		[TearDown]
+		public void Teardown()
+		{
+			this.OnTeardown();
+			Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - {TestContext.CurrentContext.Test.FullName} - Finished");
 		}
 
 		/// <summary>
@@ -119,6 +135,24 @@ namespace Relativity.DataExchange.NUnit.Integration
 		/// </summary>
 		protected virtual void OnSetup()
 		{
+		}
+
+		/// <summary>
+		/// Called when the test tear down is executed.
+		/// </summary>
+		protected virtual void OnTeardown()
+		{
+		}
+
+		/// <summary>
+		/// Re-logging in Relativity WebAPI and Relativity.Distributed.
+		/// </summary>
+		private void ReLogOn()
+		{
+			using (var userManager = new UserManager(this.RelativityInstance.Credentials, this.RelativityInstance.CookieContainer))
+			{
+				userManager.AttemptReLogin(retryOnFailure: true);
+			}
 		}
 
 		/// <summary>

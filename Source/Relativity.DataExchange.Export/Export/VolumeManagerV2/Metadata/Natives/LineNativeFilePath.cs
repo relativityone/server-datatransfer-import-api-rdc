@@ -5,7 +5,9 @@
 
 	using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
-	using kCura.WinEDDS.LoadFileEntry;	
+	using kCura.WinEDDS.LoadFileEntry;
+
+	using Relativity.DataExchange.Logger;
 
 	public class LineNativeFilePath : ILineNativeFilePath
 	{
@@ -32,11 +34,11 @@
 				{
 					string nativeLocation = string.IsNullOrWhiteSpace(artifact.NativeTempLocation) ? artifact.NativeTempLocation : _filePathTransformer.TransformPath(artifact.NativeTempLocation);
 					nativeLocationCell = _loadFileCellFormatter.CreateNativeCell(nativeLocation, artifact);
-					_logger.LogVerbose("Copying natives, so path is local {path}.", nativeLocation);
+					_logger.LogVerbose("Copying natives, so path is local {path}.", nativeLocation.Secure());
 				}
 				else
 				{
-					_logger.LogVerbose("Not copying natives, so path is remote {path}.", artifact.NativeSourceLocation);
+					_logger.LogVerbose("Not copying natives, so path is remote {path}.", artifact.NativeSourceLocation.Secure());
 					nativeLocationCell = _loadFileCellFormatter.CreateNativeCell(artifact.NativeSourceLocation, artifact);
 				}
 

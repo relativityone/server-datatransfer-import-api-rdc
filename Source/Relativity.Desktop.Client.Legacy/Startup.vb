@@ -1,7 +1,9 @@
+Imports System.Net
 Imports kCura.WinEDDS.Container
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export.VolumeManagerV2.Container
-
+Imports Relativity.DataExchange.Logger
+Imports Relativity.Logging
 
 Namespace Relativity.Desktop.Client
 
@@ -34,8 +36,10 @@ Namespace Relativity.Desktop.Client
 #End Region
 
 		Public Sub Main()
-			ContainerFactoryProvider.ContainerFactory = New ContainerFactory()
-			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler()
+			SetupRelativityLogging()
+			ImportCredentialManager.WindowsAuthenticationCredentialsProvider = AddressOf WindowsCredentialsLogin.LoginWindowsAuth
+			ContainerFactoryProvider.ContainerFactory = New ContainerFactory(RelativityLogger.Instance)
+			Dim handler As ThreadExceptionHandler = New ThreadExceptionHandler(RelativityLogger.Instance)
 			AddHandler System.Windows.Forms.Application.ThreadException, AddressOf handler.Application_ThreadException
 
 			Dim args As String() = System.Environment.GetCommandLineArgs
@@ -55,6 +59,10 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Function UrlIsValid(ByVal url As String) As Boolean
+			Return KeplerUrlIsValid(url) OrElse WebAPIUrlIsValid(url)
+		End Function
+
+		Private Function WebAPIUrlIsValid(ByVal url As String) As Boolean
 			Try
 				url = url.TrimEnd("\"c).TrimEnd("/"c) & "/"
 				Dim req As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(url & "RelativityManager.asmx"), System.Net.HttpWebRequest)
@@ -66,10 +74,29 @@ Namespace Relativity.Desktop.Client
 			End Try
 		End Function
 
+		Private Function KeplerUrlIsValid(ByVal url As String) As Boolean
+			Try
+				url = new Uri(url).GetLeftPart(UriPartial.Authority) & "/Relativity.Rest/Api"
+				Dim req As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(url), System.Net.HttpWebRequest)
+				req.Credentials = System.Net.CredentialCache.DefaultCredentials
+				Dim resp As System.Net.HttpWebResponse = DirectCast(req.GetResponse(), System.Net.HttpWebResponse)
+				Return True
+			Catch ex As WebException
+				Dim resp As System.Net.HttpWebResponse = DirectCast(ex.Response, System.Net.HttpWebResponse)
+				If resp.StatusCode = 401 Then
+					Return True
+				End If
+				Return False
+			Catch ex As Exception
+				Return False
+			End Try
+		End Function
+
 		Private Async Function RunInConsoleMode() As Task
 			Try
+				System.Net.ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 12
 				_application = Global.Relativity.Desktop.Client.Application.Instance
-				Dim _import As ImportManager = New ImportManager()
+				Dim _import As ImportManager = New ImportManager(RelativityLogger.Instance)
 
 				Dim commandList As CommandList = CommandLineParser.Parse
 				For Each command As Command In commandList
@@ -116,7 +143,7 @@ Namespace Relativity.Desktop.Client
 						Console.WriteLine(Global.Relativity.Desktop.Client.Application.ACCESS_DISABLED_MESSAGE)
 						Return
 					ElseIf loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.InvalidClientCredentials Then
-						Throw New ClientCrendentialsException
+						Throw New ClientCredentialsException
 					ElseIf loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.FailToConnectToIdentityServer Then
 						Throw New ConnectToIdentityServerException
 					ElseIf Not loginResult = Global.Relativity.Desktop.Client.Application.CredentialCheckResult.Success Then
@@ -159,6 +186,14 @@ Namespace Relativity.Desktop.Client
 			End Try
 
 		End Function
+
+		Private Sub SetupRelativityLogging()
+			Dim secureLogFactory As ISecureLogFactory = new RdcSecureLogFactory()
+			Dim secureLogger As ILog = secureLogFactory.CreateSecureLogger()
+			' Storing the logger reference on the singleton ensures it will be used throughout (see RelativityLogFactory).
+			Log.Logger = secureLogger
+			RelativityLogger.Instance = secureLogger
+		End Sub
 
 #Region " Utility "
 

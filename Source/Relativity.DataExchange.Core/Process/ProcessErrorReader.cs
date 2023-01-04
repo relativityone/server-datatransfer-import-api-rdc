@@ -9,8 +9,6 @@ namespace Relativity.DataExchange.Process
 	using System.Globalization;
 	using System.Threading;
 
-	using Microsoft.VisualBasic.CompilerServices;
-
 	using Relativity.DataExchange.Data;
 	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
@@ -57,13 +55,7 @@ namespace Relativity.DataExchange.Process
 		/// <param name="cancellationToken">
 		/// The Cancel Token used to stop the process a any requested time.</param>
 		public ProcessErrorReader(IoReporterContext context, ILog logger, CancellationToken cancellationToken)
-			: base(
-				",",
-				"\"",
-				Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(20)),
-				context,
-				logger,
-				cancellationToken)
+			: base(',', '"', Microsoft.VisualBasic.Strings.ChrW(20), context, logger, cancellationToken)
 		{
 		}
 

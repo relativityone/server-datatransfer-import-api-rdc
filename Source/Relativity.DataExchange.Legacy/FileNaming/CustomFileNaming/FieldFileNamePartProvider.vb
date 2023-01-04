@@ -30,13 +30,7 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 		End Function
 
 		Private Function GetYesNoFieldValue(viewFieldInfo As ViewFieldInfo, fieldValue As String) As String
-			Dim retVal As String = ""
-			If fieldValue = "True"
-				retVal = viewFieldInfo.DisplayName
-			Else
-				retVal = ""
-			End If
-			Return retVal
+			Return If(fieldValue = "True", viewFieldInfo.DisplayName, "")
 		End Function
 
 		Private Function CleanUpFieldValueFromObjectTags(fieldValue As String) As String

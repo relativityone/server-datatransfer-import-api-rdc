@@ -1,14 +1,21 @@
 ﻿Imports System.Net
+Imports System.Collections.Concurrent
 Imports System.Collections.Generic
 Imports System.Threading
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 
-Friend Class ImportCredentialManager
+Public Class ImportCredentialManager
 
 	Private Shared CredentialCache As List(Of CredentialEntry)
+	Private ReadOnly Shared _versionCache As ConcurrentDictionary(Of String, VersionEntry) = New ConcurrentDictionary(Of String,VersionEntry)()
 	Private Shared _WebServiceURL As String
-
-	Private Shared _lockObject As New System.Object
+	
+	Private Shared _lockObject As New Object
+	''' <summary>
+	''' This is set by RDC, to inject the function, so we don't have a reference to windows authentication in IAPI.
+	''' </summary>
+	Public Shared WindowsAuthenticationCredentialsProvider As Func(Of cookieContainer, String, CancellationToken, IRunningContext, Relativity.Logging.ILog, NetworkCredential)
 
 	Public Shared Property WebServiceURL As String
 		Get
@@ -23,7 +30,21 @@ Friend Class ImportCredentialManager
 		End Set
 	End Property
 
-	Public Shared Function GetCredentials(ByVal UserName As String, ByVal Password As String) As SessionCredentials
+	''' <summary>
+	''' Authenticates in Relativity and returns credentials.
+	''' When <paramref name="UserName"/> is empty then Integrated Windows Authentication is used.
+	''' When <paramref name="UserName"/> is equal to <see cref="Constants.OAuthWebApiBearerTokenUserName"/>
+	''' then bearer token authentication is used.
+	''' Otherwise it uses standard username and password authentication
+	'''  </summary>
+	''' <param name="UserName">username or <see cref="Constants.OAuthWebApiBearerTokenUserName"/></param>
+	''' <param name="Password">password or bearer token</param>
+	''' <param name="runningContext">Contains information about the context in which jobs are executed.</param>
+	''' <returns>Credentials <see cref="SessionCredentials"/></returns>
+	Public Shared Function GetCredentials(ByVal UserName As String,
+										  ByVal Password As String,
+										  ByVal runningContext As IRunningContext,
+										  ByVal correlationIdFunc As Func(Of String)) As SessionCredentials
 		' this function needs to be thread safe so that multiple simultaneous threads could call it
 
 		' data cleanup first
@@ -40,7 +61,7 @@ Friend Class ImportCredentialManager
 		End If
 
 		Dim retVal As SessionCredentials = Nothing
-		Dim cachedCreds As Boolean = False
+		Dim cachedCreds As Boolean
 
 		SyncLock _lockObject
 			' This section needs to be sync locked
@@ -53,19 +74,19 @@ Friend Class ImportCredentialManager
 			Else
 
 				' 2. credential in cache not found, so actually log in and create credentials
-				Dim logger As Relativity.Logging.ILog = RelativityLogFactory.CreateLog(RelativityLogFactory.DefaultSubSystem)
+				Dim logger As Relativity.Logging.ILog = RelativityLogger.Instance
 				Dim token As CancellationToken = CancellationToken.None
-				Dim creds As NetworkCredential = Nothing
-				Dim credsTapi As NetworkCredential = Nothing
+				Dim creds As NetworkCredential
 				Dim cookieMonster As New CookieContainer
 
 				Try
 					If String.IsNullOrEmpty(UserName) Then
-						creds = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuth(cookieMonster, WebServiceURL, token, logger)
-						credsTapi = kCura.WinEDDS.Api.LoginHelper.LoginWindowsAuthTapi(cookieMonster, WebServiceURL, token, logger)
+						If WindowsAuthenticationCredentialsProvider Is Nothing Then
+							Throw New InvalidOperationException("User name can't be null when no windows integrated flow is specified")
+						End If
+						creds = WindowsAuthenticationCredentialsProvider.Invoke(cookieMonster, WebServiceURL, token, runningContext, logger)
 					Else
-						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster, WebServiceURL, token, logger)
-						credsTapi = creds
+						creds = kCura.WinEDDS.Api.LoginHelper.LoginUsernamePassword(UserName.Trim(), Password.Trim(), cookieMonster, WebServiceURL, token, runningContext, logger, correlationIdFunc)
 					End If
 				Catch ex As kCura.WinEDDS.Exceptions.CredentialsNotSupportedException
 					Throw
@@ -79,7 +100,8 @@ Friend Class ImportCredentialManager
 
 				' add credentials to cache and return session credentials to caller
 				If Not creds Is Nothing Then
-					retVal = AddCredentials(UserName, Password, creds, cookieMonster, credsTapi).SessionCredentials()
+					retVal = AddCredentials(UserName, Password, creds, cookieMonster).SessionCredentials()
+					_versionCache.TryAdd(WebServiceURL, New VersionEntry() With {.RelativityVersion = runningContext.RelativityVersion, .ImportExportWebApiVersion = runningContext.ImportExportWebApiVersion})
 				End If
 				cachedCreds = False
 			End If
@@ -97,8 +119,22 @@ Friend Class ImportCredentialManager
 			End If
 		End If
 
+		AddVersionToContext(retVal, runningContext, correlationIdFunc)
+
 		Return retVal
 	End Function
+
+	Private Shared Sub AddVersionToContext(credentials As SessionCredentials, runningContext As IRunningContext, ByVal correlationIdFunc As Func(Of String))
+		Dim foundVersion As VersionEntry = Nothing
+		_versionCache.TryGetValue(WebServiceURL, foundVersion)
+		If Not foundVersion Is Nothing Then
+			runningContext.RelativityVersion = foundVersion.RelativityVersion
+			runningContext.ImportExportWebApiVersion = foundVersion.ImportExportWebApiVersion
+		Else
+			kCura.WinEDDS.Api.LoginHelper.ValidateVersionCompatibility(credentials.Credentials, credentials.CookieMonster, WebServiceURL, CancellationToken.None, runningContext, RelativityLogger.Instance, correlationIdFunc)
+			_versionCache.TryAdd(WebServiceURL, New VersionEntry() With { .RelativityVersion = runningContext.RelativityVersion, .ImportExportWebApiVersion = runningContext.ImportExportWebApiVersion })
+		End If
+	End Sub
 
 	Private Shared Function FindCredentials(ByVal UserName As String, ByVal Password As String) As CredentialEntry
 		If CredentialCache Is Nothing Then
@@ -114,7 +150,7 @@ Friend Class ImportCredentialManager
 		Return Nothing
 	End Function
 
-	Private Shared Function AddCredentials(ByVal UserName As String, ByVal Password As String, ByVal creds As ICredentials, ByVal cookieMonster As CookieContainer, ByVal tapiCreds As NetworkCredential) As CredentialEntry
+	Private Shared Function AddCredentials(ByVal UserName As String, ByVal Password As String, ByVal creds As NetworkCredential, ByVal cookieMonster As CookieContainer) As CredentialEntry
 		If CredentialCache Is Nothing Then
 			CredentialCache = New List(Of CredentialEntry)
 		End If
@@ -124,7 +160,6 @@ Friend Class ImportCredentialManager
 		ce.UserName = UserName
 		ce.PassWord = Password
 		ce.Credentials = creds
-		ce.TapiCredential = tapiCreds
 		ce.CookieMonster = cookieMonster
 		ce.URL = WebServiceURL
 
@@ -135,14 +170,13 @@ Friend Class ImportCredentialManager
 	Public Class SessionCredentials
 		Public UserName As String
 		Public CookieMonster As CookieContainer
-		Public TapiCredential As NetworkCredential
-		Private _Credentials As ICredentials
+		Private _Credentials As NetworkCredential
 
-		Public Property Credentials As ICredentials
+		Public Property Credentials As NetworkCredential
 			Get
 				Return _Credentials
 			End Get
-			Friend Set(value As ICredentials)
+			Friend Set(value As NetworkCredential)
 				If value Is Nothing Then
 					Throw New System.Exception("Invalid property value.  Credentials cannot be null")
 				End If
@@ -156,14 +190,13 @@ Friend Class ImportCredentialManager
 		Public PassWord As String
 		Public URL As String
 		Public CookieMonster As CookieContainer
-		Public TapiCredential As NetworkCredential
-		Private _Credentials As ICredentials
-		
-		Public Property Credentials As ICredentials
+		Private _Credentials As NetworkCredential
+
+		Public Property Credentials As NetworkCredential
 			Get
 				Return _Credentials
 			End Get
-			Friend Set(value As ICredentials)
+			Friend Set(value As NetworkCredential)
 				If value Is Nothing Then
 					Throw New System.Exception("Invalid property value.  Credentials cannot be null")
 				End If
@@ -175,9 +208,13 @@ Friend Class ImportCredentialManager
 			Dim sc As New SessionCredentials()
 			sc.UserName = UserName
 			sc.Credentials = Credentials
-			sc.TapiCredential = TapiCredential
 			sc.CookieMonster = CookieMonster
 			Return sc
 		End Function
+	End Class
+
+	Private Class VersionEntry
+		Public RelativityVersion As Version
+		Public ImportExportWebApiVersion As Version
 	End Class
 End Class

@@ -5,7 +5,6 @@ namespace Relativity.DataExchange.Io
 {
 	using System;
 	using System.IO;
-	using Microsoft.VisualBasic;
 
 	/// <summary>
 	/// Class that is specialized in writing error messages to the error message file.
@@ -84,7 +83,7 @@ namespace Relativity.DataExchange.Io
 		{
 			lock (this.lockObject)
 			{
-				var lineForFile = toWrite.ValuesForErrorFile().ToCsv(CSVFormat);
+				var lineForFile = toWrite.FormattedLineInFile();
 				this.stream.Value.WriteLine(lineForFile);
 
 				// We flush so we can never have half written lines in our file, for safety and convenience.
@@ -103,22 +102,6 @@ namespace Relativity.DataExchange.Io
 				this.SetStreamToInitialValue(this.FilePath);
 				this.disposed = false;
 			}
-		}
-
-		/// <summary>
-		/// CSVFormat will take in a string, replace a double quote characters with a pair of double quote characters, then surround the string with double quote characters
-		/// This preps it for being written as a field in a CSV file.
-		/// </summary>
-		/// <param name="fieldValue">The string to convert to CSV format.</param>
-		/// <returns>
-		/// The converted data.
-		/// </returns>
-		private static string CSVFormat(string fieldValue)
-		{
-			var quote = ControlChars.Quote.ToString();
-			var doubleQuote = quote + quote;
-			var escapedField = fieldValue.Replace(quote, doubleQuote);
-			return $"{quote}{escapedField}{quote}";
 		}
 
 		private void SetStreamToInitialValue(string filePath)

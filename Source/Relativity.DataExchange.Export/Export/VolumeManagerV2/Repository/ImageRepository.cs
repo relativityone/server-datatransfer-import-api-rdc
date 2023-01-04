@@ -1,21 +1,25 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Repository
 {
+	using System;
+
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 
 	using System.Collections.Generic;
 	using System.Linq;
 
+	using kCura.WinEDDS.Exporters;
+
 	public class ImageRepository : IClearable
 	{
-		private List<Image> _images;
+		private List<ImageRequest> _images;
 		private readonly object _syncLock = new object();
 
 		public ImageRepository()
 		{
-			_images = new List<Image>();
+			_images = new List<ImageRequest>();
 		}
 
-		public void Add(IList<Image> images)
+		public void Add(IList<ImageRequest> images)
 		{
 			lock (_syncLock)
 			{
@@ -23,15 +27,33 @@
 			}
 		}
 
-		public Image GetImage(int artifactId, string batesNumber)
+		public ImageRequest GetImage(int artifactId, string batesNumber)
 		{
 			lock (_syncLock)
 			{
-				return _images.First(x => x.Artifact.ArtifactID == artifactId && x.Artifact.BatesNumber == batesNumber);
+				return _images.FirstOrDefault(
+					x => x.Artifact.ArtifactID == artifactId && string.Compare(
+						     x.Artifact.BatesNumber,
+						     batesNumber,
+						     StringComparison.OrdinalIgnoreCase) == 0);
 			}
 		}
 
-		public IList<Image> GetArtifactImages(int artifactId)
+		public IList<ImageRequest> GetImagesByTargetFile(string targetFile)
+		{
+			lock (_syncLock)
+			{
+				string trimmedTargetFile = targetFile != null ? targetFile.TrimEnd() : string.Empty;
+				List<ImageRequest> images = _images.Where(
+					x => x.ExportRequest?.DestinationLocation != null && string.Compare(
+						     x.ExportRequest.DestinationLocation.TrimEnd(),
+						     trimmedTargetFile,
+						     StringComparison.OrdinalIgnoreCase) == 0).ToList();
+				return images;
+			}
+		}
+
+		public IList<ImageRequest> GetArtifactImages(int artifactId)
 		{
 			lock (_syncLock)
 			{
@@ -39,7 +61,7 @@
 			}
 		}
 
-		public IList<Image> GetImages()
+		public IList<ImageRequest> GetImages()
 		{
 			lock (_syncLock)
 			{
@@ -51,23 +73,22 @@
 		{
 			lock (_syncLock)
 			{
-				return _images.Where(x => !x.HasBeenDownloaded).Select(x => x.ExportRequest);
+				return _images.Where(x => !x.TransferCompleted).Select(x => x.ExportRequest);
 			}
 		}
 
 		public bool AnyRequestForLocation(string destinationLocation)
 		{
-			lock (_syncLock)
+			if (string.IsNullOrWhiteSpace(destinationLocation))
 			{
-				return GetExportRequests().Any(x => x.DestinationLocation == destinationLocation);
+				return false;
 			}
-		}
 
-		public Image GetByLineNumber(int lineNumber)
-		{
 			lock (_syncLock)
 			{
-				return _images.FirstOrDefault(x => x.ExportRequest?.Order == lineNumber);
+				return GetExportRequests().Any(
+					x => string.Compare(x.DestinationLocation, destinationLocation, StringComparison.OrdinalIgnoreCase)
+					     == 0);
 			}
 		}
 
@@ -75,7 +96,7 @@
 		{
 			lock (_syncLock)
 			{
-				_images = new List<Image>();
+				_images = new List<ImageRequest>();
 			}
 		}
 	}

@@ -12,11 +12,15 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using System.Data;
 	using System.Linq;
 	using System.Net;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS.Service;
+
 	using Relativity.DataExchange;
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
 	/// <summary>
 	/// Represents an abstract base class object to provide common functionality and helper methods.
@@ -120,12 +124,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		/// </param>
 		protected ImportTestsBase(Relativity.Logging.ILog log)
 		{
-			if (log == null)
-			{
-				throw new ArgumentNullException(nameof(log));
-			}
-
-			this.Logger = log;
+			this.Logger = log ?? throw new ArgumentNullException(nameof(log));
 			Assert.That(this.Logger, Is.Not.Null);
 		}
 
@@ -347,11 +346,11 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		}
 
 		[TearDown]
-		public void Teardown()
+		public Task TeardownAsync()
 		{
 			this.DataSource?.Dispose();
 			AppSettings.Instance.CreateFoldersInWebApi = true;
-			this.OnTearDown();
+			return this.OnTearDownAsync();
 		}
 
 		/// <summary>
@@ -669,46 +668,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			settings.StartRecordNumber = 0;
 		}
 
-		protected void CreateDateField(int workspaceObjectTypeId, string fieldName)
-		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
-			{
-				AllowGroupBy = false,
-				AllowPivot = false,
-				AllowSortTally = false,
-				FieldTypeID = kCura.Relativity.Client.FieldType.Date,
-				IgnoreWarnings = true,
-				IsRequired = false,
-				Linked = false,
-				Name = fieldName,
-				OpenToAssociations = false,
-				Width = "12",
-				Wrapping = true,
-			};
-
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
-		}
-
-		protected void CreateDecimalField(int workspaceObjectTypeId, string fieldName)
-		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
-			{
-				AllowGroupBy = false,
-				AllowPivot = false,
-				AllowSortTally = false,
-				FieldTypeID = kCura.Relativity.Client.FieldType.Decimal,
-				IgnoreWarnings = true,
-				IsRequired = false,
-				Linked = false,
-				Name = fieldName,
-				OpenToAssociations = false,
-				Width = "12",
-				Wrapping = true,
-			};
-
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
-		}
-
 		/// <summary>
 		/// Creates the export search manager.
 		/// </summary>
@@ -721,31 +680,12 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		protected kCura.WinEDDS.Service.Export.ISearchManager CreateExportSearchManager()
 		{
 			var credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
-			return new kCura.WinEDDS.Service.SearchManager(credentials, new CookieContainer());
+			return ManagerFactory.CreateSearchManager(credentials, new CookieContainer(), () => "TestCorrelationId");
 		}
 
-		protected void CreateFixedLengthTextField(int workspaceObjectTypeId, string fieldName, int length)
+		protected Task<int> CreateFixedLengthTextFieldAsync(int objectArtifactTypeId, string fieldName, int length)
 		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
-			{
-				AllowGroupBy = false,
-				AllowHTML = false,
-				AllowPivot = false,
-				AllowSortTally = false,
-				FieldTypeID = kCura.Relativity.Client.FieldType.FixedLengthText,
-				Length = length,
-				IgnoreWarnings = true,
-				IncludeInTextIndex = true,
-				IsRequired = false,
-				Linked = false,
-				Name = fieldName,
-				OpenToAssociations = false,
-				Unicode = false,
-				Width = string.Empty,
-				Wrapping = false,
-			};
-
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+			return FieldHelper.CreateFixedLengthTextFieldAsync(this.TestParameters, objectArtifactTypeId, fieldName, false, length);
 		}
 
 		/// <summary>
@@ -762,52 +702,21 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 				this.TestParameters.RelativityWebApiUrl.ToString());
 		}
 
-		protected void CreateSingleObjectField(int workspaceObjectTypeId, int descriptorArtifactTypeId, string fieldName)
+		protected Task<int> CreateMultiObjectFieldAsync(int objectArtifactTypeId, int associativeObjectArtifactTypeId, string fieldName)
 		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
-			{
-				AllowGroupBy = false,
-				AllowPivot = false,
-				AllowSortTally = false,
-				AssociativeObjectType = new kCura.Relativity.Client.DTOs.ObjectType { DescriptorArtifactTypeID = descriptorArtifactTypeId },
-				FieldTypeID = kCura.Relativity.Client.FieldType.SingleObject,
-				IgnoreWarnings = true,
-				IsRequired = false,
-				Linked = false,
-				Name = fieldName,
-				OpenToAssociations = false,
-				Width = "12",
-				Wrapping = false,
-			};
-
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+			return FieldHelper.CreateMultiObjectFieldAsync(this.TestParameters, fieldName, objectArtifactTypeId, associativeObjectArtifactTypeId);
 		}
 
-		protected void CreateMultiObjectField(int workspaceObjectTypeId, int descriptorArtifactTypeId, string fieldName)
+		protected async Task<int> CreateObjectTypeAsync(string objectTypeName)
 		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
-			{
-				AllowGroupBy = false,
-				AllowPivot = false,
-				AssociativeObjectType = new kCura.Relativity.Client.DTOs.ObjectType { DescriptorArtifactTypeID = descriptorArtifactTypeId },
-				FieldTypeID = kCura.Relativity.Client.FieldType.MultipleObject,
-				IgnoreWarnings = true,
-				IsRequired = false,
-				Name = fieldName,
-				Width = "12",
-			};
+			var objectTypeArtifactIdTask = await RdoHelper.CreateObjectTypeAsync(this.TestParameters, objectTypeName).ConfigureAwait(false);
 
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
-		}
-
-		protected int CreateObjectType(string objectTypeName)
-		{
-			int artifactId = RdoHelper.CreateObjectType(this.TestParameters, objectTypeName);
 			this.Logger.LogInformation(
 				"Successfully created object type '{ObjectTypeName}' - {ArtifactId}.",
 				objectTypeName,
-				artifactId);
-			return artifactId;
+				objectTypeArtifactIdTask);
+
+			return objectTypeArtifactIdTask;
 		}
 
 		protected int CreateObjectTypeInstance(int artifactTypeId, IDictionary<string, object> fields)
@@ -820,28 +729,18 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			return artifactId;
 		}
 
-		protected int CreateProduction(string productionName, string batesPrefix)
-		{
-			int artifactId = ProductionHelper.CreateProduction(this.TestParameters, productionName, batesPrefix, this.Logger);
-			this.Logger.LogInformation(
-				"Successfully created production {ProductionName} - {ArtifactId}.",
-				productionName,
-				artifactId);
-			return artifactId;
-		}
-
-		protected void DeleteObjects(IList<int> artifacts)
+		protected async Task DeleteObjectsAsync(IList<int> artifacts)
 		{
 			foreach (int artifactId in artifacts.ToList())
 			{
-				this.DeleteObject(artifactId);
+				await this.DeleteObjectAsync(artifactId).ConfigureAwait(false);
 				artifacts.Remove(artifactId);
 			}
 		}
 
-		protected void DeleteObject(int artifactId)
+		protected Task DeleteObjectAsync(int artifactId)
 		{
-			RdoHelper.DeleteObject(this.TestParameters, artifactId);
+			return RdoHelper.DeleteObjectAsync(this.TestParameters, artifactId);
 		}
 
 		/// <summary>
@@ -971,23 +870,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		}
 
 		/// <summary>
-		/// Queries for a structure that provides the first and last Bates numbers for the specified production.
-		/// </summary>
-		/// <param name="productionId">
-		/// The production artifact identifier.
-		/// </param>
-		/// <returns>
-		/// The tuple.
-		/// </returns>
-		protected Tuple<string, string> QueryProductionBatesNumbers(int productionId)
-		{
-			var production = ProductionHelper.QueryProduction(this.TestParameters, productionId);
-			Tuple<string, string> batesNumbers =
-				new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
-			return batesNumbers;
-		}
-
-		/// <summary>
 		/// Queries for the total number of objects for the specified RDO type.
 		/// </summary>
 		/// <param name="artifactTypeId">
@@ -1010,10 +892,15 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		protected IList<Relativity.Services.Objects.DataContracts.RelativityObject> QueryDocuments()
 		{
 			return this.QueryDocuments(
-				new string[]
+				new[]
 					{
-						WellKnownFields.ArtifactId, WellKnownFields.ControlNumber, WellKnownFields.HasImages,
-						WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount,
+						WellKnownFields.ArtifactId,
+						WellKnownFields.ControlNumber,
+						WellKnownFields.HasImages,
+						WellKnownFields.HasNative,
+						WellKnownFields.BatesNumber,
+						WellKnownFields.RelativityImageCount,
+						WellKnownFields.ExtractedText,
 					});
 		}
 
@@ -1046,12 +933,10 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 		protected IList<string> QueryWorkspaceFolders()
 		{
-			return WorkspaceHelper.QueryWorkspaceFolders(this.TestParameters, this.Logger);
-		}
-
-		protected int QueryWorkspaceObjectTypeDescriptorId(int artifactId)
-		{
-			return RdoHelper.QueryWorkspaceObjectTypeDescriptorId(this.TestParameters, artifactId);
+			using (Task<IList<string>> task = WorkspaceHelper.QueryWorkspaceFoldersAsync(this.TestParameters, this.Logger))
+			{
+				return task.Result;
+			}
 		}
 
 		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(
@@ -1065,8 +950,9 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		{
 		}
 
-		protected virtual void OnTearDown()
+		protected virtual Task OnTearDownAsync()
 		{
+			return Task.CompletedTask;
 		}
 	}
 }

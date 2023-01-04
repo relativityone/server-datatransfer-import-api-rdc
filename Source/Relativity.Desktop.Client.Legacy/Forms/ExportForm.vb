@@ -1,6 +1,8 @@
 Imports kCura.Vendor.Castle.Core.Internal
 Imports FileNaming.CustomFileNaming
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Service
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Service
 Imports Relativity.Desktop.Client
@@ -126,6 +128,9 @@ Public Class ExportForm
 	Public WithEvents _saveExportSettingsDialog As System.Windows.Forms.SaveFileDialog
 	Friend WithEvents _selectFromListButton As Button
 	Public WithEvents _textAndNativeFileNamePicker As TextAndNativeFileNamePicker
+	Public WithEvents _subdirectoryPdfPrefix As TextBox
+	Public WithEvents LabelPdfPrefix As Label
+	Public WithEvents _exportPdfFiles As CheckBox
 	Public WithEvents _loadExportSettingsDialog As System.Windows.Forms.OpenFileDialog
 
 	Private Sub InitializeComponent()
@@ -156,22 +161,23 @@ Public Class ExportForm
 		Me.LabelStartAtRecordNumber = New System.Windows.Forms.Label()
 		Me.LabelSelectedColumns = New System.Windows.Forms.Label()
 		Me._filters = New System.Windows.Forms.ComboBox()
-		Me._columnSelector = New TwoListBox()
+		Me._columnSelector = New Relativity.Desktop.Client.TwoListBox()
 		Me._destinationFileTabPage = New System.Windows.Forms.TabPage()
 		Me.GroupBoxTextAndNativeFileNames = New System.Windows.Forms.GroupBox()
-		Me._textAndNativeFileNamePicker = New TextAndNativeFileNamePicker()
+		Me._textAndNativeFileNamePicker = New Relativity.Desktop.Client.TextAndNativeFileNamePicker()
 		Me._metadataGroupBox = New System.Windows.Forms.GroupBox()
 		Me.LabelTextPrecedence = New System.Windows.Forms.Label()
-		Me._textFieldPrecedencePicker = New TextFieldPrecedencePicker()
-		Me._textFileEncoding = New EncodingPicker()
+		Me._textFieldPrecedencePicker = New Relativity.Desktop.Client.TextFieldPrecedencePicker()
+		Me._textFileEncoding = New Relativity.Desktop.Client.EncodingPicker()
 		Me.LabelTextFileEncoding = New System.Windows.Forms.Label()
 		Me.LabelDataFileEncoding = New System.Windows.Forms.Label()
-		Me._dataFileEncoding = New EncodingPicker()
+		Me._dataFileEncoding = New Relativity.Desktop.Client.EncodingPicker()
 		Me.LabelMetadataDataFileFormat = New System.Windows.Forms.Label()
 		Me._nativeFileFormat = New System.Windows.Forms.ComboBox()
 		Me._exportMulticodeFieldsAsNested = New System.Windows.Forms.CheckBox()
 		Me._exportFullTextAsFile = New System.Windows.Forms.CheckBox()
 		Me.GroupBoxNative = New System.Windows.Forms.GroupBox()
+		Me._exportPdfFiles = New System.Windows.Forms.CheckBox()
 		Me._exportNativeFiles = New System.Windows.Forms.CheckBox()
 		Me.GroupBoxImage = New System.Windows.Forms.GroupBox()
 		Me.LabelFileType = New System.Windows.Forms.Label()
@@ -182,6 +188,8 @@ Public Class ExportForm
 		Me.GroupBoxPhysicalFileExport = New System.Windows.Forms.GroupBox()
 		Me._copyFilesFromRepository = New System.Windows.Forms.CheckBox()
 		Me._subDirectoryInformationGroupBox = New System.Windows.Forms.GroupBox()
+		Me._subdirectoryPdfPrefix = New System.Windows.Forms.TextBox()
+		Me.LabelPdfPrefix = New System.Windows.Forms.Label()
 		Me._subdirectoryDigitPadding = New System.Windows.Forms.NumericUpDown()
 		Me.LabelSubdirectoryNumberOfDigits = New System.Windows.Forms.Label()
 		Me._subdirectoryTextPrefix = New System.Windows.Forms.TextBox()
@@ -221,30 +229,29 @@ Public Class ExportForm
 		Me._recordDelimiter = New System.Windows.Forms.ComboBox()
 		Me._saveExportSettingsDialog = New System.Windows.Forms.SaveFileDialog()
 		Me._loadExportSettingsDialog = New System.Windows.Forms.OpenFileDialog()
-		Me._textAndNativeFileNamePicker = New TextAndNativeFileNamePicker()
-		Me._productionPrecedenceBox.SuspendLayout()
-		Me.GroupBoxExportLocation.SuspendLayout()
-		Me.TabControl1.SuspendLayout()
-		Me._dataSourceTabPage.SuspendLayout()
-		Me._filtersBox.SuspendLayout()
-		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).BeginInit()
-		Me._destinationFileTabPage.SuspendLayout()
-		Me.GroupBoxTextAndNativeFileNames.SuspendLayout()
-		Me._metadataGroupBox.SuspendLayout()
-		Me.GroupBoxNative.SuspendLayout()
-		Me.GroupBoxImage.SuspendLayout()
-		Me.GroupBoxPhysicalFileExport.SuspendLayout()
-		Me._subDirectoryInformationGroupBox.SuspendLayout()
-		CType(Me._subdirectoryDigitPadding, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
-		Me._volumeInformationGroupBox.SuspendLayout()
-		CType(Me._volumeDigitPadding, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me._volumeMaxSize, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).BeginInit()
-		Me.GroupBoxFilePath.SuspendLayout()
-		Me._groupBoxLoadFileCharacterInformation.SuspendLayout()
-		Me.SuspendLayout()
+		Me._productionPrecedenceBox.SuspendLayout
+		Me.GroupBoxExportLocation.SuspendLayout
+		Me.TabControl1.SuspendLayout
+		Me._dataSourceTabPage.SuspendLayout
+		Me._filtersBox.SuspendLayout
+		CType(Me._startExportAtDocumentNumber,System.ComponentModel.ISupportInitialize).BeginInit
+		Me._destinationFileTabPage.SuspendLayout
+		Me.GroupBoxTextAndNativeFileNames.SuspendLayout
+		Me._metadataGroupBox.SuspendLayout
+		Me.GroupBoxNative.SuspendLayout
+		Me.GroupBoxImage.SuspendLayout
+		Me.GroupBoxPhysicalFileExport.SuspendLayout
+		Me._subDirectoryInformationGroupBox.SuspendLayout
+		CType(Me._subdirectoryDigitPadding,System.ComponentModel.ISupportInitialize).BeginInit
+		CType(Me._subDirectoryMaxSize,System.ComponentModel.ISupportInitialize).BeginInit
+		CType(Me._subdirectoryStartNumber,System.ComponentModel.ISupportInitialize).BeginInit
+		Me._volumeInformationGroupBox.SuspendLayout
+		CType(Me._volumeDigitPadding,System.ComponentModel.ISupportInitialize).BeginInit
+		CType(Me._volumeMaxSize,System.ComponentModel.ISupportInitialize).BeginInit
+		CType(Me._volumeStartNumber,System.ComponentModel.ISupportInitialize).BeginInit
+		Me.GroupBoxFilePath.SuspendLayout
+		Me._groupBoxLoadFileCharacterInformation.SuspendLayout
+		Me.SuspendLayout
 		'
 		'MainMenu1
 		'
@@ -305,7 +312,7 @@ Public Class ExportForm
 		'
 		'_pickPrecedenceButton
 		'
-		Me._pickPrecedenceButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+		Me._pickPrecedenceButton.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
 		Me._pickPrecedenceButton.Location = New System.Drawing.Point(152, 387)
 		Me._pickPrecedenceButton.Name = "_pickPrecedenceButton"
 		Me._pickPrecedenceButton.Size = New System.Drawing.Size(24, 20)
@@ -339,7 +346,7 @@ Public Class ExportForm
 		'
 		'_folderPath
 		'
-		Me._folderPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me._folderPath.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
 		Me._folderPath.Location = New System.Drawing.Point(8, 20)
 		Me._folderPath.Name = "_folderPath"
 		Me._folderPath.Size = New System.Drawing.Size(380, 20)
@@ -373,7 +380,7 @@ Public Class ExportForm
 		Me.TabControl1.Location = New System.Drawing.Point(0, 0)
 		Me.TabControl1.Name = "TabControl1"
 		Me.TabControl1.SelectedIndex = 0
-		Me.TabControl1.Size = New System.Drawing.Size(772, 449)
+		Me.TabControl1.Size = New System.Drawing.Size(772, 479)
 		Me.TabControl1.TabIndex = 17
 		'
 		'_dataSourceTabPage
@@ -382,7 +389,7 @@ Public Class ExportForm
 		Me._dataSourceTabPage.Controls.Add(Me._productionPrecedenceBox)
 		Me._dataSourceTabPage.Location = New System.Drawing.Point(4, 22)
 		Me._dataSourceTabPage.Name = "_dataSourceTabPage"
-		Me._dataSourceTabPage.Size = New System.Drawing.Size(764, 423)
+		Me._dataSourceTabPage.Size = New System.Drawing.Size(764, 453)
 		Me._dataSourceTabPage.TabIndex = 0
 		Me._dataSourceTabPage.Text = "Data Source"
 		'
@@ -403,7 +410,7 @@ Public Class ExportForm
 		'
 		'_selectFromListButton
 		'
-		Me._selectFromListButton.Image = CType(resources.GetObject("_selectFromListButton.Image"), System.Drawing.Image)
+		Me._selectFromListButton.Image = CType(resources.GetObject("_selectFromListButton.Image"),System.Drawing.Image)
 		Me._selectFromListButton.Location = New System.Drawing.Point(12, 20)
 		Me._selectFromListButton.Name = "_selectFromListButton"
 		Me._selectFromListButton.Padding = New System.Windows.Forms.Padding(0, 0, 0, 2)
@@ -424,7 +431,7 @@ Public Class ExportForm
 		'
 		'LabelStartAtRecordNumber
 		'
-		Me.LabelStartAtRecordNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me.LabelStartAtRecordNumber.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
 		Me.LabelStartAtRecordNumber.Location = New System.Drawing.Point(393, 48)
 		Me.LabelStartAtRecordNumber.Name = "LabelStartAtRecordNumber"
 		Me.LabelStartAtRecordNumber.Size = New System.Drawing.Size(160, 16)
@@ -434,7 +441,7 @@ Public Class ExportForm
 		'
 		'LabelSelectedColumns
 		'
-		Me.LabelSelectedColumns.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me.LabelSelectedColumns.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
 		Me.LabelSelectedColumns.Location = New System.Drawing.Point(200, 48)
 		Me.LabelSelectedColumns.Name = "LabelSelectedColumns"
 		Me.LabelSelectedColumns.Size = New System.Drawing.Size(160, 16)
@@ -458,7 +465,7 @@ Public Class ExportForm
 		Me._columnSelector.LeftOrderControlsVisible = False
 		Me._columnSelector.Location = New System.Drawing.Point(12, 64)
 		Me._columnSelector.Name = "_columnSelector"
-		Me._columnSelector.OuterBox = ListBoxLocation.Left
+		Me._columnSelector.OuterBox = Relativity.Desktop.Client.ListBoxLocation.Left
 		Me._columnSelector.RightOrderControlVisible = False
 		Me._columnSelector.Size = New System.Drawing.Size(366, 343)
 		Me._columnSelector.TabIndex = 17
@@ -477,7 +484,7 @@ Public Class ExportForm
 		Me._destinationFileTabPage.Controls.Add(Me.GroupBoxExportLocation)
 		Me._destinationFileTabPage.Location = New System.Drawing.Point(4, 22)
 		Me._destinationFileTabPage.Name = "_destinationFileTabPage"
-		Me._destinationFileTabPage.Size = New System.Drawing.Size(764, 423)
+		Me._destinationFileTabPage.Size = New System.Drawing.Size(764, 453)
 		Me._destinationFileTabPage.TabIndex = 1
 		Me._destinationFileTabPage.Text = "Destination Files"
 		'
@@ -492,6 +499,14 @@ Public Class ExportForm
 		Me.GroupBoxTextAndNativeFileNames.TabIndex = 29
 		Me.GroupBoxTextAndNativeFileNames.TabStop = False
 		Me.GroupBoxTextAndNativeFileNames.Text = "Text and Native File Names"
+		'
+		'_textAndNativeFileNamePicker
+		'
+		Me._textAndNativeFileNamePicker.Location = New System.Drawing.Point(116, 18)
+		Me._textAndNativeFileNamePicker.Name = "_textAndNativeFileNamePicker"
+		Me._textAndNativeFileNamePicker.Selection = Nothing
+		Me._textAndNativeFileNamePicker.Size = New System.Drawing.Size(176, 21)
+		Me._textAndNativeFileNamePicker.TabIndex = 32
 		'
 		'_metadataGroupBox
 		'
@@ -599,6 +614,7 @@ Public Class ExportForm
 		'
 		'GroupBoxNative
 		'
+		Me.GroupBoxNative.Controls.Add(Me._exportPdfFiles)
 		Me.GroupBoxNative.Controls.Add(Me._exportNativeFiles)
 		Me.GroupBoxNative.Location = New System.Drawing.Point(435, 184)
 		Me.GroupBoxNative.Name = "GroupBoxNative"
@@ -607,13 +623,21 @@ Public Class ExportForm
 		Me.GroupBoxNative.TabStop = False
 		Me.GroupBoxNative.Text = "Native "
 		'
+		'_exportPdfFiles
+		'
+		Me._exportPdfFiles.Location = New System.Drawing.Point(159, 19)
+		Me._exportPdfFiles.Name = "_exportPdfFiles"
+		Me._exportPdfFiles.Size = New System.Drawing.Size(157, 20)
+		Me._exportPdfFiles.TabIndex = 38
+		Me._exportPdfFiles.Text = "Export rendered PDF's"
+		'
 		'_exportNativeFiles
 		'
 		Me._exportNativeFiles.Checked = True
 		Me._exportNativeFiles.CheckState = System.Windows.Forms.CheckState.Checked
 		Me._exportNativeFiles.Location = New System.Drawing.Point(12, 20)
 		Me._exportNativeFiles.Name = "_exportNativeFiles"
-		Me._exportNativeFiles.Size = New System.Drawing.Size(300, 20)
+		Me._exportNativeFiles.Size = New System.Drawing.Size(132, 20)
 		Me._exportNativeFiles.TabIndex = 37
 		Me._exportNativeFiles.Text = "Export Native Files"
 		'
@@ -700,6 +724,8 @@ Public Class ExportForm
 		'
 		'_subDirectoryInformationGroupBox
 		'
+		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryPdfPrefix)
+		Me._subDirectoryInformationGroupBox.Controls.Add(Me.LabelPdfPrefix)
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryDigitPadding)
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me.LabelSubdirectoryNumberOfDigits)
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryTextPrefix)
@@ -714,14 +740,33 @@ Public Class ExportForm
 		Me._subDirectoryInformationGroupBox.Controls.Add(Me._subdirectoryImagePrefix)
 		Me._subDirectoryInformationGroupBox.Location = New System.Drawing.Point(7, 256)
 		Me._subDirectoryInformationGroupBox.Name = "_subDirectoryInformationGroupBox"
-		Me._subDirectoryInformationGroupBox.Size = New System.Drawing.Size(212, 164)
+		Me._subDirectoryInformationGroupBox.Size = New System.Drawing.Size(212, 193)
 		Me._subDirectoryInformationGroupBox.TabIndex = 11
 		Me._subDirectoryInformationGroupBox.TabStop = False
 		Me._subDirectoryInformationGroupBox.Text = "Subdirectory Information"
 		'
+		'_subdirectoryPdfPrefix
+		'
+		Me._subdirectoryPdfPrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
+		Me._subdirectoryPdfPrefix.Location = New System.Drawing.Point(116, 106)
+		Me._subdirectoryPdfPrefix.Name = "_subdirectoryPdfPrefix"
+		Me._subdirectoryPdfPrefix.Size = New System.Drawing.Size(88, 20)
+		Me._subdirectoryPdfPrefix.TabIndex = 19
+		Me._subdirectoryPdfPrefix.Text = "PDF"
+		'
+		'LabelPdfPrefix
+		'
+		Me.LabelPdfPrefix.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+		Me.LabelPdfPrefix.Location = New System.Drawing.Point(34, 105)
+		Me.LabelPdfPrefix.Name = "LabelPdfPrefix"
+		Me.LabelPdfPrefix.Size = New System.Drawing.Size(80, 20)
+		Me.LabelPdfPrefix.TabIndex = 18
+		Me.LabelPdfPrefix.Text = "Pdf Prefix: "
+		Me.LabelPdfPrefix.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+		'
 		'_subdirectoryDigitPadding
 		'
-		Me._subdirectoryDigitPadding.Location = New System.Drawing.Point(160, 104)
+		Me._subdirectoryDigitPadding.Location = New System.Drawing.Point(160, 135)
 		Me._subdirectoryDigitPadding.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 		Me._subdirectoryDigitPadding.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
 		Me._subdirectoryDigitPadding.Name = "_subdirectoryDigitPadding"
@@ -732,7 +777,7 @@ Public Class ExportForm
 		'LabelSubdirectoryNumberOfDigits
 		'
 		Me.LabelSubdirectoryNumberOfDigits.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.LabelSubdirectoryNumberOfDigits.Location = New System.Drawing.Point(104, 104)
+		Me.LabelSubdirectoryNumberOfDigits.Location = New System.Drawing.Point(104, 135)
 		Me.LabelSubdirectoryNumberOfDigits.Name = "LabelSubdirectoryNumberOfDigits"
 		Me.LabelSubdirectoryNumberOfDigits.Size = New System.Drawing.Size(56, 20)
 		Me.LabelSubdirectoryNumberOfDigits.TabIndex = 9
@@ -741,7 +786,7 @@ Public Class ExportForm
 		'
 		'_subdirectoryTextPrefix
 		'
-		Me._subdirectoryTextPrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me._subdirectoryTextPrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
 		Me._subdirectoryTextPrefix.Location = New System.Drawing.Point(116, 76)
 		Me._subdirectoryTextPrefix.Name = "_subdirectoryTextPrefix"
 		Me._subdirectoryTextPrefix.Size = New System.Drawing.Size(88, 20)
@@ -760,7 +805,7 @@ Public Class ExportForm
 		'
 		'_subDirectoryNativePrefix
 		'
-		Me._subDirectoryNativePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me._subDirectoryNativePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
 		Me._subDirectoryNativePrefix.Location = New System.Drawing.Point(116, 48)
 		Me._subDirectoryNativePrefix.Name = "_subDirectoryNativePrefix"
 		Me._subDirectoryNativePrefix.Size = New System.Drawing.Size(88, 20)
@@ -779,7 +824,7 @@ Public Class ExportForm
 		'
 		'_subDirectoryMaxSize
 		'
-		Me._subDirectoryMaxSize.Location = New System.Drawing.Point(116, 132)
+		Me._subDirectoryMaxSize.Location = New System.Drawing.Point(116, 163)
 		Me._subDirectoryMaxSize.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 		Me._subDirectoryMaxSize.Name = "_subDirectoryMaxSize"
 		Me._subDirectoryMaxSize.Size = New System.Drawing.Size(88, 20)
@@ -788,7 +833,7 @@ Public Class ExportForm
 		'
 		'_subdirectoryStartNumber
 		'
-		Me._subdirectoryStartNumber.Location = New System.Drawing.Point(56, 104)
+		Me._subdirectoryStartNumber.Location = New System.Drawing.Point(56, 135)
 		Me._subdirectoryStartNumber.Maximum = New Decimal(New Integer() {2000000, 0, 0, 0})
 		Me._subdirectoryStartNumber.Name = "_subdirectoryStartNumber"
 		Me._subdirectoryStartNumber.Size = New System.Drawing.Size(44, 20)
@@ -798,7 +843,7 @@ Public Class ExportForm
 		'LabelMaxFiles
 		'
 		Me.LabelMaxFiles.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.LabelMaxFiles.Location = New System.Drawing.Point(56, 132)
+		Me.LabelMaxFiles.Location = New System.Drawing.Point(56, 163)
 		Me.LabelMaxFiles.Name = "LabelMaxFiles"
 		Me.LabelMaxFiles.Size = New System.Drawing.Size(60, 20)
 		Me.LabelMaxFiles.TabIndex = 17
@@ -808,7 +853,7 @@ Public Class ExportForm
 		'LabelSubdirectoryStartNumber
 		'
 		Me.LabelSubdirectoryStartNumber.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-		Me.LabelSubdirectoryStartNumber.Location = New System.Drawing.Point(8, 104)
+		Me.LabelSubdirectoryStartNumber.Location = New System.Drawing.Point(8, 135)
 		Me.LabelSubdirectoryStartNumber.Name = "LabelSubdirectoryStartNumber"
 		Me.LabelSubdirectoryStartNumber.Size = New System.Drawing.Size(44, 20)
 		Me.LabelSubdirectoryStartNumber.TabIndex = 15
@@ -827,7 +872,7 @@ Public Class ExportForm
 		'
 		'_subdirectoryImagePrefix
 		'
-		Me._subdirectoryImagePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me._subdirectoryImagePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
 		Me._subdirectoryImagePrefix.Location = New System.Drawing.Point(116, 20)
 		Me._subdirectoryImagePrefix.Name = "_subdirectoryImagePrefix"
 		Me._subdirectoryImagePrefix.Size = New System.Drawing.Size(88, 20)
@@ -921,7 +966,7 @@ Public Class ExportForm
 		'
 		'_volumePrefix
 		'
-		Me._volumePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+		Me._volumePrefix.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
 		Me._volumePrefix.Location = New System.Drawing.Point(116, 20)
 		Me._volumePrefix.Name = "_volumePrefix"
 		Me._volumePrefix.Size = New System.Drawing.Size(88, 20)
@@ -1097,20 +1142,13 @@ Public Class ExportForm
 		Me._loadExportSettingsDialog.Filter = "Relativity Desktop Client settings files (*.kwx)|*.kwx|All files (*.*)|*.*"
 		Me._loadExportSettingsDialog.RestoreDirectory = True
 		'
-		'_textAndNativeFileNamePicker
-		'
-		Me._textAndNativeFileNamePicker.Location = New System.Drawing.Point(116, 18)
-		Me._textAndNativeFileNamePicker.Name = "_textAndNativeFileNamePicker"
-		Me._textAndNativeFileNamePicker.Size = New System.Drawing.Size(176, 21)
-		Me._textAndNativeFileNamePicker.TabIndex = 32
-		'
 		'ExportForm
 		'
 		Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
 		Me.BackColor = System.Drawing.SystemColors.Control
-		Me.ClientSize = New System.Drawing.Size(775, 452)
+		Me.ClientSize = New System.Drawing.Size(775, 476)
 		Me.Controls.Add(Me.TabControl1)
-		Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+		Me.Icon = CType(resources.GetObject("$this.Icon"),System.Drawing.Icon)
 		Me.Menu = Me.MainMenu1
 		Me.MinimumSize = New System.Drawing.Size(700, 400)
 		Me.Name = "ExportForm"
@@ -1118,11 +1156,11 @@ Public Class ExportForm
 		Me.Text = "Relativity Desktop Client | Export "
 		Me._productionPrecedenceBox.ResumeLayout(False)
 		Me.GroupBoxExportLocation.ResumeLayout(False)
-		Me.GroupBoxExportLocation.PerformLayout()
+		Me.GroupBoxExportLocation.PerformLayout
 		Me.TabControl1.ResumeLayout(False)
 		Me._dataSourceTabPage.ResumeLayout(False)
 		Me._filtersBox.ResumeLayout(False)
-		CType(Me._startExportAtDocumentNumber, System.ComponentModel.ISupportInitialize).EndInit()
+		CType(Me._startExportAtDocumentNumber,System.ComponentModel.ISupportInitialize).EndInit
 		Me._destinationFileTabPage.ResumeLayout(False)
 		Me.GroupBoxTextAndNativeFileNames.ResumeLayout(False)
 		Me._metadataGroupBox.ResumeLayout(False)
@@ -1130,21 +1168,21 @@ Public Class ExportForm
 		Me.GroupBoxImage.ResumeLayout(False)
 		Me.GroupBoxPhysicalFileExport.ResumeLayout(False)
 		Me._subDirectoryInformationGroupBox.ResumeLayout(False)
-		Me._subDirectoryInformationGroupBox.PerformLayout()
-		CType(Me._subdirectoryDigitPadding, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me._subDirectoryMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me._subdirectoryStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
+		Me._subDirectoryInformationGroupBox.PerformLayout
+		CType(Me._subdirectoryDigitPadding,System.ComponentModel.ISupportInitialize).EndInit
+		CType(Me._subDirectoryMaxSize,System.ComponentModel.ISupportInitialize).EndInit
+		CType(Me._subdirectoryStartNumber,System.ComponentModel.ISupportInitialize).EndInit
 		Me._volumeInformationGroupBox.ResumeLayout(False)
-		Me._volumeInformationGroupBox.PerformLayout()
-		CType(Me._volumeDigitPadding, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me._volumeMaxSize, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me._volumeStartNumber, System.ComponentModel.ISupportInitialize).EndInit()
+		Me._volumeInformationGroupBox.PerformLayout
+		CType(Me._volumeDigitPadding,System.ComponentModel.ISupportInitialize).EndInit
+		CType(Me._volumeMaxSize,System.ComponentModel.ISupportInitialize).EndInit
+		CType(Me._volumeStartNumber,System.ComponentModel.ISupportInitialize).EndInit
 		Me.GroupBoxFilePath.ResumeLayout(False)
-		Me.GroupBoxFilePath.PerformLayout()
+		Me.GroupBoxFilePath.PerformLayout
 		Me._groupBoxLoadFileCharacterInformation.ResumeLayout(False)
 		Me.ResumeLayout(False)
 
-	End Sub
+End Sub
 
 #End Region
 
@@ -1291,7 +1329,7 @@ Public Class ExportForm
 
 	Public Async Function GetObjectTypeName() As Task(Of String)
 		If _objectTypeName = "" Then
-			For Each row As System.Data.DataRow In New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
+			For Each row As System.Data.DataRow In ManagerFactory.CreateObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer, AddressOf _application.GetCorrelationId).RetrieveAllUploadable(_application.SelectedCaseInfo.ArtifactID).Tables(0).Rows
 				If CType(row("DescriptorArtifactTypeID"), Int32) = Me.ExportFile.ArtifactTypeID Then
 					_objectTypeName = row("Name").ToString
 				End If
@@ -1452,6 +1490,7 @@ Public Class ExportForm
 		'_exportFile.ExportFullText = _exportFullText.Checked
 		_exportFile.ExportFullTextAsFile = _exportFullTextAsFile.Checked
 		_exportFile.ExportNative = _exportNativeFiles.Checked
+		_exportFile.ExportPdf = _exportPdfFiles.Checked
 		_exportFile.QuoteDelimiter = ChrW(CType(_quoteDelimiter.SelectedValue, Int32))
 		_exportFile.RecordDelimiter = ChrW(CType(_recordDelimiter.SelectedValue, Int32))
 		_exportFile.MultiRecordDelimiter = ChrW(CType(_multiRecordDelimiter.SelectedValue, Int32))
@@ -1569,6 +1608,7 @@ Public Class ExportForm
 		_isLoadingExport = True
 		If _exportNativeFiles.Checked <> ef.ExportNative Then _exportNativeFiles.Checked = ef.ExportNative
 		If _exportImages.Checked <> ef.ExportImages Then _exportImages.Checked = ef.ExportImages
+		If _exportPdfFiles.Checked <> ef.ExportPdf Then _exportPdfFiles.Checked = ef.ExportPdf
 		If _overwriteCheckBox.Checked <> ef.Overwrite Then _overwriteCheckBox.Checked = ef.Overwrite
 		If _folderPath.Text <> ef.FolderPath Then _folderPath.Text = ef.FolderPath
 		If ef.VolumeDigitPadding >= _volumeDigitPadding.Minimum AndAlso ef.VolumeDigitPadding <= _volumeDigitPadding.Maximum Then
@@ -1583,6 +1623,7 @@ Public Class ExportForm
 			If Not _subdirectoryImagePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryImagePrefix) Then _subdirectoryImagePrefix.Text = ef.VolumeInfo.SubdirectoryImagePrefix(False)
 			If Not _subDirectoryNativePrefix.Text.Equals(ef.VolumeInfo.SubdirectoryNativePrefix) Then _subDirectoryNativePrefix.Text = ef.VolumeInfo.SubdirectoryNativePrefix(False)
 			If Not _subdirectoryTextPrefix.Text.Equals(ef.VolumeInfo.SubdirectoryFullTextPrefix) Then _subdirectoryTextPrefix.Text = ef.VolumeInfo.SubdirectoryFullTextPrefix(False)
+			If Not _subdirectoryPdfPrefix.Text.Equals(ef.VolumeInfo.SubdirectoryPdfPrefix) Then _subdirectoryPdfPrefix.Text = ef.VolumeInfo.SubdirectoryPdfPrefix(False)
 			If _subdirectoryStartNumber.Value <> ef.VolumeInfo.SubdirectoryStartNumber Then _subdirectoryStartNumber.Value = ef.VolumeInfo.SubdirectoryStartNumber
 			If _subDirectoryMaxSize.Value <> ef.VolumeInfo.SubdirectoryMaxSize Then _subDirectoryMaxSize.Value = ef.VolumeInfo.SubdirectoryMaxSize
 		End If
@@ -1697,9 +1738,9 @@ Public Class ExportForm
 
 		_textFieldPrecedencePicker.LoadNewSelectedFields(ef.SelectedTextFields)
 
-		Dim trueStartExportAtDocumentNumber As Int32 = ef.StartAtDocumentNumber + 1
-		If trueStartExportAtDocumentNumber >= _startExportAtDocumentNumber.Minimum AndAlso trueStartExportAtDocumentNumber <= _startExportAtDocumentNumber.Maximum Then
-			_startExportAtDocumentNumber.Value = trueStartExportAtDocumentNumber
+		Dim TrueStartExportAtDocumentNumber As Int32 = ef.StartAtDocumentNumber + 1
+		If TrueStartExportAtDocumentNumber >= _startExportAtDocumentNumber.Minimum AndAlso TrueStartExportAtDocumentNumber <= _startExportAtDocumentNumber.Maximum Then
+			_startExportAtDocumentNumber.Value = TrueStartExportAtDocumentNumber
 		End If
 
 		If ef.ImagePrecedence IsNot Nothing AndAlso ef.ImagePrecedence.Length > 0 Then
@@ -1748,7 +1789,7 @@ Public Class ExportForm
 				Continue For
 			End If
 		Next
-		_textAndNativeFileNamePicker.Selection = selection
+		_textAndNativeFileNamePicker.Selection = Selection
 	End Sub
 
 	Private Async Sub RunMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunMenu.Click
@@ -1843,12 +1884,14 @@ Public Class ExportForm
 		retval.SubdirectoryImagePrefix = _subdirectoryImagePrefix.Text
 		retval.SubdirectoryNativePrefix = _subDirectoryNativePrefix.Text
 		retval.SubdirectoryFullTextPrefix = _subdirectoryTextPrefix.Text
+		retval.SubdirectoryPdfPrefix = _subdirectoryPdfPrefix.Text
 		retval.SubdirectoryStartNumber = Int32.Parse(_subdirectoryStartNumber.Text)
 		retval.VolumeMaxSize = Int32.Parse(_volumeMaxSize.Text)
 		retval.VolumePrefix = _volumePrefix.Text
 		retval.VolumeStartNumber = Int32.Parse(_volumeStartNumber.Text)
 		retval.CopyNativeFilesFromRepository = _copyFilesFromRepository.Checked
 		retval.CopyImageFilesFromRepository = _copyFilesFromRepository.Checked
+		retval.CopyPdfFilesFromRepository = _copyFilesFromRepository.Checked
 		Return retval
 	End Function
 
@@ -1880,11 +1923,15 @@ Public Class ExportForm
 		_imageFileFormat.ValueMember = "Value"
 		_imageTypeDropdown.SelectedIndex = 0
 		_exportMulticodeFieldsAsNested.Checked = Me.ExportFile.MulticodesAsNested
+		HidePdfImprovements()
 		Select Case Me.ExportFile.TypeOfExport
 			Case ExportFile.ExportType.ArtifactSearch
 				_filters.Text = "Searches"
 				_filtersBox.Text = "Searches"
 				Me.Text = "Relativity Desktop Client | Export Saved Search"
+				If Me.CanUseSearchablePdfs()
+					ShowPdfImprovements()
+				End If
 			Case ExportFile.ExportType.ParentSearch, ExportFile.ExportType.AncestorSearch
 				_filters.Text = "Views"
 				_filtersBox.Text = "Views"
@@ -1892,6 +1939,9 @@ Public Class ExportForm
 					Me.Text = "Relativity Desktop Client | Export Folder"
 					If Me.ExportFile.TypeOfExport = ExportFile.ExportType.AncestorSearch Then
 						Me.Text = "Relativity Desktop Client | Export Folder and Subfolders"
+					End If
+					If Me.CanUseSearchablePdfs()
+						ShowPdfImprovements()
 					End If
 				Else
 					Dim objectTypeName As String = Await Me.GetObjectTypeName()
@@ -2007,7 +2057,7 @@ Public Class ExportForm
 	End Sub
 	Private ReadOnly Property CreateVolume() As Boolean
 		Get
-			Return _exportImages.Checked OrElse _exportNativeFiles.Checked
+			Return _exportImages.Checked OrElse _exportNativeFiles.Checked OrElse _exportPdfFiles.Checked
 		End Get
 	End Property
 
@@ -2269,5 +2319,23 @@ Public Class ExportForm
 			_filters.SelectedValue = searchListSelector.SelectedValue
 		End If
 		Cursor = Cursors.Default
+	End Sub
+
+	Private Function CanUseSearchablePdfs() As Boolean
+'		This is not the best solution, but we cannot break compatibility on Mayapple
+		Dim firstCompatibleRelativityVersion As Version = New Version(11,3,16)
+		Return AppSettings.Instance.UseSearchablePDF AndAlso Me._application.RunningContext.RelativityVersion >= firstCompatibleRelativityVersion
+	End Function
+
+	public Sub ShowPdfImprovements()
+		Me._subdirectoryPdfPrefix.Visible = True
+		Me.LabelPdfPrefix.Visible = True
+		Me._exportPdfFiles.Visible = True
+	End Sub
+
+	public Sub HidePdfImprovements()
+		Me._subdirectoryPdfPrefix.Visible = False
+		Me.LabelPdfPrefix.Visible = False
+		Me._exportPdfFiles.Visible = False
 	End Sub
 End Class

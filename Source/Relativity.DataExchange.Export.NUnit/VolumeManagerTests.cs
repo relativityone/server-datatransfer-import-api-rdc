@@ -71,7 +71,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				NativeFilesSize = sizeInMBs * _MBS_TO_BYTES,
 				ImageFilesSize = sizeInMBs * _MBS_TO_BYTES,
-				TextFilesSize = sizeInMBs * _MBS_TO_BYTES
+				TextFilesSize = sizeInMBs * _MBS_TO_BYTES,
+				PdfFileSize = sizeInMBs * _MBS_TO_BYTES
 			};
 
 			// ACT
@@ -93,7 +94,8 @@ namespace Relativity.DataExchange.Export.NUnit
 			{
 				NativeFilesSize = sizeInMBs * _MBS_TO_BYTES / 2,
 				ImageFilesSize = sizeInMBs * _MBS_TO_BYTES / 2,
-				TextFilesSize = sizeInMBs * _MBS_TO_BYTES / 2
+				TextFilesSize = sizeInMBs * _MBS_TO_BYTES / 2,
+				PdfFileSize = sizeInMBs * _MBS_TO_BYTES / 2
 			};
 
 			// ACT & ASSERT
@@ -126,6 +128,11 @@ namespace Relativity.DataExchange.Export.NUnit
 				TextFilesSize = (sizeInMBs * _MBS_TO_BYTES) + 1
 			};
 
+			VolumePredictions predictionsPdf = new VolumePredictions
+			{
+				PdfFileSize = (sizeInMBs * _MBS_TO_BYTES) + 1
+			};
+
 			// ACT & ASSERT
 			this._instance.MoveNext(predictionsNative);
 			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
@@ -135,6 +142,9 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._instance.MoveNext(predictionsText);
 			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 2));
+
+			this._instance.MoveNext(predictionsPdf);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 3));
 		}
 
 		[Test]
@@ -169,6 +179,16 @@ namespace Relativity.DataExchange.Export.NUnit
 				TextFilesSize = sizeInMBs * _MBS_TO_BYTES / 2
 			};
 
+			VolumePredictions predictionsNotExceeding4 = new VolumePredictions
+			{
+				PdfFileSize = sizeInMBs * _MBS_TO_BYTES / 4
+			};
+
+			VolumePredictions predictionsExceeding3 = new VolumePredictions
+			{
+				PdfFileSize = sizeInMBs * _MBS_TO_BYTES
+			};
+
 			// ACT & ASSERT
 			this._instance.MoveNext(predictionsNotExceeding);
 			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber));
@@ -184,6 +204,12 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._instance.MoveNext(predictionsExceeding2);
 			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 2));
+
+			this._instance.MoveNext(predictionsNotExceeding4);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 2));
+
+			this._instance.MoveNext(predictionsExceeding3);
+			Assert.That(this._instance.CurrentVolumeNumber, Is.EqualTo(startNumber + 3));
 		}
 	}
 }

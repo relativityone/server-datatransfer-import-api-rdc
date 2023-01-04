@@ -17,7 +17,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ImageLoadFileMetadataBuilderTests
@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._unsuccessfulRollupForArtifactBuilder = new Mock<IImageLoadFileMetadataForArtifactBuilder>();
 			this._writer = new Mock<IRetryableStreamWriter>();
 
-			this._instance = new ImageLoadFileMetadataBuilder(this._forArtifactBuilder.Object, this._unsuccessfulRollupForArtifactBuilder.Object, this._writer.Object, new NullLogger());
+			this._instance = new ImageLoadFileMetadataBuilder(this._forArtifactBuilder.Object, this._unsuccessfulRollupForArtifactBuilder.Object, this._writer.Object, new TestNullLogger());
 		}
 
 		[Test]

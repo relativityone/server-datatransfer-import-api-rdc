@@ -1,5 +1,6 @@
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 
 Namespace kCura.WinEDDS
@@ -10,19 +11,24 @@ Namespace kCura.WinEDDS
 		Public LoadFile As LoadFile
 		Protected WithEvents _loadFilePreviewer As LoadFilePreviewer
 		Protected WithEvents _IoReporterContext As IoReporterContext
-		Private _startTime As System.DateTime
-		Private _errorCount As Int32
 		Private _errorsOnly As Boolean
-		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
 		Private _formType As Int32
 		Private StartTime As System.DateTime
 		Private WithEvents _valueThrower As ValueThrower
 		Public ReturnValueCollection As Hashtable
 		Public ReturnValueKey As Guid
+		Private ReadOnly _correlationIdFunc As Func(Of String)
 
-		Public Sub New(ByVal formType As Int32)
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(ByVal formType As Int32, correlationIdFunc As Func(Of String))
+			Me.New(formType, RelativityLogger.Instance, correlationIdFunc)
+		End Sub
+
+		Public Sub New(ByVal formType As Int32, logger As Global.Relativity.Logging.ILog, correlationIdFunc As Func(Of String))
+			MyBase.New(logger)
 			_formType = formType
+			_correlationIdFunc = correlationIdFunc
 		End Sub
 
 		Public Property TimeZoneOffset() As Int32
@@ -53,19 +59,17 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Protected Overrides Sub OnExecute()
-			_startTime = DateTime.Now
-			_warningCount = 0
-			_errorCount = 0
 			_IoReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
 			Dim reporter As IIoReporter = Me.CreateIoReporter(_IoReporterContext)
 			_loadFilePreviewer = New kCura.WinEDDS.LoadFilePreviewer(
-				LoadFile, _
-				reporter, _
-				logger, _
-				_timeZoneOffset, _
-				_errorsOnly, _
+				LoadFile,
+				reporter,
+				Logger,
+				_timeZoneOffset,
+				_errorsOnly,
 				True,
-				Me.CancellationTokenSource, _
+				Me.CancellationTokenSource,
+				Me._correlationIdFunc,
 				Me.Context)
 			_valueThrower.ThrowValue(New Object() {_loadFilePreviewer.ReadFile(LoadFile.FilePath, _formType), _errorsOnly})
 			Me.Context.PublishProcessCompleted(True)
@@ -73,30 +77,20 @@ Namespace kCura.WinEDDS
 
 		Private Sub _loadFilePreviewer_OnEvent(ByVal e As LoadFilePreviewer.EventArgs) Handles _loadFilePreviewer.OnEvent
 			SyncLock Me.Context
-				Dim totaldisplay As String
-				Dim processeddisplay As String
-				If e.TotalBytes >= 1048576 Then
-					totaldisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
-					processeddisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
-				ElseIf e.TotalBytes < 1048576 AndAlso e.TotalBytes >= 102400 Then
-					totaldisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
-					processeddisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
-				Else
-					totaldisplay = e.TotalBytes.ToString & " B"
-					processeddisplay = e.BytesRead.ToString & " B"
-				End If
+				Dim totalDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.TotalBytes)
+				Dim processedDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.BytesRead)
 				Select Case e.Type
 					Case LoadFilePreviewer.EventType.Begin
 						Me.StartTime = System.DateTime.Now
 					Case LoadFilePreviewer.EventType.Complete
-						If e.TotalBytes = -1 Then
-							Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, "First " & Me.AppSettings.PreviewThreshold & " records", totaldisplay)
+						If e.BytesRead = -1 Then
+							Me.Context.PublishProgressInBytes(e.TotalBytes, e.TotalBytes, Me.StartTime, System.DateTime.Now, Me.ProcessId, $"First {Me.AppSettings.PreviewThreshold} records", Me.AppSettings.PreviewThreshold.ToString())
 						Else
-							Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+							Me.Context.PublishProgressInBytes(e.TotalBytes, e.TotalBytes, Me.StartTime, System.DateTime.Now, Me.ProcessId, totalDisplay, processedDisplay)
 						End If
 					Case LoadFilePreviewer.EventType.Progress
-						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, Me.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-						Me.Context.PublishStatusEvent("", "Preparing file for preview")
+						Me.Context.PublishProgressInBytes(e.TotalBytes, e.BytesRead, Me.StartTime, System.DateTime.Now, Me.ProcessId, totalDisplay, processedDisplay)
+						Me.Context.PublishStatusEvent(String.Empty, "Preparing file for preview")
 				End Select
 			End SyncLock
 		End Sub

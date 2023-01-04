@@ -4,7 +4,7 @@
 		Sub Cancel()
 		Sub Close()
 		Sub Initialize()
-		Function CountRecords() As Int64
+		Function CountRecords() As Int64?
 		ReadOnly Property CurrentRecordNumber() As Int32
 		Function GetImageRecord() As ImageRecord
 		ReadOnly Property HasMoreRecords() As Boolean

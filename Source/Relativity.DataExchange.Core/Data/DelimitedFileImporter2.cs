@@ -58,116 +58,6 @@ namespace Relativity.DataExchange.Data
 		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
 		/// </summary>
 		/// <param name="delimiter">
-		/// The delimiter string to use while splitting lines. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="bound">
-		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
-		/// </param>
-		protected DelimitedFileImporter2(string delimiter, string bound, string newlineProxy)
-			: this(delimiter, bound, newlineProxy, new IoReporterContext(), new NullLogger(), CancellationToken.None)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
-		/// </summary>
-		/// <param name="delimiter">
-		/// The delimiter character to use while splitting lines. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="bound">
-		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
-		/// </param>
-		/// <param name="retry">
-		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
-		/// </param>
-		protected DelimitedFileImporter2(string delimiter, string bound, string newlineProxy, bool retry)
-			: this(
-				delimiter,
-				bound,
-				newlineProxy,
-				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
-				new NullLogger(),
-				CancellationToken.None)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
-		/// </summary>
-		/// <param name="delimiter">
-		/// The delimiter string to use while splitting lines. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="bound">
-		/// The bounding string surrounding each delimiter. This is limited to 1 character and must be specified.
-		/// </param>
-		/// <param name="newlineProxy">
-		/// The string with which to replace system newline characters (ClRf). This is limited to 1 character and optional.
-		/// </param>
-		/// <param name="context">
-		/// The I/O reporter context.
-		/// </param>
-		/// <param name="logger">
-		/// The Relativity logger.
-		/// </param>
-		/// <param name="token">
-		/// The cancellation token used to stop the process upon request.
-		/// </param>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when <paramref name="delimiter"/> or <paramref name="bound"/> is <see langword="null" /> or empty.
-		/// </exception>
-		/// <exception cref="ArgumentOutOfRangeException">
-		/// Thrown when <paramref name="delimiter"/> or <paramref name="bound"/> is not exactly 1 character.
-		/// </exception>
-		protected DelimitedFileImporter2(
-			string delimiter,
-			string bound,
-			string newlineProxy,
-			IoReporterContext context,
-			ILog logger,
-			CancellationToken token)
-			: base(context, logger, token)
-		{
-			if (string.IsNullOrWhiteSpace(delimiter))
-			{
-				throw new ArgumentNullException(nameof(delimiter));
-			}
-
-			if (delimiter.Length != 1)
-			{
-				throw new ArgumentOutOfRangeException(
-					nameof(delimiter),
-					"The delimiter string parameter must define 1 character.");
-			}
-
-			if (string.IsNullOrWhiteSpace(bound))
-			{
-				throw new ArgumentNullException(nameof(bound));
-			}
-
-			if (bound.Length != 1)
-			{
-				throw new ArgumentOutOfRangeException(
-					nameof(bound),
-					"The bound string parameter must define 1 character.");
-			}
-
-			this.Delimiter = delimiter[0];
-			this.Bound = bound[0];
-
-			// Do NOT be tempted to use IsNullOrWhitespace here!
-			this.NewlineProxy = string.IsNullOrEmpty(newlineProxy) ? UnspecifiedNewlineProxyChar : newlineProxy[0];
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
-		/// </summary>
-		/// <param name="delimiter">
 		/// The delimiter character to use while splitting lines.
 		/// </param>
 		/// <param name="retry">
@@ -178,6 +68,36 @@ namespace Relativity.DataExchange.Data
 				delimiter,
 				UnboundedChar,
 				UnspecifiedNewlineProxyChar,
+				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
+				new NullLogger(),
+				CancellationToken.None)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DelimitedFileImporter2"/> class.
+		/// </summary>
+		/// <param name="delimiter">
+		/// The delimiter character to use while splitting lines.
+		/// </param>
+		/// <param name="bound">
+		/// The bounding characters surrounding each delimiter.
+		/// </param>
+		/// <param name="newlineProxy">
+		/// The character with which to replace system newline characters (ClRf).
+		/// </param>
+		/// <param name="retry">
+		/// Specify whether retry behavior is required. This flag was added for backwards compatibility with legacy code.
+		/// </param>
+		protected DelimitedFileImporter2(
+			char delimiter,
+			char bound,
+			char newlineProxy,
+			bool retry)
+			: this(
+				delimiter,
+				bound,
+				newlineProxy,
 				new IoReporterContext { RetryOptions = retry ? RetryOptions.Io : RetryOptions.None },
 				new NullLogger(),
 				CancellationToken.None)
@@ -746,10 +666,10 @@ namespace Relativity.DataExchange.Data
 
 					IoWarningEventArgs args = new IoWarningEventArgs(waitTime, e, this.CurrentLineNumber);
 					this.PublishWarningMessage(args);
-					if (this.Reader.BaseStream is System.IO.FileStream && e is System.IO.IOException
-					                                                   && e.ToString().ToLowerInvariant().IndexOf(
-						                                                   "network",
-						                                                   StringComparison.OrdinalIgnoreCase) != -1)
+					if ((this.Reader.BaseStream is System.IO.FileStream
+					     || this.Reader.BaseStream is RestartableFileStream) && e is System.IO.IOException
+					                                                         && e.Message.ToLowerInvariant()
+						                                                         .Contains("network"))
 					{
 						reInitReader = true;
 					}
@@ -857,7 +777,7 @@ namespace Relativity.DataExchange.Data
 		/// </returns>
 		private bool ValidateAppend(long startPosition, int maxCharacterLength, ref bool hasAlertedError)
 		{
-			if (checked(this.CharacterPosition - startPosition) > (long)maxCharacterLength)
+			if (checked(this.CharacterPosition - startPosition) > maxCharacterLength)
 			{
 				if (!hasAlertedError)
 				{
@@ -950,11 +870,11 @@ namespace Relativity.DataExchange.Data
 			StringBuilder stringBuilder = new StringBuilder();
 			long initialCharacterPosition = this.CharacterPosition;
 			bool hasAlertedError = false;
-			if (this.Peek() == (int)this.Bound)
+			if (this.Peek() == this.Bound)
 			{
 				// The Read character is NOT used.
 				Microsoft.VisualBasic.Strings.ChrW(this.Read());
-				if ((int)Microsoft.VisualBasic.Strings.ChrW(this.Peek()) == (int)this.Delimiter ||
+				if (Microsoft.VisualBasic.Strings.ChrW(this.Peek()) == this.Delimiter ||
 				    this.Peek() == EofChar ||
 				    this.Peek() == 13)
 				{
@@ -1001,7 +921,7 @@ namespace Relativity.DataExchange.Data
 			while (this.Peek() != EofChar)
 			{
 				char ch1 = Microsoft.VisualBasic.Strings.ChrW(this.Read());
-				if ((int)ch1 == (int)this.Bound)
+				if (ch1 == this.Bound)
 				{
 					if (this.TrimOption == TrimOption.Both ||
 					    this.TrimOption == TrimOption.Trailing)
@@ -1014,7 +934,7 @@ namespace Relativity.DataExchange.Data
 					}
 
 					int num = this.Peek();
-					if (num == (int)this.Delimiter)
+					if (num == this.Delimiter)
 					{
 						this.Read();
 						return this.ConvertNewLine(stringBuilder);
@@ -1043,7 +963,7 @@ namespace Relativity.DataExchange.Data
 							break;
 
 						default:
-							if (num == (int)this.Bound)
+							if (num == this.Bound)
 							{
 								this.Append(
 									stringBuilder,
@@ -1106,22 +1026,21 @@ namespace Relativity.DataExchange.Data
 					currentArrayList = new ConditionalArrayList(false);
 				}
 
-				// TODO: Verify the usage of "Or" vs "OrAlso"
 				while ((Microsoft.VisualBasic.Strings.ChrW(charCode) == ' '
 				        || Microsoft.VisualBasic.Strings.ChrW(charCode) == '\t')
 				       && (this.TrimOption == TrimOption.Both
-				          || this.TrimOption == TrimOption.Leading))
+				           || this.TrimOption == TrimOption.Leading))
 				{
 					charCode = this.Read();
 				}
 
 				char ch = Microsoft.VisualBasic.Strings.ChrW(charCode);
-				if ((int)ch == (int)this.Bound)
+				if (ch == this.Bound)
 				{
 					currentArrayList.Add(
 						this.GetBoundedFieldValue(ref hasHitEndOfLine, currentArrayList.Count, maximumFieldLength));
 				}
-				else if ((int)ch == (int)this.Delimiter)
+				else if (ch == this.Delimiter)
 				{
 					// Add an empty value
 					currentArrayList.Add(string.Empty);
@@ -1279,31 +1198,59 @@ namespace Relativity.DataExchange.Data
 		/// </summary>
 		private void ReInitializeReader()
 		{
-			FileStream fileStream = this.Reader.BaseStream as FileStream;
-			if (fileStream == null)
+			if (this.Reader.BaseStream is RestartableFileStream restartableFileStream)
 			{
-				throw new InvalidOperationException(Strings.ReinitializeReaderNotFileStreamError);
-			}
+				this.PublishWarningMessage(
+					new IoWarningEventArgs(
+						"Re-initializing stream for broken network connection",
+						this.CurrentLineNumber));
 
-			this.Reader = new System.IO.StreamReader(fileStream.Name, this.Reader.CurrentEncoding);
-			if (this.CharacterPosition > 0)
+				restartableFileStream.Restart();
+			}
+			else if (this.Reader.BaseStream is FileStream fileStream)
 			{
 				this.PublishWarningMessage(
 					new IoWarningEventArgs(
 						"Re-initializing reader for broken network connection",
 						this.CurrentLineNumber));
-				if (this.CharacterPosition > 100000)
+
+				string filename = fileStream.Name;
+				long position = fileStream.Position;
+				Encoding readerCurrentEncoding = this.Reader.CurrentEncoding;
+
+				this.Reader.Dispose();
+
+				Stream stream = new RestartableFileStream(filename);
+				try
 				{
-					this.PublishWarningMessage(
-						new IoWarningEventArgs(
-							"This could take up to several minutes.",
-							this.CurrentLineNumber));
+					this.Reader = new StreamReader(stream, readerCurrentEncoding, position == 0);
+				}
+				catch
+				{
+					stream.Dispose();
+					throw;
 				}
 
+				long delta = Math.Max(this.CharacterPosition / 10L, 100000L);
 				for (int i = 0; i <= this.CharacterPosition; i++)
 				{
+					if (i % delta == 0)
+					{
+						this.PublishWarningMessage(
+							new IoWarningEventArgs(
+								$"{i} out of {this.CharacterPosition} characters skipped.",
+								this.CurrentLineNumber));
+					}
+
 					this.Reader.Read();
 				}
+
+				this.PublishWarningMessage(
+					new IoWarningEventArgs($"{this.CharacterPosition} characters skipped.", this.CurrentLineNumber));
+			}
+			else
+			{
+				throw new InvalidOperationException(Strings.ReinitializeReaderNotFileStreamError);
 			}
 		}
 	}

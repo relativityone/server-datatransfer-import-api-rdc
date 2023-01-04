@@ -16,14 +16,14 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Images.Lines;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class IproFullTextWithoutPrecedenceLoadFileEntryTests : IproFullTextLoadFileEntryTests
 	{
 		protected override IproFullTextLoadFileEntry CreateInstance(IFieldService fieldService, LongTextHelper longTextHelper, IFullTextLineWriter fullTextLineWriter)
 		{
-			return new IproFullTextWithoutPrecedenceLoadFileEntry(fieldService, longTextHelper, new NullLogger(), fullTextLineWriter);
+			return new IproFullTextWithoutPrecedenceLoadFileEntry(fieldService, longTextHelper, new TestNullLogger(), fullTextLineWriter);
 		}
 
 		protected override void PrepareDataSet(ObjectExportInfo artifact, string textToWrite)
@@ -42,7 +42,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			artifact.ArtifactID = artifactId;
 			artifact.Metadata = new object[] { string.Empty, textToWrite, fileLocation };
 
-			LongText longText = LongText.CreateFromExistingFile(artifactId, -1, fileLocation, Encoding.Default);
+			LongText longText = LongText.CreateFromExistingFile(artifactId, -1, fileLocation, Encoding.Default, artifact.LongTextLength);
 			this.LongTextRepository.Add(longText.InList());
 		}
 	}

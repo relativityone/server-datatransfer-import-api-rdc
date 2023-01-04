@@ -9,6 +9,7 @@ namespace Relativity.DataExchange.Transfer
 	using System;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 
 	/// <summary>
@@ -29,29 +30,20 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TapiListenerBase"/> class.
 		/// </summary>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
 		/// </param>
 		/// <param name="context">
 		/// The transfer context.
 		/// </param>
-		protected TapiListenerBase(ITransferLog log, TransferContext context)
+		protected TapiListenerBase(ILog logger, TransferContext context)
 		{
-			if (log == null)
-			{
-				throw new ArgumentNullException(nameof(log));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			this.TransferLog = log;
-			this.Context = context;
+			this.Logger = logger.ThrowIfNull(nameof(logger));
+			this.Context = context.ThrowIfNull(nameof(context));
 			this.Context.LargeFileProgress += this.OnLargeFileProgress;
 			this.Context.TransferPathProgress += this.OnTransferPathProgress;
 			this.Context.TransferPathIssue += this.OnTransferPathIssue;
+			this.Context.TransferJobIssue += this.OnTransferJobIssue;
 			this.Context.TransferRequest += this.OnTransferRequestEvent;
 			this.Context.TransferJobRetry += this.OnTransferJobRetryEvent;
 			this.Context.TransferStatistics += this.OnTransferStatisticsEvent;
@@ -103,9 +95,9 @@ namespace Relativity.DataExchange.Transfer
 		}
 
 		/// <summary>
-		/// Gets the transfer log.
+		/// Gets the Relativity logger instance.
 		/// </summary>
-		protected ITransferLog TransferLog
+		protected ILog Logger
 		{
 			get;
 		}
@@ -140,9 +132,12 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="lineNumber">
 		/// The line number.
 		/// </param>
-		protected void PublishErrorMessage(string message, int lineNumber)
+		/// <param name="isMalwareError">
+		/// Information if this is a malware error.
+        /// </param>
+		protected void PublishErrorMessage(string message, int lineNumber, bool isMalwareError)
 		{
-			this.ErrorMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber));
+			this.ErrorMessage?.Invoke(this, new TapiMessageEventArgs(message, lineNumber, isMalwareError));
 		}
 
 		/// <summary>
@@ -196,6 +191,19 @@ namespace Relativity.DataExchange.Transfer
 		/// The <see cref="TransferPathProgressEventArgs"/> instance containing the event data.
 		/// </param>
 		protected virtual void OnTransferPathProgress(object sender, TransferPathProgressEventArgs e)
+		{
+		}
+
+		/// <summary>
+		/// Occurs when an issue occurs on a job level.
+		/// </summary>
+		/// <param name="sender">
+		/// The sender.
+		/// </param>
+		/// <param name="e">
+		/// The <see cref="TransferPathIssueEventArgs"/> instance containing the event data.
+		/// </param>
+		protected virtual void OnTransferJobIssue(object sender, TransferPathIssueEventArgs e)
 		{
 		}
 
@@ -269,6 +277,7 @@ namespace Relativity.DataExchange.Transfer
 				this.Context.LargeFileProgress -= this.OnLargeFileProgress;
 				this.Context.TransferPathProgress -= this.OnTransferPathProgress;
 				this.Context.TransferPathIssue -= this.OnTransferPathIssue;
+				this.Context.TransferJobIssue -= this.OnTransferJobIssue;
 				this.Context.TransferRequest -= this.OnTransferRequestEvent;
 				this.Context.TransferJobRetry -= this.OnTransferJobRetryEvent;
 				this.Context.TransferStatistics -= this.OnTransferStatisticsEvent;

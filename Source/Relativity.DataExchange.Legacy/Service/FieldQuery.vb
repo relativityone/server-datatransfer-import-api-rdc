@@ -6,6 +6,7 @@ Imports Relativity.DataExchange.Service
 Namespace kCura.WinEDDS.Service
 	Public Class FieldQuery
 		Inherits kCura.EDDS.WebAPI.FieldQueryBase.FieldQuery
+		Implements Replacement.IFieldQuery
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -23,7 +24,7 @@ Namespace kCura.WinEDDS.Service
 			Return wr
 		End Function
 
-		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, Optional ByVal includeUnmappable As Boolean = False) As kCura.EDDS.WebAPI.DocumentManagerBase.Field()
+		Public Function RetrieveAllAsArray(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32, Optional ByVal includeUnmappable As Boolean = False) As kCura.EDDS.WebAPI.DocumentManagerBase.Field() Implements Replacement.IFieldQuery.RetrieveAllAsArray
 			Dim dv As New SqlDataView(RetrieveAllMappable(caseContextArtifactID, artifactTypeID))
 			Dim fields As New System.Collections.ArrayList
 			Dim field As kCura.EDDS.WebAPI.DocumentManagerBase.Field
@@ -88,7 +89,7 @@ Namespace kCura.WinEDDS.Service
 			Return CType(System.Enum.Parse(GetType(kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice), ibc.ToString), kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice)
 		End Function
 
-		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As DocumentFieldCollection
+		Public Function RetrieveAllAsDocumentFieldCollection(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As DocumentFieldCollection Implements Replacement.IFieldQuery.RetrieveAllAsDocumentFieldCollection
 			Dim retval As New DocumentFieldCollection
 			For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.RetrieveAllAsArray(caseContextArtifactID, artifactTypeID)
 				With (fieldDTO)
@@ -103,7 +104,7 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveDisplayFieldNameByFieldCategoryID(caseContextArtifactID, fieldCategoryID))
 		End Function
 
-		Public Shadows Function RetrieveAllMappable(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrieveAllMappable(ByVal caseContextArtifactID As Int32, ByVal artifactTypeID As Int32) As System.Data.DataSet Implements Replacement.IFieldQuery.RetrieveAllMappable
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllMappable(caseContextArtifactID, artifactTypeID))
 		End Function
 
@@ -111,11 +112,11 @@ Namespace kCura.WinEDDS.Service
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAll(caseContextArtifactID))
 		End Function
 
-		Public Shadows Function RetrievePotentialBeginBatesFields(ByVal caseContextArtifactID As Int32) As System.Data.DataSet
+		Public Shadows Function RetrievePotentialBeginBatesFields(ByVal caseContextArtifactID As Int32) As System.Data.DataSet Implements Replacement.IFieldQuery.RetrievePotentialBeginBatesFields
 			Return RetryOnReLoginException(Function() MyBase.RetrievePotentialBeginBatesFields(caseContextArtifactID))
 		End Function
 
-		Public Shadows Function IsFieldIndexed(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As Boolean
+		Public Shadows Function IsFieldIndexed(ByVal caseContextArtifactID As Int32, ByVal fieldArtifactID As Int32) As Boolean Implements Replacement.IFieldQuery.IsFieldIndexed
 			Return RetryOnReLoginException(Function() MyBase.IsFieldIndexed(caseContextArtifactID, fieldArtifactID))
 		End Function
 

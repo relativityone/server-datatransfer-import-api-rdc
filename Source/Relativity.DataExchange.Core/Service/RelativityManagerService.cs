@@ -10,7 +10,6 @@
 namespace Relativity.DataExchange.Service
 {
 	using System;
-
 	using Polly;
 
 	/// <summary>
@@ -19,7 +18,7 @@ namespace Relativity.DataExchange.Service
 	/// <remarks>
 	/// This class exists in this assembly to provide minimal WebAPI functionality.
 	/// </remarks>
-	internal class RelativityManagerService : WebApiServiceBase
+	internal class RelativityManagerService : WebApiServiceBase, IRelativityManagerService
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RelativityManagerService"/> class.
@@ -71,11 +70,16 @@ namespace Relativity.DataExchange.Service
 			this.Initialize();
 			var policy = Policy
 				.Handle<Exception>(exception => !ExceptionHelper.IsFatalException(exception)).WaitAndRetry(
-					this.AppSettings.IoErrorNumberOfRetries,
-					retryAttempt => TimeSpan.FromSeconds(this.AppSettings.IoErrorWaitTimeInSeconds),
-					(exception, span) =>
+					this.AppSettings.HttpErrorNumberOfRetries,
+					retryAttempt => TimeSpan.FromSeconds(this.AppSettings.HttpErrorWaitTimeInSeconds),
+					(exception, span, retryCount, context) =>
 						{
-							this.LogError(exception, $"Get Relativity URL failed - retry span: {span}");
+							this.LogError(
+								exception,
+								"Get Relativity URL failed - Currently on attempt {RetryCount} out of {MaxRetries} and waiting {WaitSeconds} seconds before the next retry attempt.",
+								retryCount,
+								this.AppSettings.HttpErrorNumberOfRetries,
+								span.TotalSeconds);
 						});
 			return policy.Execute(() =>
 			{

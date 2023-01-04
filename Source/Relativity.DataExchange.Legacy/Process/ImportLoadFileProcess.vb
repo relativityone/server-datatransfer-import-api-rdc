@@ -1,9 +1,12 @@
+Imports kCura.WinEDDS.Service
+Imports Monitoring
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS
 
@@ -14,6 +17,7 @@ Namespace kCura.WinEDDS
 		Protected WithEvents _loadFileImporter As BulkLoadFileImporter
 		Protected WithEvents _IoReporterContext As IoReporterContext
 		Private _errorCount As Int32
+		Private _perBatchErrorCount As Int32
 		Private _warningCount As Int32
 		Private _timeZoneOffset As Int32
 
@@ -24,12 +28,18 @@ Namespace kCura.WinEDDS
 		Private _disableNativeLocationValidation As Boolean?
 		Private _auditLevel As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel = Config.AuditLevel
 
-		Public Sub New()
-			MyBase.New(New MessageService())
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(correlationIdFunc As Func(Of String))
+			Me.New(New MetricService(New ImportApiMetricSinkConfig), New RunningContext(), correlationIdFunc)
 		End Sub
 
-		Public Sub New(messageService As IMessageService)
-			MyBase.New(messageService)
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			Me.New(metricService, runningContext, RelativityLogger.Instance, correlationIdFunc)
+		End Sub
+
+		Public Sub New(metricService As IMetricService, runningContext As IRunningContext, logger As Global.Relativity.Logging.ILog, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, logger, correlationIdFunc)
 		End Sub
 
 		Public WriteOnly Property DisableNativeValidation As Boolean
@@ -44,15 +54,27 @@ Namespace kCura.WinEDDS
 			End Set
 		End Property
 
-		Protected Overrides ReadOnly Property JobType As String = "Import"
+		Protected Overrides ReadOnly Property TransferDirection As TelemetryConstants.TransferDirection = TelemetryConstants.TransferDirection.Import
 
-		Protected Overrides ReadOnly Property TapiClientName As String
+		Protected Overrides ReadOnly Property TapiClient As TapiClient
 			Get
 				If _loadFileImporter Is Nothing Then
-					Return _tapiClientName
+					Return TapiClient.None
 				Else
-					Return _loadFileImporter.TapiClientName
+					Return _loadFileImporter.TapiClient
 				End If
+			End Get
+		End Property
+
+		Private ReadOnly Property ImportStatistics As ImportStatistics
+			Get
+				Return _loadFileImporter.Statistics
+			End Get
+		End Property 
+
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return ImportStatistics
 			End Get
 		End Property
 
@@ -92,10 +114,6 @@ Namespace kCura.WinEDDS
 
 		Public Property CloudInstance() As Boolean
 
-		Public Property EnforceDocumentLimit() As Boolean
-
-		Public Property ExecutionSource() As ExecutionSource
-
 		Public Property TimeZoneOffset() As Int32
 			Get
 				Return _timeZoneOffset
@@ -109,48 +127,53 @@ Namespace kCura.WinEDDS
 			_IoReporterContext = New IoReporterContext(Me.FileSystem, Me.AppSettings, New WaitAndRetryPolicy(Me.AppSettings))
 			Dim reporter As IIoReporter = Me.CreateIoReporter(_IoReporterContext)
 			Dim returnImporter As BulkLoadFileImporter = New kCura.WinEDDS.BulkLoadFileImporter(
-				LoadFile, _
-				Me.Context, _
-				reporter, _
-				logger, _
-				_timeZoneOffset, _
-				True, _
-				Me.ProcessID, _
-				True, _
-				BulkLoadFileFieldDelimiter, _
-				EnforceDocumentLimit, _
-				Me.CancellationTokenSource, _
-				ExecutionSource)
+				LoadFile,
+				Me.Context,
+				reporter,
+				Logger,
+				_timeZoneOffset,
+				True,
+				Me.ProcessId,
+				True,
+				BulkLoadFileFieldDelimiter,
+				Me.CancellationTokenSource,
+				_correlationIdFunc,
+				Me.RunningContext)
 			Return returnImporter
 		End Function
 
-		Protected Overrides Sub OnFatalError()
-			MyBase.OnFatalError()
-			SendJobStatistics(_loadFileImporter.Statistics)
-			SendTransferJobFailedMessage()
-		End Sub
+		''' <inheritdoc/>
+		Protected Overrides Function GetTotalRecordsCount() As Long
+			Return _loadFileImporter.TotalRecords
+		End Function
+
+		''' <inheritdoc/>
+		Protected Overrides Function GetCompletedRecordsCount() As Long
+			Return _loadFileImporter.CompletedRecords
+		End Function
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendJobStatistics(_loadFileImporter.Statistics)
-			SendTransferJobCompletedMessage()
 			Me.Context.PublishProcessCompleted(False, "", True)
 		End Sub
 
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendJobStatistics(_loadFileImporter.Statistics)
-			SendTransferJobCompletedMessage()
 			Me.Context.PublishProcessCompleted(False, System.Guid.NewGuid.ToString, True)
 		End Sub
 
 		Protected Overrides Function HasErrors() As Boolean
-
 			Return _loadFileImporter.HasErrors
 		End Function
 
+		Protected Overrides Function IsCancelled() As Boolean
+			Return _loadFileImporter.IsCancelledByUser
+		End Function
+
 		Protected Overrides Function Run() As Boolean
-			Return (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasFatalErrorOccured
+			Dim returnValue As Boolean = (CType(_loadFileImporter.ReadFile(LoadFile.FilePath), Boolean)) AndAlso Not _hasFatalErrorOccured
+			RunId = _loadFileImporter.RunId
+			Return returnValue
 		End Function
 
 		Protected Overrides Sub Initialize()
@@ -158,6 +181,7 @@ Namespace kCura.WinEDDS
 			MyBase.Initialize()
 			_warningCount = 0
 			_errorCount = 0
+			_perBatchErrorCount = 0
 			_loadFileImporter = Me.GetImporter()
 
 			If _disableNativeValidation.HasValue Then _loadFileImporter.DisableNativeValidation = _disableNativeValidation.Value
@@ -171,9 +195,9 @@ Namespace kCura.WinEDDS
 			End If
 
 			If SkipExtractedTextEncodingCheck.HasValue AndAlso SkipExtractedTextEncodingCheck Then
-				_loadFileImporter.SkipExtractedTextEncodingCheck = True
+				_loadFileImporter.SkipExtractedTextEncodingAndSizeCheck = True
 			End If
-			_loadFileImporter.SkipExtractedTextEncodingCheck = (_loadFileImporter.SkipExtractedTextEncodingCheck OrElse Me.AppSettings.DisableTextFileEncodingCheck)
+			_loadFileImporter.SkipExtractedTextEncodingAndSizeCheck = (_loadFileImporter.SkipExtractedTextEncodingAndSizeCheck OrElse Me.AppSettings.DisableTextFileEncodingCheck)
 
 			_loadFileImporter.DisableExtractedTextFileLocationValidation = DisableExtractedTextFileLocationValidation
 			_loadFileImporter.AuditLevel = _auditLevel
@@ -189,7 +213,94 @@ Namespace kCura.WinEDDS
 			Me.Context.InputArgs = LoadFile.FilePath
 		End Sub
 
-		Private Sub AuditRun(ByVal success As Boolean, ByVal runID As String)
+		Protected Overrides Sub SetBaseMetrics(metric As MetricJobBase)
+			MyBase.SetBaseMetrics(metric)
+			metric.ImportObjectType = ImportStatistics.ImportObjectType
+		End Sub
+
+		Protected Overrides Function BuildStartMetric() As MetricJobStarted
+			Dim metric As MetricJobStarted = MyBase.BuildStartMetric()
+
+			metric.CustomData("OverwriteDestination") = LoadFile.OverwriteDestination
+
+			metric.CustomData("RunId") = _loadFileImporter.RunId
+			metric.CustomData("DestinationFolderID") = LoadFile.DestinationFolderID
+			metric.CustomData("FirstLineContainsHeaders") = LoadFile.FirstLineContainsHeaders
+			metric.CustomData("LoadNativeFiles") = LoadFile.LoadNativeFiles
+			metric.CustomData("RecordDelimiter") = LoadFile.RecordDelimiter
+			metric.CustomData("QuoteDelimiter") = LoadFile.QuoteDelimiter
+			metric.CustomData("NewlineDelimiter") = LoadFile.NewlineDelimiter
+			metric.CustomData("MultiRecordDelimiter") = LoadFile.MultiRecordDelimiter
+			metric.CustomData("HierarchicalValueDelimiter") = LoadFile.HierarchicalValueDelimiter
+			metric.CustomData("ArtifactTypeID") = LoadFile.ArtifactTypeID
+			metric.CustomData("StartLineNumber") = LoadFile.StartLineNumber
+			metric.CustomData("IdentityFieldId") = LoadFile.IdentityFieldId
+			metric.CustomData("SendEmailOnLoadCompletion") = LoadFile.SendEmailOnLoadCompletion
+			metric.CustomData("ForceFolderPreview") = LoadFile.ForceFolderPreview
+			metric.CustomData("OIFileIdMapped") = LoadFile.OIFileIdMapped
+			metric.CustomData("FileSizeMapped") = LoadFile.FileSizeMapped
+			metric.CustomData("MoveDocumentsInAppendOverlayMode") = LoadFile.MoveDocumentsInAppendOverlayMode
+			metric.CustomData("Billable") = LoadFile.Billable
+
+			metric.CustomData("TotalMappedFieldsCount") = LoadFile.FieldMap.Count
+
+			metric.CustomData("OverlayBehavior") = LoadFile.OverlayBehavior
+			
+			metric.CustomData("IsFolderIncluded") = LoadFile.CreateFolderStructure
+			metric.CustomData("IsExtractedTextIncluded") = Not LoadFile.ExtractedTextFileEncoding Is Nothing
+
+			Dim extractedTextColumn As String = LoadFile.LongTextColumnThatContainsPathToFullText
+			Dim fullTextsCount, singleObjectsCount, multiObjectsCount, singleChoicesCount, multiChoicesCount As Int32
+
+			For Each docField As DocumentField In LoadFile.FieldMap.DocumentFields
+				If docField.FieldCategory = FieldCategory.FullText Then
+					fullTextsCount += 1
+					If docField.FieldName = extractedTextColumn Then
+						metric.CustomData("IsExtractedTextDataGridEnabled") = docField.EnableDataGrid
+					End If
+				ElseIf docField.FieldTypeID = FieldType.Object Then
+					singleObjectsCount += 1
+				ElseIf docField.FieldTypeID = FieldType.Objects Then
+					multiObjectsCount += 1
+				ElseIf docField.FieldTypeID = FieldType.Code Then
+					singleChoicesCount += 1
+				ElseIf docField.FieldTypeID = FieldType.MultiCode Then
+					multiChoicesCount += 1
+				End If
+			Next
+			
+			metric.CustomData("FullTextsCount") = fullTextsCount
+			metric.CustomData("SingleObjectsCount") = singleObjectsCount
+			metric.CustomData("MultiObjectsCount") = multiObjectsCount
+			metric.CustomData("SingleChoicesCount") = singleChoicesCount
+			metric.CustomData("MultiChoicesCount") = multiChoicesCount
+
+			Return metric
+		End Function
+
+		Protected Overrides Function BuildProgressMetric(statistics As Statistics) As MetricJobProgress
+			Dim metric As MetricJobProgress = MyBase.BuildProgressMetric(statistics)
+
+			Dim importStatistics As ImportStatistics = TryCast(statistics, ImportStatistics)
+			If importStatistics Is Nothing Then
+				Logger.LogWarning("Unable to parse ImportStatistics in BuildProgressMetric")
+				Return metric
+			End If
+
+			metric.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(importStatistics.DocumentsCreated + importStatistics.DocumentsUpdated, statistics.MassImportDuration.TotalSeconds)
+
+			Return metric			
+		End Function
+
+		Protected Overrides Function BuildEndMetric(jobStatus As TelemetryConstants.JobStatus) As MetricJobEndReport
+			Dim metric As MetricJobEndReport = MyBase.BuildEndMetric(jobStatus)
+			
+			metric.SqlBulkLoadThroughputRecordsPerSecond = Statistics.CalculateThroughput(ImportStatistics.DocumentsCreated + ImportStatistics.DocumentsUpdated, Statistics.MassImportDuration.TotalSeconds)
+		
+			Return metric
+		End Function
+
+		Private Sub AuditRun(ByVal runID As String)
 			Try
 				Dim retval As New kCura.EDDS.WebAPI.AuditManagerBase.ObjectImportStatistics
 				retval.ArtifactTypeID = LoadFile.ArtifactTypeID
@@ -269,16 +380,17 @@ Namespace kCura.WinEDDS
 						Case TapiClient.Web
 							retval.RepositoryConnection = EDDS.WebAPI.AuditManagerBase.RepositoryConnectionType.Web
 					End Select
-					retval.TotalFileSize = _loadFileImporter.Statistics.FileBytes
+					retval.TotalFileSize = _loadFileImporter.Statistics.FileTransferredBytes
 				End If
 				retval.RunTimeInMilliseconds = CType(System.DateTime.Now.Subtract(StartTime).TotalMilliseconds, Int32)
 				retval.StartLine = CType(System.Math.Min(LoadFile.StartLineNumber, Int32.MaxValue), Int32)
-				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataBytes
+				retval.TotalMetadataBytes = _loadFileImporter.Statistics.MetadataTransferredBytes
 				retval.SendNotification = LoadFile.SendEmailOnLoadCompletion
-				Dim auditManager As New kCura.WinEDDS.Service.AuditManager(LoadFile.Credentials, LoadFile.CookieContainer)
+				Dim auditManager As kCura.WinEDDS.Service.Replacement.IAuditManager = ManagerFactory.CreateAuditManager(LoadFile.Credentials, LoadFile.CookieContainer, AddressOf GetCorrelationId)
 
-				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, Not success, retval)
-			Catch
+				auditManager.AuditObjectImport(LoadFile.CaseInfo.ArtifactID, runID, _hasFatalErrorOccured, retval)
+			Catch ex As Exception
+				logger.LogError(ex, "An error has occurred during audit")
 			End Try
 		End Sub
 
@@ -292,25 +404,23 @@ Namespace kCura.WinEDDS
 				If Not e.AdditionalInfo Is Nothing Then statisticsDictionary = DirectCast(e.AdditionalInfo, IDictionary)
 				Select Case e.EventType
 					Case EventType2.End
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, System.DateTime.Now, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
-						Me.Context.PublishProcessEnded(e.Statistics.FileBytes, e.Statistics.MetadataBytes)
+						Me.Context.PublishProcessEnded(e.Statistics.FileTransferredBytes, e.Statistics.MetadataTransferredBytes, e.Statistics.GetSqlProcessRate())
 					Case EventType2.Error
 						_errorCount += 1
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						_perBatchErrorCount += 1
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishErrorEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Progress
-						TotalRecords = e.TotalRecords
-						CompletedRecordsCount = e.CurrentRecordIndex
 						Me.Context.PublishRecordProcessed(e.CurrentRecordIndex)
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Statistics
-						SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+						SendMetricJobProgress(e.Statistics, checkThrottling := True)
 					Case EventType2.ResetProgress
 						' Do NOT raise RaiseRecordProcessed for this event. 
-						CompletedRecordsCount = 0
-						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
+						Me.Context.PublishProgress(e.TotalRecords, e.CurrentRecordIndex, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statisticsDictionary)
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
 					Case EventType2.Status
 						Me.Context.PublishStatusEvent(e.CurrentRecordIndex.ToString, e.Message)
@@ -327,52 +437,38 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception, ByVal runID As String) Handles _loadFileImporter.FatalErrorEvent
-			SyncLock Me.Context
-				Me.Context.PublishFatalException(ex)
-				'TODO: _loadFileImporter.ErrorLogFileName
-				Me.Context.PublishProcessCompleted(False, "", True)
-				_hasFatalErrorOccured = True
-			End SyncLock
-			Me.AuditRun(False, runID)
-		End Sub
-
-		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String, ByVal tapiClientName As String, ByVal isBulkEnabled As Boolean) Handles _loadFileImporter.UploadModeChangeEvent
-			If _uploadModeText Is Nothing Then
-				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(True)
+			If Not _hasFatalErrorOccured Then
+				SyncLock Me.Context
+					Me.Context.PublishFatalException(ex)
+					'TODO: _loadFileImporter.ErrorLogFileName
+					Me.Context.PublishProcessCompleted(False, "", True)
+					_hasFatalErrorOccured = True
+				End SyncLock
 			End If
-			Dim statusBarMessage As String = $"{statusBarText} - SQL Insert Mode: {If(isBulkEnabled, "Bulk", "Single")}"
-
-			SendTransferJobStartedMessage()
-
-			Me.Context.PublishStatusBarChanged(statusBarMessage, _uploadModeText)
 		End Sub
 
+		Private Sub _loadFileImporter_UploadModeChangeEvent(ByVal statusBarText As String) Handles _loadFileImporter.UploadModeChangeEvent
+			If _uploadModeText Is Nothing Then
+				_uploadModeText = TapiModeHelper.BuildDocText()
+			End If
 
+			OnTapiClientChanged()
+			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
+		End Sub
 
 		Private Sub _loadFileImporter_DataSourcePrepEvent(ByVal e As Api.DataSourcePrepEventArgs) Handles _loadFileImporter.DataSourcePrepEvent
 			SyncLock Me.Context
-				Dim totaldisplay As String
-				Dim processeddisplay As String
-				If e.TotalBytes >= 1048576 Then
-					totaldisplay = (e.TotalBytes / 1048576).ToString("N0") & " MB"
-					processeddisplay = (e.BytesRead / 1048576).ToString("N0") & " MB"
-				ElseIf e.TotalBytes < 1048576 AndAlso e.TotalBytes >= 102400 Then
-					totaldisplay = (e.TotalBytes / 1024).ToString("N0") & " KB"
-					processeddisplay = (e.BytesRead / 1024).ToString("N0") & " KB"
-				Else
-					totaldisplay = e.TotalBytes.ToString & " B"
-					processeddisplay = e.BytesRead.ToString & " B"
-				End If
+				Dim totalBytesDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.TotalBytes)
+				Dim processedBytesDisplay As String = FileSizeHelper.ConvertBytesNumberToDisplayString(e.BytesRead)
 				Select Case e.Type
 					Case Api.DataSourcePrepEventArgs.EventType.Close
-						Me.Context.PublishProgress(e.TotalBytes, e.TotalBytes, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
+						Me.Context.PublishProgressInBytes(e.TotalBytes, e.TotalBytes, e.StartTime, System.DateTime.Now, Me.ProcessId, totalBytesDisplay, processedBytesDisplay)
 					Case Api.DataSourcePrepEventArgs.EventType.Open
-						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-						Me.Context.PublishStatusEvent("", "Preparing file for import")
+						Me.Context.PublishProgressInBytes(e.TotalBytes, e.BytesRead, e.StartTime, System.DateTime.Now, Me.ProcessId, totalBytesDisplay, processedBytesDisplay)
+						Me.Context.PublishStatusEvent(String.Empty, "Preparing file for import")
 					Case Api.DataSourcePrepEventArgs.EventType.ReadEvent
-						Me.Context.PublishProgress(e.TotalBytes, e.BytesRead, 0, 0, e.StartTime, System.DateTime.Now, 0, 0, Me.ProcessID, totaldisplay, processeddisplay)
-						Me.Context.PublishStatusEvent("", "Preparing file for import")
+						Me.Context.PublishProgressInBytes(e.TotalBytes, e.BytesRead, e.StartTime, System.DateTime.Now, Me.ProcessId, totalBytesDisplay, processedBytesDisplay)
+						Me.Context.PublishStatusEvent(String.Empty, "Preparing file for import")
 				End Select
 			End SyncLock
 		End Sub
@@ -388,18 +484,27 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub _loadFileImporter_EndFileImport(ByVal runID As String) Handles _loadFileImporter.EndFileImport
-			Me.AuditRun(True, runID)
+			'We want DocCount to represent how many documents have been sent to import
+			'in case of BulkLoadFileImporter this is represented best by TotalTransferredFilesCount
+			Statistics.DocumentsCount = _loadFileImporter.TotalTransferredFilesCount
+			Statistics.DocsErrorsCount = _errorCount
+			Me.AuditRun(runID)
+		End Sub
+
+		Private Sub _loadFileImporter_OnBatchCompleted(batchInformation As BatchInformation) Handles _loadFileImporter.BatchCompleted
+			batchInformation.NumberOfRecordsWithErrors = _perBatchErrorCount
+			_perBatchErrorCount = 0
+			SendMetricJobBatch(batchInformation)
+			Me.Context.PublishBatchCompleted(batchInformation.OrdinalNumber, batchInformation.NumberOfFilesProcessed, batchInformation.NumberOfRecords, batchInformation.NumberOfRecordsWithErrors)
 		End Sub
 
 		Dim isDisposed as Boolean
 		Protected Overrides Sub Dispose(disposing As Boolean)
-			If Not isDisposed
+			If Not isDisposed Then
 				_loadFileImporter?.Dispose()
 				isDisposed = True
 			End If
 			MyBase.Dispose(disposing)
 		End Sub
-
 	End Class
-
 End Namespace

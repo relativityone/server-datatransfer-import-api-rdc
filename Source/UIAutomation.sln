@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.108
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.Desktop.Client.Legacy.Tests.UI", "Relativity.Desktop.Client.Legacy.Tests.UI\Relativity.Desktop.Client.Legacy.Tests.UI.csproj", "{F0B29F3E-F41F-4882-ADE6-5DAC07164992}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.TestFramework", "Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj", "{FED61746-80EC-40CB-998E-9299B804CE7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Core", "Relativity.DataExchange.Core\Relativity.DataExchange.Core.csproj", "{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import", "Relativity.DataExchange.Import\Relativity.DataExchange.Import.csproj", "{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.DataExchange.Legacy", "Relativity.DataExchange.Legacy\Relativity.DataExchange.Legacy.vbproj", "{2022E24B-46A1-46DA-A715-36D137436B3A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0B29F3E-F41F-4882-ADE6-5DAC07164992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0B29F3E-F41F-4882-ADE6-5DAC07164992}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0B29F3E-F41F-4882-ADE6-5DAC07164992}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0B29F3E-F41F-4882-ADE6-5DAC07164992}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FED61746-80EC-40CB-998E-9299B804CE7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED61746-80EC-40CB-998E-9299B804CE7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FED61746-80EC-40CB-998E-9299B804CE7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FED61746-80EC-40CB-998E-9299B804CE7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A91F3CCC-CCD1-46BB-A0F3-AD31F8853E31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB2CBA4C-F2EB-41D7-8CDC-AE6D9E1D885D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2022E24B-46A1-46DA-A715-36D137436B3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2022E24B-46A1-46DA-A715-36D137436B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2022E24B-46A1-46DA-A715-36D137436B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED6BF640-0C8B-4200-A2C7-9F6D8A345950}
+	EndGlobalSection
+EndGlobal

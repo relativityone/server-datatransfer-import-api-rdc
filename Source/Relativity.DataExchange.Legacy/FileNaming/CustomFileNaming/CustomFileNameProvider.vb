@@ -41,6 +41,11 @@ Namespace kCura.WinEDDS.FileNaming.CustomFileNaming
 			Return Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(nameAsString)
 		End Function
 
+		Public Function GetPdfName(exportObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetPdfName
+			Dim name As String = exportObjectInfo.PdfFileName(CreateFileName(exportObjectInfo).ToString(), _appendOriginalFileName)
+			Return Global.Relativity.DataExchange.Io.FileSystem.Instance.Path.ConvertIllegalCharactersInFilename(name)
+		End Function
+
 		Private Function CreateFileName(objectExportInfo As ObjectExportInfo) As StringBuilder
 			Dim name As StringBuilder = New StringBuilder()
 			Dim namePartsCount As Integer = CType(((_fileNamePartDescriptors.Count - 1) / 2), Integer)

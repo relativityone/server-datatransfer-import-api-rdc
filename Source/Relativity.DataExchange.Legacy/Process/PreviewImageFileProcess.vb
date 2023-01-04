@@ -1,3 +1,5 @@
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Media
 Imports Relativity.DataExchange.Process
 
@@ -12,13 +14,22 @@ Namespace kCura.WinEDDS
 		Private _errorCount As Int32
 		Private _warningCount As Int32
 
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New()
+			Me.New(RelativityLogger.Instance)
+		End Sub
+
+		Public Sub New(logger As Global.Relativity.Logging.ILog)
+			MyBase.New(logger)
+		End Sub
+
 		Public Property TimeZoneOffset As Int32
 
 		Protected Overrides Sub OnExecute()
 			_startTime = DateTime.Now
 			_warningCount = 0
 			_errorCount = 0
-			_imageFilePreviewer = New ImageFilePreviewer(Me.Context, True, New FreeImageService)
+			_imageFilePreviewer = New ImageFilePreviewer(Me.Context, True)
 
 			_imageFilePreviewer.ReadFile(LoadFile.FileName)
 			Me.Context.PublishProcessCompleted()

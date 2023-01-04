@@ -1487,6 +1487,31 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			Assert.IsFalse(_form._exportMulticodeFieldsAsNested.Checked)
 		End Function
 
+		<Test>
+		Public Async Function LoadExportFile_ExportPdf_True() As Task
+			Dim ef As New kCura.WinEDDS.ExportFile(ArtifactType.Document) With {.ExportPdf = True}
+			Await _form.LoadExportFile(ef)
+			Assert.IsTrue(_form._exportPdfFiles.Checked)
+		End Function
+
+		<Test>
+		Public Async Function LoadExportFile_PdfPrefix_IsEmpty() As Task
+			Dim prefixText As String = ""
+			Dim ef As New kCura.WinEDDS.ExportFile(ArtifactType.Document) With {.VolumeInfo = New kCura.WinEDDS.Exporters.VolumeInfo() With {
+					.SubdirectoryPdfPrefix = prefixText}}
+			Await _form.LoadExportFile(ef)
+			Assert.AreEqual(prefixText, _form._subdirectoryPdfPrefix.Text)
+		End Function
+
+		<Test>
+		Public Async Function LoadExportFile_PdfPrefix_IsNotEmpty() As Task
+			Dim prefixText As String = "TestPrefix"
+			Dim ef As New kCura.WinEDDS.ExportFile(ArtifactType.Document) With {.VolumeInfo = New kCura.WinEDDS.Exporters.VolumeInfo() With {
+					.SubdirectoryPdfPrefix = prefixText}}
+			Await _form.LoadExportFile(ef)
+			Assert.AreEqual(prefixText, _form._subdirectoryPdfPrefix.Text)
+		End Function
+
 		Private Function DoesFieldExistsInListBox(ByVal field As kCura.WinEDDS.ViewFieldInfo, ByVal list As List(Of Object)) As Boolean
 			Dim retVal As Boolean = False
 			For Each avf As kCura.WinEDDS.ViewFieldInfo In list

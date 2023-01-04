@@ -22,6 +22,11 @@ namespace Relativity.DataExchange.Transfer
 			this.BcpFileTransfer = false;
 			this.MaxFilesPerFolder = 1000;
 			this.SortIntoVolumes = true;
+
+			// Those settings are set the same in the base class for safety to preserve possible unforeseen usages
+			this.FileNotFoundErrorsRetry = AppSettingsConstants.TapiFileNotFoundErrorsRetryDefaultValue;
+			this.FileNotFoundErrorsDisabled = AppSettingsConstants.TapiFileNotFoundErrorsDisabledDefaultValue;
+			this.PermissionErrorsRetry = AppSettingsConstants.PermissionErrorsRetryDefaultValue;
 		}
 
 		/// <summary>
@@ -36,6 +41,20 @@ namespace Relativity.DataExchange.Transfer
 			this.BcpFileTransfer = copy.BcpFileTransfer;
 			this.MaxFilesPerFolder = copy.MaxFilesPerFolder;
 			this.SortIntoVolumes = copy.SortIntoVolumes;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UploadTapiBridgeParameters2"/> class.
+		/// </summary>
+		/// <param name="copy">
+		/// The parameters to copy.
+		/// </param>
+		public UploadTapiBridgeParameters2(TapiBridgeParameters2 copy)
+			: base(copy)
+		{
+			this.BcpFileTransfer = false;
+			this.MaxFilesPerFolder = 1000;
+			this.SortIntoVolumes = true;
 		}
 
 		/// <summary>

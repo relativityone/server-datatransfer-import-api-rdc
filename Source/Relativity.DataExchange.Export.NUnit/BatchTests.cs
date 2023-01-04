@@ -8,6 +8,7 @@ namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
 	using System.Threading;
+	using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -18,7 +19,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class BatchTests
@@ -41,21 +42,21 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			Mock<IMessenger> messenger = new Mock<IMessenger>();
 
-			this._instance = new Batch(this._batchExporter.Object, this._batchInitialization.Object, this._batchCleanUp.Object, this._batchValidator.Object, this._batchState.Object, messenger.Object, new NullLogger());
+			this._instance = new Batch(this._batchExporter.Object, this._batchInitialization.Object, this._batchCleanUp.Object, this._batchValidator.Object, this._batchState.Object, messenger.Object, new TestNullLogger());
 		}
 
 		[Test]
-		public void GoldWorkflow()
+		public async Task GoldWorkflow()
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 			VolumePredictions[] volumePredictions = new VolumePredictions[1];
 
 			// ACT
-			this._instance.Export(artifacts, volumePredictions, CancellationToken.None);
+			await this._instance.ExportAsync(artifacts, volumePredictions, CancellationToken.None).ConfigureAwait(false);
 
 			// ASSERT
 			this._batchInitialization.Verify(x => x.PrepareBatch(artifacts, volumePredictions, CancellationToken.None), Times.Once);
-			this._batchExporter.Verify(x => x.Export(artifacts, CancellationToken.None), Times.Once);
+			this._batchExporter.Verify(x => x.ExportAsync(artifacts, CancellationToken.None), Times.Once);
 			this._batchValidator.Verify(x => x.ValidateExportedBatch(artifacts, CancellationToken.None), Times.Once);
 			this._batchState.Verify(x => x.SaveState(), Times.Once);
 			this._batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
@@ -69,26 +70,26 @@ namespace Relativity.DataExchange.Export.NUnit
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 			VolumePredictions[] volumePredictions = new VolumePredictions[1];
 
-			this._batchExporter.Setup(x => x.Export(artifacts, CancellationToken.None)).Throws<Exception>();
+			this._batchExporter.Setup(x => x.ExportAsync(artifacts, CancellationToken.None)).Throws<Exception>();
 
 			// ACT & ASSERT
-			Assert.Throws<Exception>(() => this._instance.Export(artifacts, volumePredictions, CancellationToken.None));
+			Assert.Throws<Exception>(() => this._instance.ExportAsync(artifacts, volumePredictions, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult());
 
 			this._batchCleanUp.Verify(x => x.CleanUp(), Times.Once);
 		}
 
 		[Test]
-		public void ItShouldRestoreStateAfterCancel()
+		public async Task ItShouldRestoreStateAfterCancel()
 		{
 			ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
 			VolumePredictions[] volumePredictions = new VolumePredictions[1];
 
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
 
-			this._batchExporter.Setup(x => x.Export(artifacts, tokenSource.Token)).Callback(() => tokenSource.Cancel());
+			this._batchExporter.Setup(x => x.ExportAsync(artifacts, tokenSource.Token)).Callback(() => tokenSource.Cancel()).Returns(Task.CompletedTask);
 
 			// ACT
-			this._instance.Export(artifacts, volumePredictions, tokenSource.Token);
+			await this._instance.ExportAsync(artifacts, volumePredictions, tokenSource.Token).ConfigureAwait(false);
 
 			// ASSERT
 			this._batchState.Verify(x => x.RestoreState(), Times.Once);

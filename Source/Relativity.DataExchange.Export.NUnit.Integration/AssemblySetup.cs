@@ -6,9 +6,12 @@
 
 namespace Relativity.DataExchange.Export.NUnit.Integration
 {
+	using System.Threading.Tasks;
+
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 
 	/// <summary>
 	/// Represents a global assembly-wide setup routine that's guaranteed to be executed before ANY NUnit test.
@@ -28,22 +31,44 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			private set;
 		}
 
-		/// <summary>
-		/// The main setup method.
-		/// </summary>
 		[OneTimeSetUp]
-		public void Setup()
+		public static async Task SetupAsync()
 		{
-			TestParameters = IntegrationTestHelper.Create();
+			TestParameters = IntegrationTestHelper.Create().DeepCopy();
+
+			if (TestParameters.SkipIntegrationTests)
+			{
+				return;
+			}
+
+			if (TestParameters.PerformAdditionalWorkspaceSetup)
+			{
+				await FieldHelper.EnsureWellKnownFieldsAsync(TestParameters).ConfigureAwait(false);
+				await CreateViewForExportTests().ConfigureAwait(false);
+			}
+
+			TapiClientModeAvailabilityChecker.InitializeTapiClient(TestParameters);
+
+			var controlNumbers = ImportHelper.ImportDefaultTestData(TestParameters);
+
+			// we are importing images only for the first document
+			ImportHelper.ImportImagesForDocuments(TestParameters, controlNumbers.GetRange(0, 1));
 		}
 
-		/// <summary>
-		/// The main teardown method.
-		/// </summary>
 		[OneTimeTearDown]
-		public void TearDown()
+		public static void TearDown()
 		{
 			IntegrationTestHelper.Destroy(TestParameters);
+		}
+
+		private static async Task CreateViewForExportTests()
+		{
+			const string ViewName = "ImportAPI test view";
+			ExportTestBase.ViewId = await ViewHelper.CreateViewAsync(
+										TestParameters,
+										ViewName,
+										WellKnownArtifactTypes.DocumentArtifactTypeId,
+										WellKnownFields.ControlNumberId).ConfigureAwait(false);
 		}
 	}
 }

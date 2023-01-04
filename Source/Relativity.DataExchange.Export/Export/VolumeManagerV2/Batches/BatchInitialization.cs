@@ -44,7 +44,7 @@
 		{
 			foreach (IRepositoryBuilder repositoryBuilder in _repositoryBuilders)
 			{
-				_logger.LogVerbose("Adding artifact {artifactId} to repository {type}.", repositoryBuilder.GetType().ToString());
+				_logger.LogVerbose("Adding artifact {artifactId} to repository {type}.", artifact.ArtifactID, repositoryBuilder.GetType().ToString());
 				repositoryBuilder.AddToRepository(artifact, cancellationToken);
 			}
 		}

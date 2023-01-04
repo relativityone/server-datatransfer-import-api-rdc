@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.Process
 	using System.Threading;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.Logging;
 
 	/// <summary>
 	/// Represents a class object that writes all process errors to a CSV file. This class cannot be inherited.
@@ -18,7 +19,7 @@ namespace Relativity.DataExchange.Process
 	internal sealed class ProcessErrorWriter : IProcessErrorWriter
 	{
 		private readonly IFileSystem fileSystem;
-		private readonly Logging.ILog logger;
+		private readonly ILog logger;
 		private string errorsFile;
 		private IStreamWriter streamWriter;
 		private bool disposed;

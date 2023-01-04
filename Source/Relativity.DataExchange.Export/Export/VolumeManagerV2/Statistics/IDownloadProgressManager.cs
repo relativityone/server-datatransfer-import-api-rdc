@@ -2,7 +2,8 @@
 {
 	public interface IDownloadProgressManager
 	{
-		void MarkLongTextAsDownloaded(string id, int lineNumber);
-		void MarkFileAsDownloaded(string id, int lineNumber);
+		void MarkArtifactAsError(int artifactId, string message);
+		void MarkLongTextAsCompleted(string targetFile, int lineNumber, bool transferResult);
+		void MarkFileAsCompleted(string targetFile, int lineNumber, bool transferResult);
 	}
 }

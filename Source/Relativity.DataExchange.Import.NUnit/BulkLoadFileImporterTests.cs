@@ -11,9 +11,16 @@ namespace Relativity.DataExchange.Import.NUnit
 	using System.Collections.Generic;
 	using System.Net;
 	using global::NUnit.Framework;
+
 	using kCura.WinEDDS;
+	using kCura.WinEDDS.Service;
+
 	using Moq;
+
 	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.Service.WebApiVsKeplerSwitch;
+	using Relativity.DataExchange.Transfer;
+	using Relativity.Transfer;
 
 	/// <summary>
 	/// Represents <see cref="BulkLoadFileImporter"/> tests.
@@ -59,14 +66,62 @@ namespace Relativity.DataExchange.Import.NUnit
 		[TestCase("/some_file.txt", false, false)]
 		public void MetadataFileCountShouldBe0IfBatchCounterIsNot0(string outputNativePath, bool shouldCompleteJob, bool lastRun)
 		{
+			TapiBridgeFactory.UseLegacyWebApiInTests = false;
+
 			this.Setup();
-			AppSettings.Instance.IoErrorNumberOfRetries = 1;
-			AppSettings.Instance.IoErrorWaitTimeInSeconds = 1;
+			AppSettings.Instance.HttpErrorNumberOfRetries = 1;
+			AppSettings.Instance.HttpErrorWaitTimeInSeconds = 1;
 			this.importer.SetTapiBridges();
 			this.importer.SetBatchCounter(20);
-			Assert.Throws<WebException>(() =>
-			this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun));
+
+			try
+			{
+				this.importer.PushNativeBatchInvoker(outputNativePath, shouldCompleteJob, lastRun);
+			}
+			catch (WebException)
+			{
+				// This exception is thrown when when WebAPI is used. RelativityManagerService.GetRelativityUrl
+				// tries to access WebAPI and it fails.
+			}
+			catch (TransferException ex) when (ex.InnerException?.InnerException is WebException)
+			{
+				// This exception is thrown when Kepler services are used. KeplerRelativityManagerService.GetRelativityUrl
+				// does not make a call to a Relativity, so it does not fail. Exception is thrown when TAPI tries to
+				// make a call to the Relativity.
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Unexpected exception was thrown: {ex.Message}");
+				throw;
+			}
+
 			Assert.AreEqual(0, this.importer.GetMetadataFilesCount);
+		}
+
+		[Test]
+		[TestCase("hii}", 0, 60)]
+		[TestCase("hii{0:randomString}", 4423, 0)]
+		[TestCase("[[--", 2223, -100)]
+		[TestCase(" {1:hh}", 123123, 34)]
+		[TestCase("Prime numbers less than 10: {0}, {1}, {2}, {3}", -2113, 112334)]
+		[TestCase("0x{0:omg} {0:1337} {0:N}", 232, -66)]
+		[TestCase("dddd MMMM", 55, 66)]
+		public void WriteCodeLineToTempFileShouldNotDoubleFormat(string documentIdentifier, int codeArtifactID, int codeTypeID)
+		{
+			this.importer.WriteCodeLineToTempFile(documentIdentifier, codeArtifactID, codeTypeID);
+		}
+
+		[Test]
+		[TestCase("hii}", "hii}i", 0, 3224, 60)]
+		[TestCase("hii{0:randomString}", "hii}i", 4423, 434, 0)]
+		[TestCase("{", "[[--", 2223, 1134, -100)]
+		[TestCase(" {1:hh}", "hii}i", 123123, 34, 60)]
+		[TestCase("hii}", "Prime numbers less than 10: {0}, {1}, {2}, {3}", -2113, 112334, 4334)]
+		[TestCase("0x{0:omg} {0:1337} {0:N}", "hii}i", 232, -66, 656)]
+		[TestCase("hii}", "dddd MMMM", 55, 66, 3434)]
+		public void WriteObjectLineToTempFileShouldNotDoubleFormat(string ownerIdentifier, string objectName, int artifactID, int objectTypeArtifactID, int fieldID)
+		{
+			this.importer.WriteObjectLineToTempFile(ownerIdentifier, objectName, artifactID, objectTypeArtifactID, fieldID);
 		}
 
 		[Test]
@@ -77,22 +132,6 @@ namespace Relativity.DataExchange.Import.NUnit
 			Assert.That(results, Is.Not.Null);
 			Assert.That(this.importer.BatchSize, Is.EqualTo(500));
 			Assert.That(this.importer.PauseCalled, Is.EqualTo(0));
-		}
-
-		[Test]
-		public void ShouldRetrySystemExceptions()
-		{
-			this.MockBulkImportManager
-				.Setup(
-					x => x.BulkImportObjects(
-						It.IsAny<int>(),
-						It.IsAny<kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo>(),
-						It.IsAny<bool>())).Throws(new InvalidOperationException("bombed out"));
-			InvalidOperationException exception = Assert.Throws<InvalidOperationException>(
-				() => this.importer.TryBulkImport(new kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo()));
-			Assert.That(exception.Message, Is.EqualTo("bombed out"));
-			Assert.That(this.importer.BatchSize, Is.EqualTo(500));
-			Assert.That(this.importer.PauseCalled, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -111,14 +150,13 @@ namespace Relativity.DataExchange.Import.NUnit
 		[Test]
 		public void ShouldGetTheMappedFields()
 		{
-			kCura.EDDS.WebAPI.BulkImportManagerBase.FieldInfo[] fields = null;
 			LoadFileFieldMap fieldMap = new LoadFileFieldMap();
 			fieldMap.Add(new LoadFileFieldMap.LoadFileFieldMapItem(new DocumentField("Field1", 1, (int)FieldType.Object, 1, 0, 0, 0, true, null, false), 0));
 			fieldMap.Add(new LoadFileFieldMap.LoadFileFieldMapItem(new DocumentField("Field2", 2, (int)FieldType.Object, 1, 0, 0, 0, true, null, false), 0));
 			this.importer.FieldMap = fieldMap;
 
 			// ImportBehavior is null because no artifact identifiers are specified.
-			fields = this.importer.GetMappedFields(1, new List<int>());
+			var fields = this.importer.GetMappedFields(1, new List<int>());
 			Assert.That(fields.Length, Is.EqualTo(2));
 			Assert.That(fields[0].ImportBehavior, Is.Null);
 			Assert.That(fields[1].ImportBehavior, Is.Null);
@@ -206,9 +244,8 @@ namespace Relativity.DataExchange.Import.NUnit
 		[Test]
 		public void ShouldGetTheMaxExtractedTextLength()
 		{
-			int actual = 0;
 			System.Text.Encoding encoding = null;
-			actual = this.importer.GetMaxExtractedTextLength(encoding);
+			var actual = this.importer.GetMaxExtractedTextLength(encoding);
 			Assert.That(actual, Is.EqualTo(1073741824));
 			encoding = System.Text.Encoding.UTF8;
 			actual = this.importer.GetMaxExtractedTextLength(encoding);
@@ -274,8 +311,13 @@ namespace Relativity.DataExchange.Import.NUnit
 
 		protected override void OnSetup()
 		{
+			var webApiVsKeplerMock = new Mock<IWebApiVsKepler>();
+			webApiVsKeplerMock.Setup(x => x.UseKepler()).Returns(true);
+			ManagerFactory._webApiVsKeplerLazy = new Lazy<IWebApiVsKepler>(() => webApiVsKeplerMock.Object);
+
 			this.args = new LoadFile();
 			this.args.CaseInfo = new Relativity.DataExchange.Service.CaseInfo { RootArtifactID = -1 };
+			this.args.Credentials = new NetworkCredential();
 			this.importer = new MockBulkLoadFileImporter(
 				this.args,
 				this.Context,
@@ -289,7 +331,7 @@ namespace Relativity.DataExchange.Import.NUnit
 				"S",
 				this.MockBulkImportManager.Object,
 				this.TokenSource,
-				ExecutionSource.Unknown);
+				null);
 		}
 	}
 }

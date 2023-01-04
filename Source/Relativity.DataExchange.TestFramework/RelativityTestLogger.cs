@@ -10,7 +10,9 @@
 namespace Relativity.DataExchange.TestFramework
 {
 	using System;
+	using System.Collections;
 	using System.Linq;
+	using System.Text;
 
 	using Relativity.Logging;
 
@@ -24,7 +26,7 @@ namespace Relativity.DataExchange.TestFramework
 	/// Serilog is used to decode the message templates and properties into a complete message string that
 	/// can be easily viewed by developers or Jenkins pipelines.
 	/// </remarks>
-	internal sealed class RelativityTestLogger : Relativity.Logging.ILog
+	public sealed class RelativityTestLogger : Relativity.Logging.ILog
 	{
 		/// <summary>
 		/// The logger instance.
@@ -39,12 +41,7 @@ namespace Relativity.DataExchange.TestFramework
 		/// </param>
 		public RelativityTestLogger(Relativity.Logging.ILog logger)
 		{
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			this.logger = logger;
+			this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
 		}
 
 		/// <inheritdoc />
@@ -60,9 +57,9 @@ namespace Relativity.DataExchange.TestFramework
 		public string System => this.logger.System;
 
 		/// <inheritdoc />
-		public Relativity.Logging.ILog ForContext(Type source)
+		public Relativity.Logging.ILog ForContext(Type forContext)
 		{
-			Relativity.Logging.ILog newRelLogger = this.logger.ForContext(source);
+			Relativity.Logging.ILog newRelLogger = this.logger.ForContext(forContext);
 			return new RelativityTestLogger(newRelLogger);
 		}
 
@@ -193,8 +190,8 @@ namespace Relativity.DataExchange.TestFramework
 		{
 			var parser = new MessageTemplateParser();
 			var template = parser.Parse(messageTemplate);
-			var properties = template.Tokens.OfType<PropertyToken>().Distinct().Zip(propertyValues, Tuple.Create)
-				.ToDictionary(p => p.Item1.PropertyName, p => new ScalarValue(p.Item2) as LogEventPropertyValue);
+			var properties = template.Tokens.OfType<PropertyToken>().Distinct().Zip(propertyValues ?? new object[] { }, Tuple.Create)
+				.ToDictionary(p => p.Item1.PropertyName, p => new ScalarValue(GetItemValue(p.Item2)) as LogEventPropertyValue);
 			var message = template.Render(properties);
 
 			try
@@ -204,12 +201,28 @@ namespace Relativity.DataExchange.TestFramework
 					message += $" - Exception: {exception}";
 				}
 
-				Console.WriteLine($"[{level}] - {message}");
+				Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - [{level}] - {message}");
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine("Failed to format the message template to a standard Console message. Error: " + e);
+				Console.WriteLine($"[{DateTime.Now.ToString("hh.mm.ss.ffffff")}] - Failed to format the message template to a standard Console message. Error: " + e);
 			}
+		}
+
+		private static object GetItemValue(object propertyValue)
+		{
+			if (propertyValue is IDictionary dictionary)
+			{
+				var stringBuilder = new StringBuilder();
+				foreach (DictionaryEntry entry in dictionary)
+				{
+					stringBuilder.AppendFormat("{0}={1}, ", entry.Key, entry.Value);
+				}
+
+				return stringBuilder.ToString();
+			}
+
+			return propertyValue;
 		}
 	}
 }

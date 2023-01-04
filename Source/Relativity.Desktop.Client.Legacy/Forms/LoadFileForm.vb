@@ -1,4 +1,5 @@
 Imports kCura.WinEDDS
+Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client
@@ -59,7 +60,7 @@ Namespace Relativity.Desktop.Client
 				Me._buildFolderStructure.Text = "Folder Information Column"
 				ParentArtifactTypeID = 8
 			Else
-				Dim parentQuery As New kCura.WinEDDS.Service.ObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer)
+				Dim parentQuery As kCura.WinEDDS.Service.Replacement.IObjectTypeManager = ManagerFactory.CreateObjectTypeManager(Await _application.GetCredentialsAsync(), _application.CookieContainer, AddressOf _application.GetCorrelationId)
 				ParentArtifactTypeID = CType(parentQuery.RetrieveParentArtifactTypeID(_application.SelectedCaseInfo.ArtifactID,
 				Me.LoadFile.ArtifactTypeID).Tables(0).Rows(0)("ParentArtifactTypeID"), Int32)
 				Me.GroupBoxFolderInfo.Enabled = False
@@ -1050,16 +1051,7 @@ Namespace Relativity.Desktop.Client
 				Return False
 			End If
 			Me.LoadFile.FieldMap = Utility.ExtractFieldMap(_fieldMap.FieldColumns, _fieldMap.LoadFileColumns, currentFields, Me.LoadFile.ArtifactTypeID, Me.LoadFile.ObjectFieldIdListContainsArtifactId)
-			'Dim groupIdentifier As DocumentField = _application.CurrentGroupIdentifierField
-			'If _identifiersDropDown.SelectedIndex > 0 Then
-			'	Dim columnname As String = CType(_identifiersDropDown.SelectedItem, String)
-			'	Dim openParenIndex As Int32 = columnname.LastIndexOf("("c) + 1
-			'	Dim closeParenIndex As Int32 = columnname.LastIndexOf(")"c)
-			'	Dim fieldColumnIndex As Int32 = Int32.Parse(columnname.Substring(openParenIndex, closeParenIndex - openParenIndex)) - 1
-			'	If Not groupIdentifier Is Nothing Then
-			'		Me.LoadFile.FieldMap.Add(New kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem(groupIdentifier, fieldColumnIndex))
-			'	End If
-			'End If
+
 			If LoadFile.ArtifactTypeID = 0 Then
 				LoadFile.ArtifactTypeID = _application.ArtifactTypeID
 			End If
@@ -1071,6 +1063,8 @@ Namespace Relativity.Desktop.Client
 				If _overlayExtractedText.SelectedItem IsNot Nothing Then
 					LoadFile.LongTextColumnThatContainsPathToFullText = _overlayExtractedText.SelectedItem.ToString
 				End If
+			Else
+				LoadFile.LongTextColumnThatContainsPathToFullText = Nothing
 			End If
 
 			LoadFile.ExtractedTextFileEncoding = _fullTextFileEncodingPicker.SelectedEncoding
@@ -1084,7 +1078,7 @@ Namespace Relativity.Desktop.Client
 				LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
 			End If
 			'This value comes from kCura.Relativity.DataReaderClient.OverwriteModeEnum, but is not referenced to prevent circular dependencies.
-			If LoadFile.OverwriteDestination = ImportOverwriteType.Overlay.ToString Then
+			If LoadFile.OverwriteDestination = ImportOverwriteType.Overlay.ToString OrElse LoadFile.OverwriteDestination = ImportOverwriteType.AppendOverlay.ToString Then
 				LoadFile.IdentityFieldId = DirectCast(_overlayIdentifier.SelectedItem, DocumentField).FieldID
 			Else
 				LoadFile.IdentityFieldId = -1
@@ -1222,7 +1216,7 @@ Namespace Relativity.Desktop.Client
 				Await Me.MarkIdentifierField(caseFields)
 				_fieldMap.FieldColumns.LeftSearchableList.AddFields(caseFields)
 			End If
-			'_identifiersDropDown.Items.AddRange(_application.IdentiferFieldDropdownPopulator)
+			'_identifiersDropDown.Items.AddRange(_application.IdentifierFieldDropdownPopulator)
 			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(LoadFile.OverwriteDestination)
 			_overlayBehavior.SelectedItem = Me.GetOverlayBehaviorDropdownItem(LoadFile.OverlayBehavior)
 			_overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
@@ -1285,10 +1279,6 @@ Namespace Relativity.Desktop.Client
 					Next
 				End If
 			End If
-			'If Not Me.LoadFile.GroupIdentifierColumn Is Nothing AndAlso Me.LoadFile.GroupIdentifierColumn <> "" AndAlso _
-			''_identifiersDropDown.Items.Contains(LoadFile.GroupIdentifierColumn) Then
-			'	'_identifiersDropDown.SelectedItem = LoadFile.GroupIdentifierColumn
-			'End If
 
 			If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
 				_extractedTextValueContainsFileLocation.Enabled = Await Me.AnyLongTextIsMapped
@@ -1303,13 +1293,6 @@ Namespace Relativity.Desktop.Client
 
 			_fullTextFileEncodingPicker.Enabled = _extractedTextValueContainsFileLocation.Enabled And _extractedTextValueContainsFileLocation.Checked
 
-			'If LoadFile.OverwriteDestination AndAlso Not LoadFile.SelectedIdentifierField Is Nothing Then
-			'	_overWrite.Checked = True
-			'	caseFieldName = _application.GetSelectedIdentifier(LoadFile.SelectedIdentifierField)
-			'	If caseFieldName <> String.Empty Then
-			'		_identifiersDropDown.SelectedItem = caseFieldName
-			'	End If
-			'End If
 			_fieldMap.FieldColumns.EnsureHorizontalScrollbars()
 			_fieldMap.LoadFileColumns.EnsureHorizontalScrollbars()
 			_startLineNumber.Value = CType(LoadFile.StartLineNumber, Decimal)
@@ -1325,9 +1308,6 @@ Namespace Relativity.Desktop.Client
 				If _loadFile.CookieContainer Is Nothing Then
 					_loadFile.CookieContainer = Global.Relativity.Desktop.Client.Application.Instance.CookieContainer
 				End If
-				'If _loadFile.Identity Is Nothing Then
-				'	_loadFile.Identity = Global.Relativity.Desktop.Client.Application.Instance.Identity
-				'End If
 				Return _loadFile
 			End Get
 			Set(ByVal value As kCura.WinEDDS.LoadFile)
@@ -1422,7 +1402,7 @@ Namespace Relativity.Desktop.Client
 			Dim columnHeaders As String() = Nothing
 			Dim listsAreSame As Boolean = True
 			Dim currentHeaders As String() = Nothing
-			Dim determinedEncoding As System.Text.Encoding = Nothing
+			Dim determinedEncoding As System.Text.Encoding
 			If System.IO.File.Exists(LoadFile.FilePath) Then
 				_loadFileEncodingPicker.Enabled = True
 				LabelFileEncoding.Text = "File Encoding"
@@ -1601,17 +1581,19 @@ Namespace Relativity.Desktop.Client
 		Private Sub _filePath_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _filePath.TextChanged
 			ActionMenuEnabled = ReadyToRun
 			LoadFile.FilePath = _filePath.Text
-			'RefreshNativeFilePathFieldAndFileColumnHeaders()
 		End Sub
 
 		Private Async Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
+			'' This function is invoked when the user clicks import file in the upper menu.
+			'' Since it could be the user has ran an import before, and due to config changes in the workspace on the server, the cached case info might be out of date. That's why you want to refresh it here, so we have a fresh copy.
+			Await RefreshServerDataAsync()
+
 			If (Await PopulateLoadFileObject(True)) AndAlso (Await _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftSearchableListItems))) AndAlso (Await _application.ReadyToLoad(Me.LoadFile, False)) Then
 				Await _application.ImportLoadFile(Me.LoadFile)
 			End If
 		End Sub
 
 		Private Sub LoadFileForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			'Relativity.Desktop.Client.EnhancedMenuProvider.Hook(Me)
 			_loadFileEncodingPicker.InitializeDropdown()
 			_fullTextFileEncodingPicker.InitializeDropdown()
 			_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
@@ -1628,9 +1610,6 @@ Namespace Relativity.Desktop.Client
 		Private Sub _loadNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadNativeFiles.CheckedChanged
 			_nativeFilePathField.Enabled = _loadNativeFiles.Checked
 			_advancedButton.Enabled = _loadNativeFiles.Checked
-			'If Not _nativeFilePathField.Items.Count = 0 Then
-			'	_nativeFilePathField.SelectedItem = _nativeFilePathField.Items(0)
-			'End If
 			_nativeFilePathField.SelectedItem = Nothing
 			_nativeFilePathField.Text = "Select ..."
 			ActionMenuEnabled = ReadyToRun
@@ -1684,7 +1663,7 @@ Namespace Relativity.Desktop.Client
 						_destinationFolderPath.Enabled = True
 						_buildFolderStructure.Checked = True
 						_buildFolderStructure.Enabled = False
-						_overlayIdentifier.Enabled = False
+						_overlayIdentifier.Enabled = True
 				End Select
 			Else
 				_destinationFolderPath.Enabled = False
@@ -1694,6 +1673,8 @@ Namespace Relativity.Desktop.Client
 				_destinationFolderPath.Text = "Select ..."
 				Select Case overwriteDestination
 					Case ImportOverwriteType.Overlay
+						_overlayIdentifier.Enabled = True
+					Case ImportOverwriteType.AppendOverlay
 						_overlayIdentifier.Enabled = True
 					Case Else
 						_overlayIdentifier.Enabled = False
@@ -1723,7 +1704,6 @@ Namespace Relativity.Desktop.Client
 			If Not System.IO.File.Exists(_saveFieldMapDialog.FileName) Then
 				System.IO.File.Create(_saveFieldMapDialog.FileName).Close()
 			End If
-			'PopulateLoadFileObject()
 			_application.SaveLoadFile(Me.LoadFile, _saveFieldMapDialog.FileName)
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Sub
@@ -1945,10 +1925,16 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub _fileRefreshMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _fileRefreshMenuItem.Click
+			Await RefreshServerDataAsync()
+		End Sub
+
+		Private Async Function RefreshServerDataAsync() As Task
+
 			_multiObjectMultiChoiceCache = Nothing
+			_application.ResetFieldsCache()
 			Dim caseFieldsCollection As DocumentFieldCollection = Await _application.CurrentNonFileFields(Me.LoadFile.ArtifactTypeID, refresh:=True)
 			Dim caseFields As String() = caseFieldsCollection.Names()
-			If caseFields Is Nothing Then Exit Sub
+			If caseFields Is Nothing Then Return
 			Await Me.MarkIdentifierField(caseFields)
 			Dim fieldName As String
 			For Each fieldName In caseFields
@@ -1994,18 +1980,14 @@ Namespace Relativity.Desktop.Client
 					End If
 				Next
 			End If
-
-			Await InitializeDocumentSpecificComponents()
-		End Sub
+		End Function
 
 		Private Async Function EnsureConnection() As Task(Of Boolean)
-			Dim retval As Boolean = False
 			If Not _loadFile Is Nothing AndAlso Not _loadFile.CaseInfo Is Nothing Then
-				retval = Await _application.EnsureConnection()
+				return Await _application.EnsureConnection()
 			Else
-				retval = True
+				return True
 			End If
-			Return retval
 		End Function
 
 		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click

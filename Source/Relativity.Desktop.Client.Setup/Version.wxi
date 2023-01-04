@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
   <!-- The DEV team is responsible to manually update the version when preparing a new release! -->
-  <?define ProductMajorVersion ="10" ?>
-  <?define ProductMinorVersion ="3" ?>
-  <?define ProductVersion ="10.3.5" ?>
+  <?define ProductMajorVersion ="14" ?>
+  <?define ProductMinorVersion ="0" ?>
+  <?define ProductVersion ="14.0.0" ?>
 </Include>

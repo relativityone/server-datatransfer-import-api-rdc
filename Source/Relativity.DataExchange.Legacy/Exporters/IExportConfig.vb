@@ -1,30 +1,30 @@
 ﻿Namespace kCura.WinEDDS
 
-Public Interface IExportConfig
+	Public Interface IExportConfig
 
-	ReadOnly Property ExportBatchSize() As Int32
+		ReadOnly Property ExportBatchSize As Int32
 
-	ReadOnly Property ExportThreadCount() As Int32
+		ReadOnly Property ExportIOErrorWaitTime As Int32
 
-	ReadOnly Property UseOldExport() As Boolean
+		ReadOnly Property ExportIOErrorNumberOfRetries As Int32
 
-	ReadOnly Property ForceParallelismInNewExport() As Boolean
+		ReadOnly Property ExportErrorNumberOfRetries As Int32
 
-	ReadOnly Property ExportIOErrorWaitTime() As Int32
+		ReadOnly Property ExportErrorWaitTime As Int32
 
-	ReadOnly Property ExportIOErrorNumberOfRetries() As Int32
+		ReadOnly Property ExportLongTextDataGridThreadCount As Int32
 
-	ReadOnly Property ExportErrorNumberOfRetries() As Int32
+		ReadOnly Property ExportLongTextObjectManagerEnabled As Boolean
 
-	ReadOnly Property ExportErrorWaitTime() As Int32
+		ReadOnly Property ExportLongTextSqlThreadCount As Int32
 
-	ReadOnly Property MaxNumberOfFileExportTasks() As Int32
+		ReadOnly Property HttpErrorNumberOfRetries As Int32
 
-	ReadOnly Property TapiBridgeExportTransferWaitingTimeInSeconds As Int32
+		ReadOnly Property HttpErrorWaitTimeInSeconds As Int32
 
-	ReadOnly Property TapiForceHttpClient As Boolean
+		ReadOnly Property TapiForceHttpClient As Boolean
 
-	ReadOnly Property MaximumFilesForTapiBridge As Integer
-End Interface
+		ReadOnly Property WebApiServiceUrl As String
+	End Interface
 
 End Namespace

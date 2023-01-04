@@ -14,6 +14,8 @@ namespace Relativity.DataExchange.Transfer
 
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Resources;
+	using Relativity.DataExchange.Service;
+	using Relativity.Logging;
 	using Relativity.Transfer;
 	using Relativity.Transfer.Aspera;
 
@@ -36,19 +38,29 @@ namespace Relativity.DataExchange.Transfer
 		/// Initializes a new instance of the <see cref="UploadTapiBridge2"/> class.
 		/// </summary>
 		/// <param name="parameters">
-		/// The native file transfer parameters.
+		///     The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		///     The Relativity logger instance.
 		/// </param>
+		/// <param name="authTokenProvider">Authentication token provider.</param>
 		/// <param name="token">
-		/// The cancellation token.
+		///     The cancellation token.
 		/// </param>
-		/// <remarks>
-		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
-		/// </remarks>
-		public UploadTapiBridge2(UploadTapiBridgeParameters2 parameters, ITransferLog log, CancellationToken token)
-			: this(new TapiObjectService(), parameters, log, token)
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
+		/// </param>
+		/// <param name="relativityManagerServiceFactory">
+		///     Factory to create Relativity service manager.
+		/// </param>
+		public UploadTapiBridge2(
+			UploadTapiBridgeParameters2 parameters,
+			ILog logger,
+			IAuthenticationTokenProvider authTokenProvider,
+			CancellationToken token,
+			bool useLegacyWebApi,
+			IRelativityManagerServiceFactory relativityManagerServiceFactory)
+			: this(new TapiObjectService(authTokenProvider, relativityManagerServiceFactory, useLegacyWebApi), parameters, logger, useLegacyWebApi, token)
 		{
 		}
 
@@ -61,22 +73,60 @@ namespace Relativity.DataExchange.Transfer
 		/// <param name="parameters">
 		/// The native file transfer parameters.
 		/// </param>
-		/// <param name="log">
-		/// The transfer log.
+		/// <param name="logger">
+		/// The Relativity logger instance.
+		/// </param>
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
 		/// </param>
 		/// <param name="token">
 		/// The cancellation token.
 		/// </param>
-		/// <remarks>
-		/// Don't expose Transfer API objects to WinEDDS - at least not yet. This is reserved for integration tests.
-		/// </remarks>
 		public UploadTapiBridge2(
 			ITapiObjectService factory,
 			UploadTapiBridgeParameters2 parameters,
-			ITransferLog log,
+			ILog logger,
+			bool useLegacyWebApi,
 			CancellationToken token)
-			: base(factory, parameters, TransferDirection.Upload, log, token)
+			: this(factory, parameters, null, logger, useLegacyWebApi, token)
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UploadTapiBridge2"/> class.
+		/// </summary>
+		/// <param name="factory">
+		/// The Transfer API object factory.
+		/// </param>
+		/// <param name="parameters">
+		/// The native file transfer parameters.
+		/// </param>
+		/// <param name="context">
+		/// The transfer context.
+		/// </param>
+		/// <param name="logger">
+		/// The Relativity logger instance.
+		/// </param>
+		/// <param name="useLegacyWebApi">
+		/// If true use WebApi, otherwise use Kepler.
+		/// </param>
+		/// <param name="token">
+		/// The cancellation token.
+		/// </param>
+		public UploadTapiBridge2(
+			ITapiObjectService factory,
+			UploadTapiBridgeParameters2 parameters,
+			TransferContext context,
+			ILog logger,
+			bool useLegacyWebApi,
+			CancellationToken token)
+			: base(factory, parameters, TransferDirection.Upload, context, logger, useLegacyWebApi, token)
+		{
+			if (parameters == null)
+			{
+				throw new ArgumentNullException(nameof(parameters));
+			}
+
 			this.parameters = parameters;
 			this.pathManager = new FileSharePathManager(parameters.MaxFilesPerFolder);
 		}
@@ -131,13 +181,13 @@ namespace Relativity.DataExchange.Transfer
 		/// <summary>
 		/// Dump the transfer bridge parameter.
 		/// </summary>
-		public override void DumpInfo()
+		public override void LogTransferParameters()
 		{
-			base.DumpInfo();
-			this.TransferLog.LogInformation("BCP file transfer: {BcpFileTransfer}", this.parameters.BcpFileTransfer);
-			this.TransferLog.LogInformation("Aspera BCP root folder: {AsperaBcpRootFolder}", this.parameters.AsperaBcpRootFolder);
-			this.TransferLog.LogInformation("Sort into volume: {SortIntoVolumes}", this.parameters.SortIntoVolumes);
-			this.TransferLog.LogInformation("Max file per folder: {MaxFilesPerFolder}", this.parameters.MaxFilesPerFolder);
+			base.LogTransferParameters();
+			this.Logger.LogInformation("BCP file transfer: {BcpFileTransfer}", this.parameters.BcpFileTransfer);
+			this.Logger.LogInformation("Aspera BCP root folder: {AsperaBcpRootFolder}", this.parameters.AsperaBcpRootFolder);
+			this.Logger.LogInformation("Sort into volume: {SortIntoVolumes}", this.parameters.SortIntoVolumes);
+			this.Logger.LogInformation("Max file per folder: {MaxFilesPerFolder}", this.parameters.MaxFilesPerFolder);
 		}
 
 		/// <summary>
@@ -189,13 +239,15 @@ namespace Relativity.DataExchange.Transfer
 					{
 						resolver = new AsperaUncBcpPathResolver(
 							this.parameters.FileShare,
-							this.parameters.AsperaBcpRootFolder);
+							this.parameters.AsperaBcpRootFolder,
+							this.TransferLog);
 					}
 					else
 					{
 						resolver = new AsperaUncPathResolver(
 							this.parameters.FileShare,
-							this.parameters.AsperaDocRootLevels);
+							this.parameters.AsperaDocRootLevels,
+							this.TransferLog);
 					}
 
 					request.TargetPathResolver = resolver;

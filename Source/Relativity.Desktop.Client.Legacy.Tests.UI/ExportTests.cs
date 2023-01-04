@@ -1,0 +1,273 @@
+﻿using System;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using kCura.Relativity.Client;
+using NUnit.Framework;
+using Relativity.DataExchange.TestFramework;
+using Relativity.DataExchange.TestFramework.NUnitExtensions;
+using Relativity.DataExchange.TestFramework.RelativityHelpers;
+using Relativity.DataExchange.TestFramework.RelativityVersions;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Windows;
+using Relativity.Desktop.Client.Legacy.Tests.UI.Workflow;
+using Relativity.Testing.Identification;
+
+namespace Relativity.Desktop.Client.Legacy.Tests.UI
+{
+	[TestFixture]
+	[Feature.DataTransfer.RelativityDesktopClient.Export]
+	internal class ExportTests : RdcTestBase
+	{
+		private const string ProductionName = "Production-For-Export";
+		private readonly string exportRootPath = PathsProvider.GetTestOutputPath(@"Export");
+
+		[OneTimeSetUp]
+		public Task OneTimeSetUpAsync()
+		{
+			TestParameters = IntegrationTestHelper.Create();
+			return ImportDataForExportAsync();
+		}
+
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
+		{
+			if (TestParameters != null)
+			{
+				IntegrationTestHelper.Destroy(TestParameters);
+				TestParameters = null;
+			}
+		}
+
+		public Task ResetContextAsync()
+		{
+			OneTimeTearDown();
+			return OneTimeSetUpAsync();
+		}
+
+		[IdentifiedTest("143c68a9-dc4e-43b2-b7a7-39d6d26f9402")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.FolderAndSubfolders]
+		[IgnoreIfVersionLowerThan(RelativityVersion.MayappleExportPDFs)]
+		[IgnoreIfRegressionEnvironment("Ignored because test set up requires access to SQL to prepare pdfs to export.")]
+		public async Task ExportRenderedPdfsAsync()
+		{
+			// Test requires 'UseSearchablePDF' flag set to True in RDC config file
+			await RdoHelper.DeleteAllObjectsByTypeAsync(this.TestParameters, (int) ArtifactType.Document).ConfigureAwait(false);
+			ImportHelper.ImportDefaultTestData(TestParameters);
+			SetPdfTypeForDocumentsInWorkspace();
+
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = GetDocumentsViewName(TestParameters),
+				ExportPath = CreateExportPath(),
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				ExportImages = false,
+				ExportNativeFiles = true,
+				ExportFullTextAsFile = true,
+				MetadataFileFormat = "Concordance (.dat)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				TextFileEncoding = "Unicode (UTF-8)",
+				TextFieldPrecedence = "Extracted Text",
+				ExportRenderedPDFs = true,
+				PDFPrefix = "PDF_TEST"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
+
+			await ResetContextAsync().ConfigureAwait(false);
+		}
+
+		[IdentifiedTest("e2a115ab-7905-4ec5-a600-61c747c79567")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.FolderAndSubfolders]
+		public void ExportNativesWithFullTextAsFilesFromFolderAndSubfoldersToDatFile()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = GetDocumentsViewName(TestParameters),
+				ExportPath = CreateExportPath(),
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				ExportImages = false,
+				ExportNativeFiles = true,
+				ExportFullTextAsFile = true,
+				MetadataFileFormat = "Concordance (.dat)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				TextFileEncoding = "Unicode (UTF-8)",
+				TextFieldPrecedence = "Extracted Text"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 21);
+		}
+
+		[IdentifiedTest("3c502d9f-e354-4b25-b233-79579b3ce195")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.FolderAndSubfolders]
+		public void ExportImagesFromFolderAndSubfoldersToOpticonFile()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = GetDocumentsViewName(TestParameters),
+				ExportPath = CreateExportPath(),
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				ExportImages = true,
+				ExportNativeFiles = false,
+				ExportFullTextAsFile = false,
+				MetadataFileFormat = "Concordance (.dat)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				ImageFileFormat = "Opticon",
+				ImageFileType = "Multi-page TIF"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportFolderAndSubfolders(), 12);
+		}
+
+		[IdentifiedTest("ad528f53-fb92-4497-92a1-e76671eb4812")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.Production]
+		public void ExportProductionSetAsNativesAndImagesAndTextFiles()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = ProductionName,
+				ExportPath = CreateExportPath(),
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Begin production number",
+				ExportImages = true,
+				ExportNativeFiles = true,
+				ExportFullTextAsFile = true,
+				MetadataFileFormat = "Comma-separated (.csv)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				TextFileEncoding = "Unicode (UTF-8)",
+				TextFieldPrecedence = "Extracted Text",
+				ImageFileFormat = "IPRO",
+				ImageFileType = "Single-page TIF/JPG"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportProductionSet(), 52);
+		}
+
+		[IdentifiedTest("6f516fc9-259a-42dd-b3f3-dc0e39fc77a6")]
+		[Feature.DataTransfer.RelativityDesktopClient.Export.SavedSearch]
+		public void ExportSavedSearchAsNativesAndImagesAndTextFiles()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = "All Documents",
+				ExportPath = CreateExportPath(),
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				ExportImages = true,
+				ExportNativeFiles = true,
+				ExportFullTextAsFile = true,
+				MetadataFileFormat = "HTML (.html)",
+				MetadataFileEncoding = "Unicode (UTF-8)",
+				TextFileEncoding = "Unicode (UTF-8)",
+				TextFieldPrecedence = "Extracted Text",
+				ImageFileFormat = "IPRO (FullText)",
+				ImageFileType = "PDF"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportSavedSearch(), 32);
+		}
+
+		[IdentifiedTest("49d09eb7-7802-4a99-8dbb-470c847236aa")]
+		public void ExportImagingProfiles()
+		{
+			var exportParameters = new ExportWindowSetupParameters
+			{
+				FieldSourceName = "All Imaging Profiles",
+				ExportPath = CreateExportPath(),
+				VolumeInformationDigitPadding = 3,
+				FilesNamedAfter = "Identifier",
+				MetadataFileFormat = "Concordance (.dat)",
+				MetadataFileEncoding = "Unicode (UTF-8)"
+			};
+
+			RunExportTest(exportParameters, x => x.ExportImagingProfileObjects(), 1);
+		}
+
+		private string GetDocumentsViewName(IntegrationTestParameters parameters)
+		{
+			return parameters.RelativityUrl.ToString().Contains(".r1.")
+				? "All Documents"
+				: "Documents";
+		}
+
+		private void RunExportTest(ExportWindowSetupParameters exportParameters,
+			Func<RelativityDesktopClientWindow, ExportWindow> getExportWindow,
+			int expectedFilesCount)
+		{
+			var workspaceSelectWindow = Login();
+
+			var rdcWindow = workspaceSelectWindow.ChooseWorkspace(TestParameters.WorkspaceName);
+			rdcWindow.SelectRootFolder();
+			rdcWindow.WaitForTransferModeDetection();
+			rdcWindow.CaptureWindowScreenshot();
+
+			var exportWindow = getExportWindow(rdcWindow);
+			exportWindow.SetupExport(exportParameters);
+
+			var progressWindow = exportWindow.RunExport();
+
+			var allRecordsProcessed = progressWindow.WaitForAllRecordsToBeProcessed(TimeSpan.FromMinutes(5));
+
+			if (RdcWindowsManager.TryGetRdcConfirmationDialog(out DialogWindow confirmationDialog))
+			{
+				confirmationDialog.CaptureWindowScreenshot();
+				confirmationDialog.ClickButton("OK");
+				progressWindow.SwitchToWindow();
+			}
+
+			var progressStatus = progressWindow.StatusText;
+			var errors = progressWindow.GetErrorsText();
+			var files = Directory.GetFiles(exportParameters.ExportPath, "*.*", SearchOption.AllDirectories);
+
+			if (string.IsNullOrEmpty(errors) && allRecordsProcessed)
+			{
+				CloseSession();
+				Directory.Delete(exportParameters.ExportPath, true);
+			}
+
+			// Assert
+			Assert.IsTrue(string.IsNullOrEmpty(errors), $"Export failed with errors: {errors}");
+			Assert.IsTrue(allRecordsProcessed, $"Failed to process all records. Status: {progressStatus}");
+			Assert.AreEqual(expectedFilesCount, files.Length);
+		}
+
+		private string CreateExportPath()
+		{
+			var exportPath = Path.Combine(exportRootPath, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+			Directory.CreateDirectory(exportPath);
+			return exportPath;
+		}
+
+		private Task ImportDataForExportAsync()
+		{
+			var documents = ImportHelper.ImportDocuments(TestParameters).ToList();
+			ImportHelper.ImportImagesForDocuments(TestParameters, documents);
+			return ImportHelper.ImportProductionAsync(TestParameters, ProductionName, documents);
+		}
+
+		private void SetPdfTypeForDocumentsInWorkspace()
+		{
+			// In future we can potentially replace this code with Production service that would produce searchable pdf
+			int pdfType = (int) Relativity.DataExchange.Service.FileType.Pdf;
+			int nativeType = (int) Relativity.DataExchange.Service.FileType.Native;
+
+			SqlConnectionStringBuilder builder =
+				IntegrationTestHelper.GetSqlConnectionStringBuilder(this.TestParameters);
+
+			using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+			{
+				connection.Open();
+				using (SqlCommand command = connection.CreateCommand())
+				{
+					command.CommandText =
+						$@"Update [EDDS{this.TestParameters.WorkspaceId}].[EDDSDBO].[File] Set Type = '{pdfType}' WHERE Type = '{nativeType}'";
+					command.ExecuteScalar();
+				}
+			}
+
+		}
+	}
+}

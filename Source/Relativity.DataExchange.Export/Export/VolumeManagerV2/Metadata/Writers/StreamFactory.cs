@@ -7,6 +7,7 @@
 	using kCura.WinEDDS.Exceptions;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
 	public class StreamFactory : IStreamFactory
@@ -36,7 +37,7 @@
 
 			try
 			{
-				_logger.LogVerbose("Creating new file stream {path}.", path);
+				_logger.LogVerbose("Creating new file stream {path}.", path.Secure());
 				FileStream fileStream;
 				if (append)
 				{
@@ -54,7 +55,7 @@
 			}
 			catch (IOException ex)
 			{
-				_logger.LogError(ex, "Failed to initialize stream {path} with encoding {encoding}.", path, encoding);
+				_logger.LogError(ex, "Failed to initialize stream {path} with encoding {encoding}.", path.Secure(), encoding);
 				throw new FileWriteException(FileWriteException.DestinationFile.Generic, ex);
 			}
 		}

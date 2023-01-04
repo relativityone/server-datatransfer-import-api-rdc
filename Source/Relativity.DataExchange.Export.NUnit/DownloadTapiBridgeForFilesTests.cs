@@ -12,7 +12,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class DownloadTapiBridgeForFilesTests : DownloadTapiBridgeAdapterTests
@@ -32,7 +32,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this.MessagesHandler.Object,
 				this.TransferStatistics.Object,
 				this._transferClientHandler.Object,
-				new NullLogger());
+				new TestNullLogger());
 		}
 
 		[Test]
@@ -41,7 +41,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.Instance.Dispose();
 
 			// ASSERT
-			this._transferClientHandler.Verify(x => x.Detach());
+			this._transferClientHandler.Verify(x => x.Unsubscribe(this.TapiBridge.Object));
 		}
 	}
 }

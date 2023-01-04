@@ -4,6 +4,7 @@ Imports Relativity.DataExchange.Service
 Namespace kCura.WinEDDS.Service
 	Public Class DocumentManager
 		Inherits kCura.EDDS.WebAPI.DocumentManagerBase.DocumentManager
+		Implements Replacement.IDocumentManager
 
 		Public Sub New(ByVal credentials As Net.ICredentials, ByVal cookieContainer As System.Net.CookieContainer)
 			MyBase.New()
@@ -65,7 +66,7 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
-		Public Shadows Function RetrieveAllUnsupportedOiFileIds() As Int32()
+		Public Shadows Function RetrieveAllUnsupportedOiFileIds() As Int32() Implements Replacement.IDocumentManager.RetrieveAllUnsupportedOiFileIds
 			Return RetryOnReLoginException(Function() MyBase.RetrieveAllUnsupportedOiFileIds())
 		End Function
 
@@ -94,21 +95,9 @@ Namespace kCura.WinEDDS.Service
 			Return Nothing
 		End Function
 
+		<Obsolete("This function is removed in https://jira.kcura.com/browse/REL-445167, but the signature remains for a while, as we want to delete this",False)>
 		Public Shadows Function RetrieveDocumentLimit(ByVal caseContextArtifactID As Int32) As Int32
-			Dim tries As Int32 = 0
-			While tries < AppSettings.Instance.MaxReloginTries
-				Try
-					tries += 1
-					Return MyBase.RetrieveDocumentLimit(caseContextArtifactID)
-				Catch ex As System.Exception
-					If TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("NeedToReLoginException") <> -1 AndAlso tries < AppSettings.Instance.MaxReloginTries Then
-						Helper.AttemptReLogin(Me.Credentials, Me.CookieContainer, tries)
-					Else
-						Throw
-					End If
-				End Try
-			End While
-			Return Nothing
+			return Int32.MaxValue
 		End Function
 #End Region
 

@@ -17,6 +17,9 @@ namespace Relativity.DataExchange
 	using System.Web.Services.Protocols;
 
 	using Relativity.DataExchange.Resources;
+	using Relativity.Kepler.Exceptions;
+	using Relativity.Services.Exceptions;
+	using Relativity.Services.Objects.Exceptions;
 
 	/// <summary>
 	/// Defines static helper methods to perform common exception handling.
@@ -47,31 +50,36 @@ namespace Relativity.DataExchange
 		public const string TryAgainAdminFatalMessage = "Try again. If the problem persists please contact your system administrator for assistance.";
 
 		/// <summary>
+		/// Exception message that tells user that import of the current batch is still in progress.
+		/// </summary>
+		public const string BatchInProgressMessage = "Batch In Progress";
+
+		/// <summary>
 		/// The list of fatal exception candidates.
 		/// </summary>
-		public static readonly List<Type> FatalExceptionCandidates = new List<Type>(
+		public static readonly IReadOnlyList<Type> FatalExceptionCandidates = new List<Type>(
 			new[]
 				{
 					typeof(AccessViolationException), typeof(ApplicationException), typeof(BadImageFormatException),
 					typeof(DivideByZeroException), typeof(DllNotFoundException), typeof(EntryPointNotFoundException),
 					typeof(InsufficientMemoryException), typeof(NullReferenceException), typeof(OutOfMemoryException),
 					typeof(OverflowException), typeof(SecurityException), typeof(StackOverflowException),
-					typeof(ThreadAbortException),
+					typeof(ThreadAbortException), typeof(FileNotFoundException),
 				});
 
 		/// <summary>
-		/// The list of path exception candidates.
+		/// The list of Kepler specific fatal exception candidates.
 		/// </summary>
-		public static readonly List<Type> PathExceptionCandidates = new List<Type>(
-			new[]
-				{
-					typeof(DirectoryNotFoundException), typeof(PathTooLongException), typeof(UnauthorizedAccessException),
-				});
+		public static readonly IReadOnlyList<Type> FatalKeplerExceptionCandidates = new List<Type>(
+			new[] { typeof(NotAuthorizedException), typeof(WireProtocolMismatchException), typeof(NotFoundException), typeof(PermissionDeniedException) });
 
 		/// <summary>
-		/// Represents the thread synchronization object.
+		/// Array of fatal kepler exception messages.
 		/// </summary>
-		private static readonly object SyncRoot = new object();
+		private static readonly string[] FatalKeplerExceptionMessagesFragments =
+		{
+			"InvalidAppArtifactID",
+		};
 
 		/// <summary>
 		/// Gets the default HTTP status codes that are considered fatal [BadRequest,Forbidden,Unauthorized].
@@ -167,20 +175,6 @@ namespace Relativity.DataExchange
 		/// <param name="exception">
 		/// The exception.
 		/// </param>
-		/// <returns>
-		/// <see langword="true" /> when the endpoint is not found; otherwise, <see langword="false" />.
-		/// </returns>
-		public static bool IsEndpointNotFound(SoapException exception)
-		{
-			return IsEndpointNotFound(exception, string.Empty);
-		}
-
-		/// <summary>
-		/// Determines whether the SOAP exception is thrown when an endpoint is not found.
-		/// </summary>
-		/// <param name="exception">
-		/// The exception.
-		/// </param>
 		/// <param name="name">
 		/// The optional web-service method name. When specified, the check only returns <see langword="true" /> if the name appears within the exception.
 		/// </param>
@@ -209,12 +203,50 @@ namespace Relativity.DataExchange
 				throw new ArgumentNullException(nameof(exception));
 			}
 
-			lock (SyncRoot)
+			Func<Exception, bool>[] isFatalExceptionPredicates =
 			{
-				var exceptionType = exception.GetType();
-				return FatalExceptionCandidates.Any(exceptionCandidateType => exceptionType == exceptionCandidateType)
-				       || IsFatalWebException(exception) || IsOutOfDiskSpaceException(exception);
+				e => FatalExceptionCandidates.Any(exceptionCandidateType => exceptionCandidateType.IsInstanceOfType(e)),
+				IsFatalWebException,
+				IsFatalServiceInfrastructureException,
+				IsOutOfDiskSpaceException,
+				e => e.Message.Contains("Bearer token should not be null or empty"),
+			};
+
+			return isFatalExceptionPredicates.Any(predicate => predicate(exception));
+		}
+
+		/// <summary>
+		/// Determines whether the Kepler <paramref name="exception"/> is considered fatal.
+		/// </summary>
+		/// <param name="exception">
+		/// The exception to test.
+		/// </param>
+		/// <returns>
+		/// <see langword="true"/> indicates the exception is fatal; otherwise, <see langword="false"/>.
+		/// </returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown when <paramref name="exception"/> is <see langword="null"/>.
+		/// </exception>
+		public static bool IsFatalKeplerException(Exception exception)
+		{
+			if (exception == null)
+			{
+				throw new ArgumentNullException(nameof(exception));
 			}
+
+			var exceptionType = exception.GetType();
+			if (FatalKeplerExceptionCandidates.Any(
+				exceptionCandidateType => exceptionCandidateType.IsAssignableFrom(exceptionType)))
+			{
+				return true;
+			}
+
+			if (FatalKeplerExceptionMessagesFragments.Any(fragment => exception.Message.Contains(fragment)))
+			{
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -265,9 +297,7 @@ namespace Relativity.DataExchange
 			}
 
 			// Retry all other I/O errors except the disk-full scenario.
-			const int HandleDiskFull = unchecked((int)0x80070027);
-			const int DiskFullHResult = unchecked((int)0x80070070);
-			return exception.HResult == HandleDiskFull || exception.HResult == DiskFullHResult;
+			return exception.HResult == HandleDiskFullHResult || exception.HResult == DiskFullHResultHResult;
 		}
 
 		/// <summary>
@@ -315,24 +345,20 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
-		/// Determines whether the exception is a Path exception.
+		/// Check if exception has message indicating that batch import is in progress.
 		/// </summary>
-		/// <param name="exception">The exception.</param>
+		/// <param name="exception">The exception to check.</param>
 		/// <returns>
-		///   <c>true</c> if the exception is a Path exception; otherwise, <c>false</c>.
+		/// <see langword="true" /> when the exception is considered fatal; otherwise, <see langword="false" />.
 		/// </returns>
-		public static bool IsPathException(Exception exception)
+		public static bool IsBatchInProgressException(Exception exception)
 		{
 			if (exception == null)
 			{
 				throw new ArgumentNullException(nameof(exception));
 			}
 
-			lock (SyncRoot)
-			{
-				var exceptionType = exception.GetType();
-				return PathExceptionCandidates.Any(exceptionCandidateType => exceptionType == exceptionCandidateType);
-			}
+			return exception.GetType() == typeof(ConflictException) && exception.Message.Contains(BatchInProgressMessage);
 		}
 
 		/// <summary>
@@ -406,6 +432,11 @@ namespace Relativity.DataExchange
 		public static bool IsWebExceptionStatusCodeFatalError(WebExceptionStatus status)
 		{
 			return DefaultFatalWebExceptionStatusCodes.Any(x => x == status);
+		}
+
+		private static bool IsFatalServiceInfrastructureException(Exception exception)
+		{
+			return exception is ServiceNotFoundException;
 		}
 	}
 }

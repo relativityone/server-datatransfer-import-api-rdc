@@ -133,9 +133,17 @@ namespace Relativity.DataExchange
 				{
 					AssignInt64(settings, prop, null);
 				}
+				else if (prop.PropertyType == typeof(float))
+				{
+					AssignFloat(settings, prop, null);
+				}
 				else if (prop.PropertyType.IsEnum)
 				{
 					AssignEnum(settings, prop, null);
+				}
+				else if (prop.PropertyType == typeof(bool?))
+				{
+					AssignBoolNullable(settings, prop, null);
 				}
 				else
 				{
@@ -398,6 +406,10 @@ namespace Relativity.DataExchange
 			{
 				AssignInt64(settings, prop, value);
 			}
+			else if (prop.PropertyType == typeof(float))
+			{
+				AssignFloat(settings, prop, value);
+			}
 			else if (prop.PropertyType == typeof(Uri))
 			{
 				AssignUri(settings, prop, value);
@@ -417,6 +429,10 @@ namespace Relativity.DataExchange
 				}
 
 				AssignEnum(settings, prop, enumValue);
+			}
+			else if (prop.PropertyType == typeof(bool?))
+			{
+				AssignBoolNullable(settings, prop, value);
 			}
 			else
 			{
@@ -460,6 +476,35 @@ namespace Relativity.DataExchange
 				if (!bool.TryParse(attribute.DefaultValue.ToString(), out defaultValue))
 				{
 					defaultValue = false;
+				}
+			}
+
+			if (!boolValue.HasValue)
+			{
+				boolValue = defaultValue;
+			}
+
+			AssignValue(settings, prop, boolValue);
+		}
+
+		private static void AssignBoolNullable(IAppSettings settings, PropertyInfo prop, object value)
+		{
+			bool? boolValue = null;
+			if (value != null)
+			{
+				if (bool.TryParse(value.ToString(), out bool temp))
+				{
+					boolValue = temp;
+				}
+			}
+
+			bool? defaultValue = null;
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
+			if (value == null && attribute?.DefaultValue != null)
+			{
+				if (bool.TryParse(attribute.DefaultValue.ToString(), out bool temp))
+				{
+					defaultValue = temp;
 				}
 			}
 
@@ -564,6 +609,38 @@ namespace Relativity.DataExchange
 			}
 
 			AssignValue(settings, prop, longValue);
+		}
+
+		private static void AssignFloat(IAppSettings settings, PropertyInfo prop, object value)
+		{
+			float? floatValue = null;
+			if (value != null)
+			{
+				if (float.TryParse(value.ToString(), out float temp))
+				{
+					floatValue = temp;
+				}
+			}
+
+			float defaultValue = 0f;
+			AppSettingAttribute attribute = GetAppSettingAttribute(GetPropertyKey(prop));
+			if (!floatValue.HasValue && attribute != null)
+			{
+				if (attribute.DefaultValue != null)
+				{
+					if (!float.TryParse(attribute.DefaultValue.ToString(), out defaultValue))
+					{
+						defaultValue = 0L;
+					}
+				}
+			}
+
+			if (!floatValue.HasValue)
+			{
+				floatValue = defaultValue;
+			}
+
+			AssignValue(settings, prop, floatValue);
 		}
 
 		private static void AssignUri(IAppSettings settings, PropertyInfo prop, object value)

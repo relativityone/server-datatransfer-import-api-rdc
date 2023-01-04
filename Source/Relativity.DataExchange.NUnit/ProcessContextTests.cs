@@ -95,12 +95,15 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldPublishTheCancellationRequestEvent()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ShouldPublishTheCancellationRequestEvent(bool requestByUser)
 		{
 			Guid processId = Guid.NewGuid();
-			this.context.PublishCancellationRequest(processId);
+			this.context.PublishCancellationRequest(processId, requestByUser);
 			Assert.That(this.cancellationRequestEvents.Count, Is.EqualTo(1));
 			Assert.That(this.cancellationRequestEvents.All(x => x.ProcessId == processId), Is.True);
+			Assert.That(this.cancellationRequestEvents.All(x => x.RequestByUser == requestByUser), Is.True);
 
 			// Assert that null events are handled.
 			this.context.CancellationRequest -= this.OnCancellationRequest;
@@ -227,7 +230,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.processCompleteEvents.Count, Is.EqualTo(5));
 			Assert.That(
 				this.processCompleteEvents.Any(
-					x => x.CloseForm == true && x.ExportLog == true && x.ExportFilePath == "a"),
+					x => x.CloseForm && x.ExportLog && x.ExportFilePath == "a"),
 				Is.True);
 
 			// Assert that null events are handled.
@@ -242,13 +245,13 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ShouldPublishTheProcessEndedEvent()
 		{
-			this.context.PublishProcessEnded(49, 99);
+			this.context.PublishProcessEnded(49, 99, 1.0);
 			Assert.That(this.processEndEvents.Count, Is.EqualTo(1));
-			Assert.That(this.processEndEvents.Any(x => x.MetadataBytes == 99 && x.NativeFileBytes == 49), Is.True);
+			Assert.That(this.processEndEvents.Any(x => x.MetadataBytes == 99 && x.NativeFileBytes == 49 && Math.Abs(x.SqlProcessRate - 1.0) < 0.001), Is.True);
 
 			// Assert that null events are handled.
 			this.context.ProcessEnded -= this.OnProcessEnded;
-			this.context.PublishProcessEnded(49, 99);
+			this.context.PublishProcessEnded(49, 99, 1.0);
 			Assert.That(this.processEndEvents.Count, Is.EqualTo(1));
 		}
 
@@ -334,11 +337,11 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(eventArgs.ProcessId, Is.EqualTo(processId));
 			Assert.That(eventArgs.StartTime, Is.EqualTo(startTime));
 			Assert.That(eventArgs.Timestamp, Is.EqualTo(timestamp));
-			Assert.That(eventArgs.TotalProcessedErrorRecords, Is.EqualTo(40));
-			Assert.That(eventArgs.TotalProcessedRecordsDisplay, Is.EqualTo(totalProcessedRecordsDisplay));
-			Assert.That(eventArgs.TotalProcessedWarningRecords, Is.EqualTo(30));
-			Assert.That(eventArgs.TotalRecords, Is.EqualTo(100));
-			Assert.That(eventArgs.TotalRecordsDisplay, Is.EqualTo(totalRecordsDisplay));
+			Assert.That(eventArgs.ProcessedWithError, Is.EqualTo(40));
+			Assert.That(eventArgs.ProcessedDisplay, Is.EqualTo(totalProcessedRecordsDisplay));
+			Assert.That(eventArgs.ProcessedWithWarning, Is.EqualTo(30));
+			Assert.That(eventArgs.Total, Is.EqualTo(100));
+			Assert.That(eventArgs.TotalDisplay, Is.EqualTo(totalRecordsDisplay));
 
 			// Don't supply the optional parameters.
 			this.context.PublishProgress(
@@ -354,8 +357,8 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(this.processProgressEvents.Count, Is.EqualTo(2));
 			eventArgs = this.processProgressEvents[1];
 			Assert.That(eventArgs.Metadata, Is.Null);
-			Assert.That(eventArgs.TotalProcessedRecordsDisplay, Is.EqualTo("20"));
-			Assert.That(eventArgs.TotalRecordsDisplay, Is.EqualTo("100"));
+			Assert.That(eventArgs.ProcessedDisplay, Is.EqualTo("20"));
+			Assert.That(eventArgs.TotalDisplay, Is.EqualTo("100"));
 
 			// Assert that null events are handled.
 			this.context.Progress -= this.OnProgress;

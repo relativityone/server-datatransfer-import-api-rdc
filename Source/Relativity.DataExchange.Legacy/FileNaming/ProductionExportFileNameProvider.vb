@@ -29,6 +29,10 @@ Namespace kCura.WinEDDS
 				appendOriginalFilename := _exportSettings.AppendOriginalFileName)
 		End Function
 
+		Public Function GetPdfName(exportedObjectInfo As ObjectExportInfo) As String Implements IFileNameProvider.GetPdfName
+			Throw New InvalidOperationException("Production export doesn't support searchable PDFs")
+		End Function
+
 		Private Function AreFilesNamedAfterIdentifier() As Boolean
 			Dim productionTypeExport As Boolean = _exportSettings.TypeOfExport = ExportFile.ExportType.Production
 			Return productionTypeExport AndAlso _exportSettings.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier

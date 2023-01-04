@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download.EncodingHelpers;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class FileEncodingConverterTests
@@ -31,7 +31,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this._encodingRewrite = new Mock<IFileEncodingRewrite>();
 			this._fileHelper = new Mock<IFile>();
-			this._instance = new FileEncodingConverter(this._encodingRewrite.Object, this._fileHelper.Object, new NullLogger());
+			this._instance = new FileEncodingConverter(this._encodingRewrite.Object, this._fileHelper.Object, new TestNullLogger());
 		}
 
 		[Test]

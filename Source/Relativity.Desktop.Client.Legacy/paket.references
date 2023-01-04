@@ -1,14 +1,12 @@
-kcura.outsidein.fi.win32
+Relativity.OutsideIn
 newtonsoft.json
-relativity.datatransfer.messageservice
-relativity.kepler
 relativity.kepler.client
 relativity.logging
-relativity.logging.interfaces
 relativity.oauth2client
 relativity.oauth2client.implicit
 relativity.oauth2client.interfaces
+relativity.services.datacontracts
+relativity.services.interfaces
 relativity.telemetry.datacontracts.shared
-relativity.telemetry.apm
 relativity.transfer.client
 microsoft-windowsapicodepack-core

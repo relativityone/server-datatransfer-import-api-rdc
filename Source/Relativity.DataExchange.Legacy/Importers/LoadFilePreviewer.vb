@@ -24,21 +24,23 @@ Namespace kCura.WinEDDS
 
 #Region "Constructors"
 
-		Public Sub New(args As LoadFile, _
-		               reporter As IIoReporter, _
-		               logger As ILog, _
-		               timeZoneOffset As Int32, _
-		               errorsOnly As Boolean, _
-		               doRetryLogic As Boolean, _
-		               tokenSource As CancellationTokenSource,
-		               Optional ByVal context As ProcessContext = Nothing)
-			MyBase.New(args, _
-			           reporter, _
-			           logger, _
-			           timeZoneOffset, _
-			           doRetryLogic, _
-			           True, _
-			           tokenSource)
+		Public Sub New(args As LoadFile,
+					   reporter As IIoReporter,
+					   logger As ILog,
+					   timeZoneOffset As Int32,
+					   errorsOnly As Boolean,
+					   doRetryLogic As Boolean,
+					   tokenSource As CancellationTokenSource,
+					   correlationIdFunc As Func(Of String),
+					   Optional ByVal context As ProcessContext = Nothing)
+			MyBase.New(args,
+					   reporter,
+					   logger,
+					   timeZoneOffset,
+					   doRetryLogic,
+					   True,
+					   tokenSource,
+					   correlationIdFunc)
 			_selectedCaseArtifactID = args.CaseInfo.ArtifactID
 			_errorsOnly = errorsOnly
 			_processContext = context
@@ -117,7 +119,8 @@ Namespace kCura.WinEDDS
 			Dim stepsize As Int64 = CType(filesize / 100, Int64)
 			ProcessStart(0, filesize, stepsize)
 			Dim fieldArrays As New System.Collections.ArrayList
-			_columnHeaders = _artifactReader.GetColumnNames(_settings)
+			_artifactReader.GetColumnNames(_settings)
+
 			If _firstLineContainsColumnNames Then
 				If _uploadFiles Then
 					Dim openParenIndex As Int32 = _filePathColumn.LastIndexOf("("c) + 1
@@ -130,7 +133,7 @@ Namespace kCura.WinEDDS
 					_filePathColumnIndex = Int32.Parse(_filePathColumn.Replace("Column", "").Replace("(", "").Replace(")", "").Trim) - 1
 				End If
 			End If
-			Dim i As Int32 = 0
+			Dim i As Int32
 			i = 0
 			While _artifactReader.HasMoreRecords AndAlso _continue
 				If fieldArrays.Count < AppSettings.Instance.PreviewThreshold Then
@@ -199,7 +202,7 @@ Namespace kCura.WinEDDS
 						End Select
 
 						lineContainsErrors = lineContainsErrors Or SetFieldValueOrErrorMessage(field, mapItem.NativeFileColumnIndex, identifierField.ValueAsString, codePageId, mapItem.DocumentField.ImportBehavior)
-						'dont add field if object type is not a document and the field is a file field
+						'Don't add field if object type is not a document and the field is a file field
 						retval.Add(field)
 
 					End If
@@ -210,7 +213,7 @@ Namespace kCura.WinEDDS
 				If _processedIdentifiers(identifierField.Value.ToString) Is Nothing Then
 					_processedIdentifiers(identifierField.Value.ToString) = Me.CurrentLineNumber.ToString
 				Else
-					identifierField.Value = New Exceptions.ErrorMessage(String.Format("Error: The identifier '{0}' has been previously proccessed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString)))
+					identifierField.Value = New Exceptions.ErrorMessage(String.Format("Error: The identifier '{0}' has been previously processed on line {1}.", identifierField.Value.ToString, _processedIdentifiers(identifierField.Value.ToString)))
 					lineContainsErrors = True
 				End If
 			End If
@@ -347,9 +350,8 @@ Namespace kCura.WinEDDS
 		End Function
 
 		Protected Overrides Function GetArtifactReader() As Api.IArtifactReader
-			Return New LoadFileReader(_settings, True)
+			Return New LoadFileReader(_settings, True, AddressOf GetCorrelationId)
 		End Function
-
-    End Class
+	End Class
 End Namespace
 

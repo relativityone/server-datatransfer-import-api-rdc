@@ -18,7 +18,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class BatchValidatorTests
@@ -35,7 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				new Mock<IBatchValidator>(),
 				new Mock<IBatchValidator>()
 			};
-			this._instance = new BatchValidator(this._validatorMocks.Select(x => x.Object).ToList(), new NullLogger());
+			this._instance = new BatchValidator(this._validatorMocks.Select(x => x.Object).ToList(), new TestNullLogger());
 		}
 
 		[Test]

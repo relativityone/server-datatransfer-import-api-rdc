@@ -9,16 +9,17 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using Relativity.Testing.Identification;
 
 	/// <summary>
 	/// Represents tests that fails to import documents and validates the results.
 	/// </summary>
 	[TestFixture]
+	[Feature.DataTransfer.ImportApi.Operations.ImportDocuments]
+	[TestType.Error]
 	public class DocNegativeImportTests : DocImportTestsBase
 	{
-		[Test]
-		[Category(TestCategories.ImportDoc)]
-		[Category(TestCategories.Integration)]
+		[IdentifiedTest("9be67303-3afd-4009-9558-b9b73a6c5ed3")]
 		public void ShouldNotImportWhenTheFolderExceedsTheMaxLength()
 		{
 			// Arrange

@@ -17,7 +17,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text.Delimiter;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class LongTextHandlerTests
@@ -36,7 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			IDelimiter delimiter = new ConfigurableDelimiter(_DELIMITER_START, _DELIMITER_END);
 
-			this._instance = new LongTextHandler(this._textPrecedenceHandler.Object, this._textToLoadFile.Object, delimiter, new NullLogger());
+			this._instance = new LongTextHandler(this._textPrecedenceHandler.Object, this._textToLoadFile.Object, delimiter, new TestNullLogger());
 		}
 
 		[Test]

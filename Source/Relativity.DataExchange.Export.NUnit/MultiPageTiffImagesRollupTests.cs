@@ -15,13 +15,13 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.ImagesRollup;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	public class MultiPageTiffImagesRollupTests : MultiPageImagesRollupTests
 	{
 		protected override MultiPageImagesRollup CreateInstance(ExportFile exportSettings, IFile fileHelper, IStatus status, IImage imageConverter)
 		{
-			return new MultiPageTiffImagesRollup(exportSettings, fileHelper, status, new NullLogger(), imageConverter);
+			return new MultiPageTiffImagesRollup(exportSettings, fileHelper, status, new TestNullLogger(), imageConverter);
 		}
 
 		protected override void AssertImageConverterCall(Mock<IImage> imageConverter, ObjectExportInfo artifact)

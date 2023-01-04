@@ -22,7 +22,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LongTextBatchValidatorTests
@@ -47,7 +47,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		protected virtual IBatchValidator CreateValidator()
 		{
-			return new LongTextBatchValidator(this.LongTextRepository.Object, this.FileHelper.Object, this.Status.Object, new NullLogger());
+			return new LongTextBatchValidator(this.LongTextRepository.Object, this.FileHelper.Object, this.Status.Object, new TestNullLogger());
 		}
 
 		[Test]
@@ -137,17 +137,17 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			if (!toDownload)
 			{
-				return LongText.CreateFromExistingFile(1, 1, location, Encoding.ASCII);
+				return LongText.CreateFromExistingFile(1, 1, location, Encoding.ASCII, 1);
 			}
 
 			LongTextExportRequest exportRequest = LongTextExportRequest.CreateRequestForFullText(new ObjectExportInfo(), 1, location);
 
 			if (requireDeletion)
 			{
-				return LongText.CreateFromMissingValue(1, 1, exportRequest, Encoding.ASCII);
+				return LongText.CreateFromMissingValue(1, 1, exportRequest, Encoding.ASCII, 1);
 			}
 
-			return LongText.CreateFromMissingFile(1, 1, exportRequest, Encoding.ASCII, Encoding.ASCII);
+			return LongText.CreateFromMissingFile(1, 1, exportRequest, Encoding.ASCII, Encoding.ASCII, 1);
 		}
 	}
 }

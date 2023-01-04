@@ -3,11 +3,11 @@ Imports Relativity.DataExchange.Service
 Namespace kCura.WinEDDS.Api
 	Public Class ArtifactFieldCollection
 		Implements System.Collections.Generic.ICollection(Of ArtifactField)
-		Private _orderedList As New System.Collections.Generic.List(Of ArtifactField)
-		Private _idLookup As New System.Collections.Hashtable
-		Private _nameLookup As New System.Collections.Hashtable
-		Private _typeLookup As New System.Collections.Hashtable
-		Private _categoryLookup As New System.Collections.Hashtable
+		Private ReadOnly _orderedList As New System.Collections.Generic.List(Of ArtifactField)
+		Private ReadOnly _idLookup As New System.Collections.Hashtable
+		Private ReadOnly _nameLookup As New System.Collections.Hashtable
+		Private ReadOnly _typeLookup As New System.Collections.Hashtable
+		Private ReadOnly _categoryLookup As New System.Collections.Hashtable
 		Private _identifierField As ArtifactField
 		Private _fileField As ArtifactField
 		Private _outOfOrder As Boolean = True
@@ -20,8 +20,8 @@ Namespace kCura.WinEDDS.Api
 			End If
 		End Sub
 #Region " ICollection Virtual Method Implementation "
-		Public Sub Add1(item As ArtifactField) Implements System.Collections.Generic.ICollection(Of ArtifactField).Add
-			Me.Add(item)
+		Public Sub Add1(artifactField As ArtifactField) Implements System.Collections.Generic.ICollection(Of ArtifactField).Add
+			Me.Add(artifactField)
 		End Sub
 
 		Public Sub Clear() Implements System.Collections.Generic.ICollection(Of ArtifactField).Clear
@@ -32,8 +32,8 @@ Namespace kCura.WinEDDS.Api
 			_categoryLookup.Clear()
 		End Sub
 
-		Public Function Contains(item As ArtifactField) As Boolean Implements System.Collections.Generic.ICollection(Of ArtifactField).Contains
-			Return _orderedList.Contains(item)
+		Public Function Contains(artifactField As ArtifactField) As Boolean Implements System.Collections.Generic.ICollection(Of ArtifactField).Contains
+			Return _orderedList.Contains(artifactField)
 		End Function
 
 		Public Sub CopyTo(array() As ArtifactField, arrayIndex As Integer) Implements System.Collections.Generic.ICollection(Of ArtifactField).CopyTo
@@ -53,8 +53,8 @@ Namespace kCura.WinEDDS.Api
 			End Get
 		End Property
 
-		Public Function Remove(item As ArtifactField) As Boolean Implements System.Collections.Generic.ICollection(Of ArtifactField).Remove
-			Dim retval As Boolean = _orderedList.Remove(item)
+		Public Function Remove(artifactField As ArtifactField) As Boolean Implements System.Collections.Generic.ICollection(Of ArtifactField).Remove
+			Dim retval As Boolean = _orderedList.Remove(artifactField)
 			_outOfOrder = True
 			Return retval
 		End Function
@@ -68,32 +68,6 @@ Namespace kCura.WinEDDS.Api
 			Me.EnsureSortTheList()
 			Return _orderedList.GetEnumerator
 		End Function
-		'Public Sub CopyTo(ByVal array As System.Array, ByVal index As Integer) Implements System.Collections.ICollection.CopyTo
-		'	_orderedList.CopyTo(array, index)
-		'End Sub
-
-		'Public ReadOnly Property Count() As Integer Implements System.Collections.ICollection.Count
-		'	Get
-		'		Return _orderedList.Count
-		'	End Get
-		'End Property
-
-		'Public ReadOnly Property IsSynchronized() As Boolean Implements System.Collections.ICollection.IsSynchronized
-		'	Get
-		'		Return _orderedList.IsSynchronized
-		'	End Get
-		'End Property
-
-		'Public ReadOnly Property SyncRoot() As Object Implements System.Collections.ICollection.SyncRoot
-		'	Get
-		'		Return _orderedList.SyncRoot
-		'	End Get
-		'End Property
-
-		'Public Function GetEnumerator() As System.Collections.IEnumerator Implements System.Collections.IEnumerable.GetEnumerator
-		'	Return _orderedList.GetEnumerator
-		'End Function
-
 #End Region
 
 #Region " Accessors "

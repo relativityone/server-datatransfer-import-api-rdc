@@ -196,6 +196,8 @@
           <s:element minOccurs="1" maxOccurs="1" name="StartExportAtDocumentNumber" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="VolumeStartNumber" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="ArtifactTypeID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="SubdirectoryPDFPrefix" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ExportSearchablePDFs" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="ImageLoadFileFormatType">
@@ -258,6 +260,8 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="boolean" type="s:boolean" />
+      <s:element name="int" type="s:int" />
     </s:schema>
     <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
       <s:simpleType name="char">
@@ -301,6 +305,26 @@
   <wsdl:message name="GetUserIdByGuidSoapOut">
     <wsdl:part name="parameters" element="tns:GetUserIdByGuidResponse" />
   </wsdl:message>
+  <wsdl:message name="CreateAuditRecordHttpPostIn">
+    <wsdl:part name="caseContextArtifactID" type="s:string" />
+    <wsdl:part name="artifactID" type="s:string" />
+    <wsdl:part name="action" type="s:string" />
+    <wsdl:part name="details" type="s:string" />
+    <wsdl:part name="origination" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateAuditRecordHttpPostOut">
+    <wsdl:part name="Body" element="tns:boolean" />
+  </wsdl:message>
+  <wsdl:message name="DeleteAuditTokenHttpPostIn">
+    <wsdl:part name="token" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DeleteAuditTokenHttpPostOut" />
+  <wsdl:message name="GetUserIdByGuidHttpPostIn">
+    <wsdl:part name="token" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetUserIdByGuidHttpPostOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
   <wsdl:portType name="AuditManagerSoap">
     <wsdl:operation name="CreateAuditRecord">
       <wsdl:input message="tns:CreateAuditRecordSoapIn" />
@@ -325,6 +349,20 @@
     <wsdl:operation name="GetUserIdByGuid">
       <wsdl:input message="tns:GetUserIdByGuidSoapIn" />
       <wsdl:output message="tns:GetUserIdByGuidSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="AuditManagerHttpPost">
+    <wsdl:operation name="CreateAuditRecord">
+      <wsdl:input message="tns:CreateAuditRecordHttpPostIn" />
+      <wsdl:output message="tns:CreateAuditRecordHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAuditToken">
+      <wsdl:input message="tns:DeleteAuditTokenHttpPostIn" />
+      <wsdl:output message="tns:DeleteAuditTokenHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserIdByGuid">
+      <wsdl:input message="tns:GetUserIdByGuidHttpPostIn" />
+      <wsdl:output message="tns:GetUserIdByGuidHttpPostOut" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="AuditManagerSoap" type="tns:AuditManagerSoap">
@@ -441,12 +479,43 @@
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="AuditManagerHttpPost" type="tns:AuditManagerHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="CreateAuditRecord">
+      <http:operation location="/CreateAuditRecord" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAuditToken">
+      <http:operation location="/DeleteAuditToken" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserIdByGuid">
+      <http:operation location="/GetUserIdByGuid" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="AuditManager">
     <wsdl:port name="AuditManagerSoap" binding="tns:AuditManagerSoap">
       <soap:address location="http://localhost/RelativityWebApi/AuditManager.asmx" />
     </wsdl:port>
     <wsdl:port name="AuditManagerSoap12" binding="tns:AuditManagerSoap12">
       <soap12:address location="http://localhost/RelativityWebApi/AuditManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="AuditManagerHttpPost" binding="tns:AuditManagerHttpPost">
+      <http:address location="http://localhost/RelativityWebApi/AuditManager.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

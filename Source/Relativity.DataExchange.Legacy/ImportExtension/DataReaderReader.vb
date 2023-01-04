@@ -1,13 +1,14 @@
+Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
+Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderReader
 
 		Implements kCura.WinEDDS.Api.IArtifactReader
-
 
 		Private Const _KCURAMARKERFILENAME As String = "kcuramarkerfilename"
 
@@ -40,9 +41,9 @@ Namespace kCura.WinEDDS.ImportExtension
 				fileSettings = New FileSettings() With {.FileNameColumn = Nothing, .FileSizeColumn = Nothing, .FileSizeMapped = False, .IDColumnName = Nothing, .OIFileIdMapped = False, .TypeColumnName = Nothing}
 			End If
 			_FileSettings = fileSettings
-
-			If _reader Is Nothing Then Throw New NullReferenceException("The reader being passed into this IDataReaderReader is null")
-			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader being passed into this IDataReaderReader is empty")
+			
+			_reader.ThrowIfNull(nameof(_reader))
+			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader is closed or empty")
 			_loadFileSettings = fieldMap
 			_allFields = args.AllFields
 			If args.TemporaryLocalDirectory Is Nothing Then
@@ -85,13 +86,13 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 
 		Public Sub AdvanceRecord() Implements kCura.WinEDDS.Api.IArtifactReader.AdvanceRecord
-			If _reader.Read() Then
-				_currentLineNumber += 1
-			Else
-				_currentLineNumber += 1
-				_reader.Close()
-			End If
-
+            Try
+                If Not _reader.Read() Then
+                    _reader.Close()
+                End If
+            Finally
+                _currentLineNumber += 1
+            End Try
 		End Sub
 
 		Public ReadOnly Property BytesProcessed() As Long Implements kCura.WinEDDS.Api.IArtifactReader.BytesProcessed
@@ -106,9 +107,17 @@ Namespace kCura.WinEDDS.ImportExtension
 			End Get
 		End Property
 
-		Public Function CountRecords() As Long Implements kCura.WinEDDS.Api.IArtifactReader.CountRecords
-			'Return _reader.Rows.Count
-			Return 1
+		''' <summary>
+		''' Returns total records count, but only when <see cref="_reader"/> already read all the records, otherwise returns null.
+		''' This is because <see cref="_reader"/> is a forward-only record viewer and does not contain information about total number of rows.
+		''' To calculate total number of records we need to iterate through all the rows and increment <see cref="_currentLineNumber"/>
+		''' </summary>
+		''' <returns>Total records count if <see cref="_reader"/> is closed, null otherwise</returns>
+		Public Function CountRecords() As Long? Implements kCura.WinEDDS.Api.IArtifactReader.CountRecords
+			If _reader.IsClosed Then
+				Return CurrentLineNumber
+			End If
+			Return Nothing
 		End Function
 
 		Public ReadOnly Property CurrentLineNumber() As Integer Implements kCura.WinEDDS.Api.IArtifactReader.CurrentLineNumber
@@ -119,14 +128,20 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Function GetColumnNames(ByVal args As Object) As String() Implements kCura.WinEDDS.Api.IArtifactReader.GetColumnNames
 			If _columnNames Is Nothing Then
-				Dim retval As New System.Collections.ArrayList
-				For iFieldIndex As Integer = 0 To _reader.FieldCount - 1
-					retval.Add(_reader.GetName(iFieldIndex))
-				Next
-				_columnNames = DirectCast(retval.ToArray(GetType(String)), String())
+				_columnNames = Enumerable _
+					.Range(0, _reader.FieldCount) _
+					.Select(Function(fieldIndex) _reader.GetName(fieldIndex)) _
+					.ToArray()
 			End If
+
 			Return _columnNames
 		End Function
+
+		Public Sub ValidateColumnNames(invalidNameAction As Action(Of String)) Implements IArtifactReader.ValidateColumnNames
+			For Each invalidName As String In GetColumnNames(Nothing).Where(Function(columnName) _allFields(columnName.ToLower()) Is Nothing)
+				invalidNameAction(invalidName)
+			Next
+		End Sub
 
 		Public ReadOnly Property HasMoreRecords() As Boolean Implements kCura.WinEDDS.Api.IArtifactReader.HasMoreRecords
 			Get
@@ -137,7 +152,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private Function DoesFilenameMarkerFieldExistInIDataReader() As Boolean
 			If Not _markerNameIsMapped.HasValue Then
 				Try
-					Dim isValidItemName As Integer = _reader.GetOrdinal(_KCURAMARKERFILENAME)
+					_reader.GetOrdinal(_KCURAMARKERFILENAME)
 					_markerNameIsMapped = True
 				Catch ex As IndexOutOfRangeException
 					_markerNameIsMapped = False
@@ -601,7 +616,13 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Sub Halt() Implements kCura.WinEDDS.Api.IArtifactReader.Halt
 		End Sub
 
+        ''' <summary>
+        ''' Reads all remaining rows and then closes <see cref="IDataReader"/>. This is because the only way to get the total number of records is to read all the rows.
+        ''' </summary>
 		Public Sub Close() Implements kCura.WinEDDS.Api.IArtifactReader.Close
+            While Not _reader.IsClosed
+                AdvanceRecord
+            End While
 		End Sub
 
 		Public Function ManageErrorRecords(ByVal errorMessageFileLocation As String, ByVal prePushErrorLineNumbersFileName As String) As String Implements kCura.WinEDDS.Api.IArtifactReader.ManageErrorRecords

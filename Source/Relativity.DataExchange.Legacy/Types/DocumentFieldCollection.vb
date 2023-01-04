@@ -52,7 +52,7 @@ Namespace kCura.WinEDDS
 			Dim ind As Int32
 			Dim field As DocumentField
 			For Each ind In _idIndex.Keys
-				field = DirectCast(_idIndex(ind), DocumentField)
+				field = _idIndex(ind)
 				If field.FieldCategory = type Then
 					Return field
 				End If
@@ -65,7 +65,7 @@ Namespace kCura.WinEDDS
 			Dim retval As New System.Collections.ArrayList
 			Dim field As DocumentField
 			For Each ind In _idIndex.Keys
-				field = DirectCast(_idIndex(ind), DocumentField)
+				field = _idIndex(ind)
 				If field.FieldCategory = type Then
 					retval.Add(field)
 				End If

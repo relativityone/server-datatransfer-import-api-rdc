@@ -1,6 +1,10 @@
-kcura.outsidein.fi.win32
+Relativity.OutsideIn
 polly
+relativity.kepler.client
 relativity.logging
-relativity.logging.interfaces
+relativity.services.datacontracts
+relativity.services.interfaces
 relativity.transfer.client
 stylecop.analyzers
+ConfigureAwaitChecker.Analyzer
+Relativity.AutomatedWorkflows.Services.Interfaces

@@ -1,8 +1,11 @@
 Imports System.Net
+Imports Relativity.DataExchange
+Imports kCura.WinEDDS
+Imports kCura.WinEDDS.ImportExtension
+Imports kCura.WinEDDS.Service
 Imports Monitoring.Sinks
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.Relativity.DataReaderClient
 
@@ -53,6 +56,12 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Event OnProgress(ByVal completedRow As Long) Implements IImportNotifier.OnProgress
 
 		''' <summary>
+		''' Occurs when a batch is processed.
+		''' </summary>
+		''' <param name="batchReport">The batch report.</param>
+		Public Event OnBatchComplete(ByVal batchReport As BatchReport) Implements IImportNotifier.OnBatchComplete
+
+		''' <summary>
 		''' Gets or sets the current options for imaging files.
 		''' </summary>
 		''' <value>
@@ -68,7 +77,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 
 		''' <summary>
-		''' Represents an instance of the SourceIDataReader, which contains data for import. This property is required.
+		''' Represents an instance of the ImageSourceIDataReader, which contains data for import. This property is required.
 		''' </summary>
 		''' <value>
 		''' The source data.
@@ -87,14 +96,17 @@ Namespace kCura.Relativity.DataReaderClient
 #End Region
 
 #Region " Private variables "
+		Private ReadOnly _runningContext As IRunningContext
 		Private WithEvents _processContext As ProcessContext
 		Private _settings As ImageSettings
 		Private _sourceData As ImageSourceIDataReader
+        Private _sourceDataReader As SourceIDataReader
 		Private _credentials As ICredentials
 		Private _cookieMonster As Net.CookieContainer
 		Private _jobReport As JobReport
-		Private _executionSource As ExecutionSource
-        Private ReadOnly _metricSinkManager As IMetricSinkManager
+		Private _webApiCredential As WebApiCredential
+		Private _correlationIdFunc As Func(Of String)
+        Private _instanceId As Guid = Guid.NewGuid()
 #End Region
 
 #Region " Public Methods "
@@ -106,6 +118,7 @@ Namespace kCura.Relativity.DataReaderClient
 			_settings = New ImageSettings
 			_sourceData = New ImageSourceIDataReader
 			_cookieMonster = New Net.CookieContainer()
+			_correlationIdFunc = AddressOf GetDefaultCorrelationId
 		End Sub
 
 		''' <summary>
@@ -113,13 +126,15 @@ Namespace kCura.Relativity.DataReaderClient
 		''' </summary>
 		''' <param name="credentials">The credentials.</param>
 		''' <param name="cookieMonster">The cookie monster.</param>
-		''' <param name="executionSource">Optional parameter that states what process the import is coming from.</param>
-		Friend Sub New(ByVal credentials As ICredentials, ByVal cookieMonster As Net.CookieContainer, ByVal metricSinkManager As IMetricSinkManager, ByVal Optional executionSource As Integer = 0)
+		''' <param name="runningContext">Contains information about the context in which jobs are executed.</param>
+		''' <param name="correlationIdFunc">Function retrieving correlation id related with import job.</param>
+		Friend Sub New(ByVal credentials As ICredentials, ByVal webApiCredential As WebApiCredential, ByVal cookieMonster As Net.CookieContainer, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
 			Me.New()
-			_executionSource = CType(executionSource, ExecutionSource)
+			_runningContext = runningContext
 			_credentials = credentials
 			_cookieMonster = cookieMonster
-            _metricSinkManager = metricSinkManager
+			_webApiCredential = webApiCredential
+		    _correlationIdFunc = correlationIdFunc
 		End Sub
 
 		''' <summary>
@@ -132,18 +147,18 @@ Namespace kCura.Relativity.DataReaderClient
 			' Authenticate here instead of in CreateLoadFile
 			If _credentials Is Nothing Then
 				ImportCredentialManager.WebServiceURL = Settings.WebServiceURL
-				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword)
+				Dim creds As ImportCredentialManager.SessionCredentials = ImportCredentialManager.GetCredentials(Settings.RelativityUsername, Settings.RelativityPassword, _runningContext, _correlationIdFunc)
 				_credentials = creds.Credentials
+				_webApiCredential.Credential = creds.Credentials
 				_cookieMonster = creds.CookieMonster
 			End If
 
 			If IsSettingsValid() Then
 				RaiseEvent OnMessage(New Status("Getting source data from database"))
 
-				MapSuppliedFieldNamesToActual(Settings, SourceData.SourceData)
-
-				Dim process As New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData.SourceData, _metricSinkManager.SetupMessageService(_settings.Telemetry))
-				process.ExecutionSource = _executionSource
+			    Dim metricService As IMetricService = New MetricService(Settings.Telemetry, KeplerProxyFactory.CreateKeplerProxy(_webApiCredential.Credential))
+				_runningContext.ApplicationName = Settings.ApplicationName
+				Dim process As kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess = New kCura.WinEDDS.ImportExtension.DataReaderImageImporterProcess(SourceData, Settings, metricService, _runningContext, _correlationIdFunc)
 				_processContext = process.Context
 
 				If Settings.DisableImageTypeValidation.HasValue Then process.DisableImageTypeValidation = Settings.DisableImageTypeValidation.Value
@@ -154,6 +169,7 @@ Namespace kCura.Relativity.DataReaderClient
 				process.SkipExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck
 				RaiseEvent OnMessage(New Status("Updating settings"))
 				process.ImageLoadFile = Me.CreateLoadFile()
+                process.CaseInfo = process.ImageLoadFile.CaseInfo
 
 				RaiseEvent OnMessage(New Status("Executing"))
 				Try
@@ -210,18 +226,14 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub ValidateDataSourceSettings()
 			'This expects the DataTable in SourceData to have already been set
-			EnsureFieldNameIsValid("BatesNumber", Settings.BatesNumberField)
-			EnsureFieldNameIsValid("DocumentIdentifier", Settings.DocumentIdentifierField)
-			EnsureFieldNameIsValid("FileLocation", Settings.FileLocationField)
+			EnsureFieldNameIsValid(DefaultImageFieldNames.BatesNumber, Settings.BatesNumberField)
+			EnsureFieldNameIsValid(DefaultImageFieldNames.DocumentIdentifier, Settings.DocumentIdentifierField)
+			EnsureFieldNameIsValid(DefaultImageFieldNames.FileLocation, Settings.FileLocationField)
 		End Sub
 
 		Private Sub EnsureFieldNameIsValid(ByVal imageSettingsField As String, ByVal forFieldName As String)
 			If String.IsNullOrEmpty(forFieldName) Then
 				Throw New Exception("No field name specified for " & imageSettingsField)
-			End If
-
-			If Not SourceData.SourceData.Columns.Contains(forFieldName) Then
-				Throw New Exception(String.Format("No field named {0} found in the DataTable for " & imageSettingsField, forFieldName))
 			End If
 		End Sub
 
@@ -229,7 +241,7 @@ Namespace kCura.Relativity.DataReaderClient
 
 			Dim credential As System.Net.NetworkCredential = DirectCast(_credentials, Net.NetworkCredential)
 
-			Dim casemanager As kCura.WinEDDS.Service.CaseManager = GetCaseManager(credential)
+			Dim casemanager As kCura.WinEDDS.Service.Replacement.ICaseManager = GetCaseManager(credential)
 			Dim tempLoadFile As New kCura.WinEDDS.ImageLoadFile
 
 			'These are ALL of the image file settings
@@ -237,6 +249,7 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.CaseInfo = casemanager.Read(Settings.CaseArtifactId)
 			'tempLoadFile.ControlKeyField = "Identifier"
 			tempLoadFile.Credential = credential
+			tempLoadFile.WebApiCredential = _webApiCredential
 			tempLoadFile.CookieContainer = _cookieMonster
 			tempLoadFile.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository
 			If Settings.DestinationFolderArtifactID > 0 Then
@@ -250,8 +263,11 @@ Namespace kCura.Relativity.DataReaderClient
 			tempLoadFile.ReplaceFullText = Settings.ExtractedTextFieldContainsFilePath
 			If tempLoadFile.Overwrite = OverwriteModeEnum.Overlay.ToString Then
 				tempLoadFile.IdentityFieldId = Settings.IdentityFieldId 'e.x Control Number
+				tempLoadFile.BeginBatesFieldArtifactID = Settings.BeginBatesFieldArtifactID
 			Else
-				tempLoadFile.IdentityFieldId = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
+				Dim identifierFieldId As Integer = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
+				tempLoadFile.IdentityFieldId = identifierFieldId
+				tempLoadFile.BeginBatesFieldArtifactID = identifierFieldId
 			End If
 
 			tempLoadFile.ProductionArtifactID = Settings.ProductionArtifactID
@@ -263,7 +279,6 @@ Namespace kCura.Relativity.DataReaderClient
 
 			tempLoadFile.SendEmailOnLoadCompletion = False
 			tempLoadFile.StartLineNumber = Settings.StartRecordNumber
-			tempLoadFile.BeginBatesFieldArtifactID = GetDefaultIdentifierFieldID(credential, Settings.CaseArtifactId)
 			tempLoadFile.Billable = Settings.Billable
 
 			Return tempLoadFile
@@ -271,14 +286,18 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub MapSuppliedFieldNamesToActual(ByVal imageSettings As ImageSettings, ByRef srcDataTable As DataTable)
 			'kCura.WinEDDS.ImportExtension.ImageDataTableReader contains the 'real' field names
-			srcDataTable.Columns(imageSettings.BatesNumberField).ColumnName = "BatesNumber"
-			srcDataTable.Columns(imageSettings.DocumentIdentifierField).ColumnName = "DocumentIdentifier"
-			srcDataTable.Columns(imageSettings.FileLocationField).ColumnName = "FileLocation"
+			srcDataTable.Columns(imageSettings.BatesNumberField).ColumnName = DefaultImageFieldNames.BatesNumber
+			srcDataTable.Columns(imageSettings.DocumentIdentifierField).ColumnName = DefaultImageFieldNames.DocumentIdentifier
+			srcDataTable.Columns(imageSettings.FileLocationField).ColumnName = DefaultImageFieldNames.FileLocation
+			'Additional fileName column to fix issue REL-365880: File Extensions not Populating after Integration Points Promotion. To ensure backward compatibility is not required.
+			If srcDataTable.Columns(imageSettings.FileNameField) IsNot Nothing Then
+    		    srcDataTable.Columns(imageSettings.FileNameField).ColumnName = DefaultImageFieldNames.FileName
+			End If
 		End Sub
 
 		Private Function GetDefaultIdentifierFieldID(ByVal credential As System.Net.NetworkCredential, ByVal caseArtifactID As Int32) As Int32
 			Dim retval As Int32
-			Dim dt As System.Data.DataTable = New kCura.WinEDDS.Service.FieldQuery(credential, _cookieMonster).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
+			Dim dt As System.Data.DataTable = ManagerFactory.CreateFieldQuery(credential, _cookieMonster, _correlationIdFunc).RetrievePotentialBeginBatesFields(caseArtifactID).Tables(0)
 			For Each identifierRow As System.Data.DataRow In dt.Rows
 				If CType(identifierRow("FieldCategoryID"), FieldCategory) = FieldCategory.Identifier Then
 					retval = CType(identifierRow("ArtifactID"), Int32)
@@ -287,11 +306,13 @@ Namespace kCura.Relativity.DataReaderClient
 			Return retval
 		End Function
 
-		Private Function GetCaseManager(ByVal credentials As Net.ICredentials) As kCura.WinEDDS.Service.CaseManager
-			Return New kCura.WinEDDS.Service.CaseManager(credentials, _cookieMonster)
+		Private Function GetCaseManager(ByVal credentials As NetworkCredential) As kCura.WinEDDS.Service.Replacement.ICaseManager
+			Return ManagerFactory.CreateCaseManager(credentials, _cookieMonster, _correlationIdFunc)
 		End Function
 
-
+        Private Function GetDefaultCorrelationId() As String
+            Return _instanceId.ToString()
+        End Function
 #End Region
 
 #Region " Validation "
@@ -384,6 +405,12 @@ Namespace kCura.Relativity.DataReaderClient
 			RaiseComplete()
 		End Sub
 
+		Private Sub _processContext_OnProcessEnded(sender As Object, e As ProcessEndEventArgs) Handles _processContext.ProcessEnded
+			Me._jobReport.FileBytes = e.NativeFileBytes
+			Me._jobReport.MetadataBytes = e.MetadataBytes
+			Me._jobReport.SqlProcessRate = e.SqlProcessRate
+		End Sub
+
 		Private Sub _processContext_OnProcessEvent(ByVal sender As Object, ByVal e As ProcessEventArgs) Handles _processContext.ProcessEvent
 			If e.EventType = ProcessEventType.Error OrElse e.EventType = ProcessEventType.Warning OrElse e.EventType = ProcessEventType.Status Then
 				RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Record Info: {2}] {3} - {1}", e.Timestamp, e.Message, e.RecordInfo, e.EventType)))
@@ -397,8 +424,8 @@ Namespace kCura.Relativity.DataReaderClient
 		End Sub
 
 		Private Sub _processContext_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _processContext.Progress
-			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, e.TotalProcessedRecordsDisplay)))
-			RaiseEvent OnProcessProgress(New FullStatus(e.TotalRecords, e.TotalProcessedRecords, e.TotalProcessedWarningRecords, e.TotalProcessedErrorRecords, e.StartTime, e.Timestamp, e.TotalRecordsDisplay, e.TotalProcessedRecordsDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessID, e.Metadata))
+			RaiseEvent OnMessage(New Status(String.Format("[Timestamp: {0}] [Progress Info: {1} ]", System.DateTime.Now, e.ProcessedDisplay)))
+			RaiseEvent OnProcessProgress(New FullStatus(e.Total, e.Processed, e.ProcessedWithWarning, e.ProcessedWithError, e.StartTime, e.Timestamp, e.TotalDisplay, e.ProcessedDisplay, e.MetadataThroughput, e.NativeFileThroughput, e.ProcessID, e.Metadata))
 		End Sub
 
 		Private Sub _processContext_RecordProcessedEvent(ByVal sender As Object, ByVal e As RecordNumberEventArgs) Handles _processContext.RecordProcessed
@@ -407,6 +434,10 @@ Namespace kCura.Relativity.DataReaderClient
 
 		Private Sub _processContext_IncrementRecordCount(ByVal sender As Object, ByVal e As RecordCountEventArgs) Handles _processContext.RecordCountIncremented
 			_jobReport.TotalRows += 1
+		End Sub
+
+		Private Sub _processContext_OnBatchCompleted(sender As Object, e As BatchCompletedEventArgs) Handles _processContext.BatchCompleted
+			RaiseEvent OnBatchComplete(new BatchReport(e.BatchOrdinalNumber, e.NumberOfFiles, e.NumberOfRecords, e.NumberOfRecordsWithErrors))
 		End Sub
 #End Region
 		

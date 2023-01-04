@@ -23,7 +23,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	using ViewFieldInfo = kCura.WinEDDS.ViewFieldInfo;
 
@@ -44,7 +43,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		{
 			this._fieldFactory = new QueryFieldFactory();
 			this._exportSettings = new ExportFile(1);
-			this._longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._longTextRepository = new LongTextRepository(null, new TestNullLogger());
 
 			this._fieldService = new Mock<IFieldService>();
 			this._filePathTransformer = new Mock<IFilePathTransformer>();
@@ -55,7 +54,7 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._filePathTransformer.Object,
 				this._longTextRepository,
 				new LongTextHelper(this._exportSettings, this._fieldService.Object, this._longTextRepository),
-				new NullLogger());
+				new TestNullLogger());
 		}
 
 		[Test]
@@ -70,7 +69,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact.ArtifactID,
 				field.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, expectedResult),
-				Encoding.Default);
+				Encoding.Default,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();
@@ -98,7 +98,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				artifact.ArtifactID,
 				field.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, location),
-				Encoding.Default);
+				Encoding.Default,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();
@@ -137,7 +138,8 @@ namespace Relativity.DataExchange.Export.NUnit
 					artifact,
 					trueTextPrecedenceField.FieldArtifactId,
 					expectedResult),
-				Encoding.Default);
+				Encoding.Default,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry entry = new DeferredEntry();

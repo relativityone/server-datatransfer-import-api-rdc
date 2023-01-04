@@ -9,6 +9,7 @@
 	public class ExportFileFormatter : ExportFileFormatterBase
 	{
 		private const string _FILE_PATH_COL_NAME = "FILE_PATH";
+		private const string _PDF_PATH_COL_NAME = "PDF_PATH";
 
 		public ExportFileFormatter(ExportFile exportSettings, IFieldNameProvider fieldNameProvider) : base(exportSettings, fieldNameProvider)
 		{
@@ -24,7 +25,11 @@
 			}
 			if (ExportSettings.ExportNative)
 			{
-				stringBuilder.AppendFormat($"{ExportSettings.QuoteDelimiter}{_FILE_PATH_COL_NAME}{ExportSettings.QuoteDelimiter}");
+				stringBuilder.AppendFormat($"{ExportSettings.QuoteDelimiter}{_FILE_PATH_COL_NAME}{ExportSettings.QuoteDelimiter}{ExportSettings.RecordDelimiter}");
+			}
+			if (ExportSettings.ExportPdf)
+			{
+				stringBuilder.AppendFormat($"{ExportSettings.QuoteDelimiter}{_PDF_PATH_COL_NAME}{ExportSettings.QuoteDelimiter}{ExportSettings.RecordDelimiter}");
 			}
 			return stringBuilder.ToString().TrimEnd(ExportSettings.RecordDelimiter);
 		}

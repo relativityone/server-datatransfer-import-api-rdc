@@ -189,6 +189,11 @@ namespace Relativity.DataExchange.Process
 		public event EventHandler<StatusBarEventArgs> StatusBarChanged;
 
 		/// <summary>
+		/// Occurs when batch is completed.
+		/// </summary>
+		public event EventHandler<BatchCompletedEventArgs> BatchCompleted;
+
+		/// <summary>
 		/// Gets or sets input arguments.
 		/// </summary>
 		/// <value>
@@ -237,14 +242,29 @@ namespace Relativity.DataExchange.Process
 		}
 
 		/// <summary>
-		/// Halts the runnable process with the specified process unique identifier.
+		/// Halts the runnable process with the specified process unique identifier. This assumes cancellation is requested by the user.
 		/// </summary>
 		/// <param name="processId">
 		/// The process unique identifier.
 		/// </param>
 		public void PublishCancellationRequest(Guid processId)
 		{
-			CancellationRequestEventArgs args = new CancellationRequestEventArgs(processId);
+			const bool RequestByUser = true;
+			this.PublishCancellationRequest(processId, RequestByUser);
+		}
+
+		/// <summary>
+		/// Halts the runnable process with the specified process unique identifier.
+		/// </summary>
+		/// <param name="processId">
+		/// The process unique identifier.
+		/// </param>
+		/// <param name="requestByUser">
+		/// <see langword="true" /> when cancellation is requested by the user; otherwise, <see langword="false" /> when requested to terminate the process.
+		/// </param>
+		public void PublishCancellationRequest(Guid processId, bool requestByUser)
+		{
+			CancellationRequestEventArgs args = new CancellationRequestEventArgs(processId, requestByUser);
 			this.CancellationRequest?.Invoke(this, args);
 		}
 
@@ -438,9 +458,12 @@ namespace Relativity.DataExchange.Process
 		/// <param name="metadataBytes">
 		/// The total number of metadata bytes that were transferred.
 		/// </param>
-		public void PublishProcessEnded(long nativeFileBytes, long metadataBytes)
+		/// <param name="sqlProcessRate">
+		/// Server/SQL Process rate (docs / sec).
+		/// </param>
+		public void PublishProcessEnded(long nativeFileBytes, long metadataBytes, double sqlProcessRate)
 		{
-			ProcessEndEventArgs args = new ProcessEndEventArgs(nativeFileBytes, metadataBytes);
+			ProcessEndEventArgs args = new ProcessEndEventArgs(nativeFileBytes, metadataBytes, sqlProcessRate);
 			this.ProcessEnded?.Invoke(this, args);
 		}
 
@@ -513,7 +536,59 @@ namespace Relativity.DataExchange.Process
 				totalProcessedWarningRecords,
 				totalProcessedErrorRecords,
 				metadataThroughput,
-				nativeFileThroughput);
+				nativeFileThroughput,
+				ProgressEventArgs.UnitOfMeasurement.Records);
+			this.Progress?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publishes an event indicating the runnable process progress event has occurred.
+		/// Progress is measured in number of bytes.
+		/// </summary>
+		/// <param name="totalBytes">
+		/// The total number of bytes to process.
+		/// </param>
+		/// <param name="processedBytes">
+		/// The total number of bytes that have been processed.
+		/// </param>
+		/// <param name="startTime">
+		/// The process start time.
+		/// </param>
+		/// <param name="timestamp">
+		/// The timestamp when the event occurred.
+		/// </param>
+		/// <param name="processId">
+		/// The process unique identifier.
+		/// </param>
+		/// <param name="totalBytesDisplay">
+		/// The display string for the total number of bytes to process.
+		/// </param>
+		/// <param name="processedBytesDisplay">
+		/// The display string for the total number of bytes that have been processed.
+		/// </param>
+		public void PublishProgressInBytes(
+			long totalBytes,
+			long processedBytes,
+			DateTime startTime,
+			DateTime timestamp,
+			Guid processId,
+			string totalBytesDisplay,
+			string processedBytesDisplay)
+		{
+			ProgressEventArgs args = new ProgressEventArgs(
+				processId,
+				null,
+				startTime,
+				timestamp,
+				totalBytes,
+				totalBytesDisplay,
+				processedBytes,
+				processedBytesDisplay,
+				0,
+				0,
+				0,
+				0,
+				ProgressEventArgs.UnitOfMeasurement.Bytes);
 			this.Progress?.Invoke(this, args);
 		}
 
@@ -560,6 +635,19 @@ namespace Relativity.DataExchange.Process
 		{
 			StatusBarEventArgs args = new StatusBarEventArgs(message, popupText);
 			this.StatusBarChanged?.Invoke(this, args);
+		}
+
+		/// <summary>
+		/// Publish batch complete event.
+		/// </summary>
+		/// <param name="ordinalNumber">Ordinal batch number.</param>
+		/// <param name="numberOfFiles">Number of files.</param>
+		/// <param name="numberOfRecords">Number of records.</param>
+		/// <param name="numberOfRecordsWithErrors">Number of records with errors.</param>
+		public void PublishBatchCompleted(int ordinalNumber, int numberOfFiles, int numberOfRecords, int numberOfRecordsWithErrors)
+		{
+			BatchCompletedEventArgs args = new BatchCompletedEventArgs(ordinalNumber, numberOfFiles, numberOfRecords, numberOfRecordsWithErrors);
+			this.BatchCompleted?.Invoke(this, args);
 		}
 
 		/// <summary>

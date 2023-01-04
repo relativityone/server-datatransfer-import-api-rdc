@@ -41,11 +41,12 @@
 				Dim info As VolumeInfo = If(settings.VolumeInfo, New VolumeInfo())
 				If String.IsNullOrWhiteSpace(info.SubdirectoryImagePrefix) Then AppendErrorMessage(msg, "Subdirectory Image Prefix cannot be blank.")
 				If String.IsNullOrWhiteSpace(info.SubdirectoryFullTextPrefix) Then AppendErrorMessage(msg, "Subdirectory Text Prefix cannot be blank.")
-				If info.SubdirectoryMaxSize < 1 Then AppendErrorMessage(msg, "Subdirectory Max Size must be greater than zero.")
+				If String.IsNullOrWhiteSpace(info.SubdirectoryPdfPrefix) Then AppendErrorMessage(msg, "Subdirectory PDF Prefix cannot be blank.")
 				If String.IsNullOrWhiteSpace(info.SubdirectoryNativePrefix) Then AppendErrorMessage(msg, "Subdirectory Native Prefix cannot be blank.")
+				If String.IsNullOrWhiteSpace(info.VolumePrefix) Then AppendErrorMessage(msg, "Volume Prefix cannot be blank.")
+				If info.SubdirectoryMaxSize < 1 Then AppendErrorMessage(msg, "Subdirectory Max Size must be greater than zero.")
 				If info.SubdirectoryStartNumber < 1 Then AppendErrorMessage(msg, "Subdirectory Start Number must be greater than zero.")
 				If info.VolumeMaxSize < 1 Then AppendErrorMessage(msg, "Volume Max Size must be greater than zero.")
-				If String.IsNullOrWhiteSpace(info.VolumePrefix) Then AppendErrorMessage(msg, "Volume Prefix cannot be blank.")
 				If info.VolumeStartNumber < 1 Then AppendErrorMessage(msg, "Volume Start Number must be greater than zero.")
 			End If
 			If msg.ToString.Trim <> String.Empty Then

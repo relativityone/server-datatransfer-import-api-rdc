@@ -3,6 +3,7 @@ Imports System.Collections.Generic
 Imports kCura.WinEDDS.Importers
 Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 
 Namespace kCura.WinEDDS
 
@@ -128,7 +129,7 @@ Namespace kCura.WinEDDS
 		    End If
 
 		    If _dictionary.ContainsKey(folderPath) Then
-			    Return DirectCast(_dictionary(folderPath), FolderCacheItem).FolderID
+			    Return _dictionary(folderPath).FolderID
 		    Else
 				Try
 				    Dim newFolder As FolderCacheItem = Me.GetNewFolder(folderPath)
@@ -141,7 +142,7 @@ Namespace kCura.WinEDDS
 						Throw
 					End If
 
-					_logger.LogFatal(ex, "Failed to create the {FolderPath} folder path for workspace {WorkspaceId}.", folderPath, _workspaceId)
+					_logger.LogFatal(ex, "Failed to create the {FolderPath} folder path for workspace {WorkspaceId}.", folderPath.Secure(), _workspaceId)
 					Dim message As String = $"A fatal error occurred creating the '{folderPath}' folder path for workspace {_workspaceId}."
 					message = ExceptionHelper.AppendTryAgainAdminFatalMessage(message)
 					Throw New kCura.WinEDDS.Exceptions.WebApiException(message, ex)
@@ -164,7 +165,7 @@ Namespace kCura.WinEDDS
 
 		Private Function CreateFolders(ByVal parentFolder As FolderCacheItem, ByVal folderNames As List(Of String)) As FolderCacheItem
 			If folderNames.Count > 0 Then
-				Dim newFolderName As String = CType(folderNames(0), String)
+				Dim newFolderName As String = folderNames(0)
 				folderNames.RemoveAt(0)
 
 				'We've gotten this far, so the hashtable mapping of folder paths to artifact ids doesn't contain the folder of interest.
@@ -191,7 +192,7 @@ Namespace kCura.WinEDDS
 
 		Private Function FindParentFolder(ByVal folderPath As String, ByVal pathToDestination As List(Of String)) As FolderCacheItem
 			If _dictionary.ContainsKey(folderPath) Then
-				Return DirectCast(_dictionary(folderPath), FolderCacheItem)
+				Return _dictionary(folderPath)
 			Else
 				Dim pathEntry As String = folderPath.Substring(folderPath.LastIndexOf(PathSeparator) + 1)
 				If pathEntry = "" Then

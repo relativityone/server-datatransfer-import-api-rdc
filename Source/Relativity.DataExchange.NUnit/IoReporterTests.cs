@@ -11,6 +11,7 @@ namespace Relativity.DataExchange.NUnit
 {
 	using System;
 	using System.Collections;
+	using System.IO;
 	using System.Threading;
 
 	using global::NUnit.Framework;
@@ -34,16 +35,12 @@ namespace Relativity.DataExchange.NUnit
 		private const string TestFileName = "TestFileName";
 		private const string ExpectedDefaultExceptionMessage = "Expected exception message";
 		private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-		private IIoReporter ioReporterInstance;
+		private IoReporter ioReporterInstance;
 		private Mock<IFileSystem> mockFileSystem;
-		private Mock<IWaitAndRetryPolicy> mockWaitAndRetryPolicy;
 		private Mock<IAppSettings> mockAppSettings;
-		private IWaitAndRetryPolicy waitAndRetry;
 		private Mock<ILog> mockLogger;
 		private IoReporterContext context;
 		private long actualFileLength;
-		private Func<int, TimeSpan> actualRetryDurationFunc = null;
-		private Exception expectedException;
 		private bool actualFileExists;
 		private Exception actualLoggedWarningException;
 		private string actualLoggedWarningMessage;
@@ -69,38 +66,38 @@ namespace Relativity.DataExchange.NUnit
 				yield return new TestCaseData(RetryOptions.None, false, new InvalidOperationException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: disk full scenario 1 follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, DataExchange.ExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, DataExchange.ExceptionHelper.DiskFullHResultHResult), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, DataExchange.ExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.DiskFull, false, new IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.DiskFullHResultHResult), MaxExpectedRetryCount);
 
 				// Test Case: disk full scenario 2 follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, DataExchange.ExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.DiskFull, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, DataExchange.ExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.IOException(ExpectedDefaultExceptionMessage, DataExchange.ExceptionHelper.HandleDiskFullHResult), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.DiskFull, false, new IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new IOException(ExpectedDefaultExceptionMessage, ExceptionHelper.HandleDiskFullHResult), NoExpectedRetryCount);
 
 				// Test Case: file does not exist follow the options.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.FileNotFoundException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.FileNotFound, false, new System.IO.FileNotFoundException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.FileNotFoundException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new FileNotFoundException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.FileNotFound, false, new FileNotFoundException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new FileNotFoundException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: path too long should never retry.
-				yield return new TestCaseData(RetryOptions.All, false, new System.IO.PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new System.IO.PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, false, new System.IO.PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new PathTooLongException(ExpectedDefaultExceptionMessage), NoExpectedRetryCount);
 
 				// Test Case: illegal characters in the path should never retry.
-				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
-				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.None, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.All, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, false, new ArgumentException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
+				yield return new TestCaseData(RetryOptions.Io, true, new FileInfoInvalidPathException(ExceptionHelper.IllegalCharactersInPathMessage), NoExpectedRetryCount);
 
 				// Test Case: permission errors follow the options.
 				yield return new TestCaseData(RetryOptions.All, false, new UnauthorizedAccessException(ExpectedDefaultExceptionMessage), MaxExpectedRetryCount);
@@ -113,11 +110,13 @@ namespace Relativity.DataExchange.NUnit
 		[SetUp]
 		public void Setup()
 		{
-			AppSettings.Instance.EnforceMinRetryCount = false;
+			AppSettings.Instance.EnforceMinRetryCount = true;
 			AppSettings.Instance.EnforceMinWaitTime = false;
 			this.cachedAppSettings = new AppDotNetSettings();
-			this.cachedAppSettings.EnforceMinRetryCount = false;
+			this.cachedAppSettings.EnforceMinRetryCount = true;
 			this.cachedAppSettings.EnforceMinWaitTime = false;
+			this.cachedAppSettings.IoErrorNumberOfRetries = 1;
+			this.cachedAppSettings.IoErrorWaitTimeInSeconds = 0;
 			this.actualFileExists = false;
 			this.actualFileLength = 0;
 			this.actualLoggedErrorException = null;
@@ -125,7 +124,6 @@ namespace Relativity.DataExchange.NUnit
 			this.actualLoggedInformationMessage = null;
 			this.actualLoggedWarningException = null;
 			this.actualLoggedWarningMessage = null;
-			this.actualRetryDurationFunc = null;
 			this.mockAppSettings = new Mock<IAppSettings>();
 			this.mockAppSettings.SetupGet(x => x.DisableThrowOnIllegalCharacters).Returns(false);
 			this.mockAppSettings.Setup(x => x.DeepCopy()).Callback(
@@ -140,8 +138,6 @@ namespace Relativity.DataExchange.NUnit
 							this.mockAppSettings.Object.DisableThrowOnIllegalCharacters;
 					}).Returns(this.cachedAppSettings);
 			this.mockFileSystem = new Mock<IFileSystem>();
-			this.mockWaitAndRetryPolicy = new Mock<IWaitAndRetryPolicy>();
-			this.waitAndRetry = null;
 			this.mockLogger = new Mock<ILog>();
 			this.mockLogger.Setup(
 					log => log.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
@@ -165,10 +161,9 @@ namespace Relativity.DataExchange.NUnit
 					this.actualLoggedInformationMessage = logInformationMessage;
 				});
 			this.context = new IoReporterContext(
-							   this.mockFileSystem.Object,
-							   this.mockAppSettings.Object,
-							   this.mockWaitAndRetryPolicy.Object)
-			{ RetryOptions = RetryOptions.Io };
+				               this.mockFileSystem.Object,
+				               this.mockAppSettings.Object,
+				               new WaitAndRetryPolicy(this.mockAppSettings.Object)) { RetryOptions = RetryOptions.Io };
 		}
 
 		[Test]
@@ -248,7 +243,8 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase(1299)]
 		public void ItShouldGetTheFileLength(int expectedLength)
 		{
-			this.GivenTheRealWaitAndRetryPolicy(1);
+			this.GivenTheIoErrorNumberOfRetries(1);
+			this.GivenTheIoErrorWaitTimeInSeconds(0);
 			this.GivenTheMockFileSystemCreateFileInfoReturns(expectedLength, true);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
@@ -261,7 +257,8 @@ namespace Relativity.DataExchange.NUnit
 		[TestCase(false)]
 		public void ItShouldGetTheFileExists(bool expectedFileExists)
 		{
-			this.GivenTheRealWaitAndRetryPolicy(1);
+			this.GivenTheIoErrorNumberOfRetries(1);
+			this.GivenTheIoErrorWaitTimeInSeconds(0);
 			this.GivenTheMockFileSystemCreateFileInfoReturns(1, expectedFileExists);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.Io);
@@ -270,30 +267,32 @@ namespace Relativity.DataExchange.NUnit
 			this.ThenTheActualFileExistsShouldEqual(expectedFileExists);
 		}
 
-		[TestCase(1, 1)]
-		[TestCase(2, 1)]
-		[TestCase(2, 2)]
-		[TestCase(3, 10)]
-		[TestCase(2, -1)]
-		[TestCase(2, 0)]
-		public void ItShouldCalculateTheProperRetryDuration(int retryAttempt, int waitTimeBetweenRetryAttempts)
+		[TestCase(1, 5, -1, 0)]
+		[TestCase(1, 5, 0, 0)]
+		[TestCase(1, 5, 1, 1)]
+		[TestCase(2, 5, 1, 1)]
+		[TestCase(3, 5, 1, 1)]
+		[TestCase(4, 5, 1, 0)]
+		[TestCase(5, 5, 1, 0)]
+		[TestCase(6, 5, 1, 0)]
+		public void ItShouldCalculateTheProperRetryDuration(
+			int retryAttempt,
+			int numberOfRetries,
+			int waitTimeInSeconds,
+			int expectedWaitTimeInSeconds)
 		{
-			this.GivenTheMockWaitAndRetryReturns(waitTimeBetweenRetryAttempts);
-			this.GivenTheMockWaitAndRetryPolicyCallback();
-			this.GivenTheMockFileSystemCreateFileInfoReturns(1000, true);
-			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
-			this.GivenTheRetryOptions(RetryOptions.Io);
+			this.GivenTheIoErrorNumberOfRetries(numberOfRetries);
+			this.GivenTheIoErrorWaitTimeInSeconds(waitTimeInSeconds);
 			this.GivenTheIoReportInstanceIsConstructed();
-			this.WhenCallingTheFileLengthReporterMethod(TestFileName);
-			int expectedWaitTimeBetweenRetryAttempts = waitTimeBetweenRetryAttempts;
-			this.ThenTheActualRetryDurationShouldCalculated(retryAttempt, expectedWaitTimeBetweenRetryAttempts);
+			this.ThenTheActualRetryDurationShouldCalculated(retryAttempt, expectedWaitTimeInSeconds);
 		}
 
 		[Test]
 		public void ItShouldReturnWhenCanceled()
 		{
 			this.cancellationTokenSource.Cancel();
-			this.GivenTheRealWaitAndRetryPolicy(1);
+			this.GivenTheIoErrorNumberOfRetries(1);
+			this.GivenTheIoErrorWaitTimeInSeconds(0);
 			this.GivenTheMockFileSystemCreateFileInfoReturns(1, true);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(false);
 			this.GivenTheRetryOptions(RetryOptions.None);
@@ -314,7 +313,8 @@ namespace Relativity.DataExchange.NUnit
 
 			const int MaxRetryCount = 5;
 			this.GivenTheRetryOptions(testOptions);
-			this.GivenTheRealWaitAndRetryPolicy(MaxRetryCount);
+			this.GivenTheIoErrorNumberOfRetries(MaxRetryCount);
+			this.GivenTheIoErrorWaitTimeInSeconds(0);
 			this.GivenTheMockFileSystemCreateFileInfoThrows(testException);
 			this.GivenTheMockFileSystemCopyThrows(testException);
 			this.GivenTheDisableNativeLocationValidationConfigSetting(testDisableNativeLocationValidation);
@@ -324,7 +324,7 @@ namespace Relativity.DataExchange.NUnit
 			Assert.Throws(testException.GetType(), this.WhenCallingTheFileCopyReporterMethod);
 			bool localExpectedException = !testDisableNativeLocationValidation;
 			this.ThenTheLoggerErrorShouldBeInvoked(0, localExpectedException);
-			this.ThenTheLoggerWarningShouldBeInvoked(testExpectedRetryCount, localExpectedException);
+			this.ThenTheLoggerWarningShouldBeInvoked(0, localExpectedException);
 			this.ResetMockLogger();
 
 			// Verify retrieving the file length.
@@ -340,72 +340,26 @@ namespace Relativity.DataExchange.NUnit
 			this.ResetMockLogger();
 		}
 
-		[Test]
-		[TestCase(true)]
-		[TestCase(false)]
-		public void ItShouldHandleIllegalCharactersInPathException(bool testValue)
-		{
-			Exception exception = new ArgumentException(DataExchange.ExceptionHelper.IllegalCharactersInPathMessage);
-			this.GivenTheDisableNativeLocationValidationConfigSetting(testValue);
-			this.GivenTheRetryOptions(RetryOptions.Io);
-			this.GivenTheExpectedException(exception);
-			this.GivenTheMockFileSystemCreateFileInfoThrows(exception);
-			this.GivenTheMockWaitAndRetryCallback();
-			this.GivenTheIoReportInstanceIsConstructed();
-			if (testValue)
-			{
-				Assert.Throws<FileInfoInvalidPathException>(() => this.WhenCallingTheFileLengthReporterMethod(TestFileName));
-			}
-			else
-			{
-				Assert.Throws<ArgumentException>(() => this.WhenCallingTheFileLengthReporterMethod(TestFileName));
-			}
-
-			const bool ExpectedException = false;
-			this.ThenTheLoggerErrorShouldBeInvoked(testValue ? 1 : 0, ExpectedException);
-			this.ThenTheLoggerWarningShouldBeInvoked(1, ExpectedException);
-		}
-
-		private void GivenTheMockWaitAndRetryReturns(int waitTimeBetweenRetryAttempts)
-		{
-			this.mockAppSettings.SetupGet(x => x.IoErrorWaitTimeInSeconds).Returns(waitTimeBetweenRetryAttempts);
-		}
-
 		/// <summary>
-		/// Givens the real wait and retry policy.
+		/// Given the total number of I/O retry attempts.
 		/// </summary>
 		/// <param name="maxRetryAttempts">
 		/// The maximum retry attempts.
 		/// </param>
-		private void GivenTheRealWaitAndRetryPolicy(int maxRetryAttempts)
+		private void GivenTheIoErrorNumberOfRetries(int maxRetryAttempts)
 		{
 			this.mockAppSettings.SetupGet(x => x.IoErrorNumberOfRetries).Returns(maxRetryAttempts);
-			this.mockAppSettings.SetupGet(x => x.IoErrorWaitTimeInSeconds).Returns(0);
-			this.waitAndRetry = new WaitAndRetryPolicy(this.mockAppSettings.Object);
 		}
 
-		private void GivenTheMockWaitAndRetryPolicyCallback()
+		/// <summary>
+		/// Given the total number of seconds to wait in between each I/O retry attempt.
+		/// </summary>
+		/// <param name="seconds">
+		/// The total number of seconds.
+		/// </param>
+		private void GivenTheIoErrorWaitTimeInSeconds(int seconds)
 		{
-			this.mockWaitAndRetryPolicy
-				.Setup(
-					obj => obj.WaitAndRetry(
-						It.IsAny<Func<Exception, bool>>(),
-						It.IsAny<Func<int, TimeSpan>>(),
-						It.IsAny<Action<Exception, TimeSpan>>(),
-						It.IsAny<Func<CancellationToken, long>>(),
-						It.IsAny<CancellationToken>()))
-				.Callback<
-					Func<Exception, bool>,
-					Func<int, TimeSpan>,
-					Action<Exception, TimeSpan>,
-					Func<CancellationToken, long>,
-					CancellationToken>(
-					(exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
-					{
-						this.actualRetryDurationFunc = retryDuration;
-						retryAction(this.expectedException, TimeSpan.Zero);
-						execFunc(token);
-					});
+			this.mockAppSettings.SetupGet(x => x.IoErrorWaitTimeInSeconds).Returns(seconds);
 		}
 
 		private void GivenTheMockFileSystemCreateFileInfoReturns(int expectedLength, bool expectedFileExists)
@@ -413,7 +367,11 @@ namespace Relativity.DataExchange.NUnit
 			var mockFileInfo = new Mock<IFileInfo>();
 			mockFileInfo.Setup(x => x.Length).Returns(expectedLength);
 			mockFileInfo.Setup(x => x.Exists).Returns(expectedFileExists);
-			this.mockFileSystem.Setup(x => x.CreateFileInfo(TestFileName)).Returns(mockFileInfo.Object);
+			this.mockFileSystem
+				.Setup(
+					x => x.CreateFileInfo(
+						It.Is<string>(s => string.Compare(s, TestFileName, StringComparison.OrdinalIgnoreCase) == 0)))
+				.Returns(mockFileInfo.Object);
 		}
 
 		private void GivenTheMockFileSystemCreateFileInfoThrows(Exception exception)
@@ -428,31 +386,6 @@ namespace Relativity.DataExchange.NUnit
 			this.mockFileSystem.Setup(x => x.File).Returns(mockFile.Object);
 		}
 
-		private void GivenTheMockWaitAndRetryCallback()
-		{
-			this.mockWaitAndRetryPolicy
-				.Setup(
-					obj => obj.WaitAndRetry(
-						It.IsAny<Func<Exception, bool>>(),
-						It.IsAny<Func<int, TimeSpan>>(),
-						It.IsAny<Action<Exception, TimeSpan>>(),
-						It.IsAny<Func<CancellationToken, long>>(),
-						It.IsAny<CancellationToken>()))
-				.Callback<Func<Exception, bool>, Func<int, TimeSpan>, Action<Exception, TimeSpan>,
-					Func<CancellationToken, long>, CancellationToken>(
-					(exceptionPredicate, retryDuration, retryAction, execFunc, token) =>
-					{
-						this.actualRetryDurationFunc = retryDuration;
-						retryAction(null, TimeSpan.Zero);
-						execFunc(token);
-					});
-		}
-
-		private void GivenTheExpectedException(Exception exception)
-		{
-			this.expectedException = exception;
-		}
-
 		private void GivenTheDisableNativeLocationValidationConfigSetting(bool value)
 		{
 			this.mockAppSettings.SetupGet(x => x.DisableThrowOnIllegalCharacters).Returns(value);
@@ -465,7 +398,6 @@ namespace Relativity.DataExchange.NUnit
 
 		private void GivenTheIoReportInstanceIsConstructed()
 		{
-			this.context.WaitAndRetryPolicy = this.waitAndRetry ?? this.mockWaitAndRetryPolicy.Object;
 			this.ioReporterInstance = new IoReporter(
 				this.context,
 				this.mockLogger.Object,
@@ -487,12 +419,10 @@ namespace Relativity.DataExchange.NUnit
 			this.ioReporterInstance.CopyFile("source", "destination", true, 0);
 		}
 
-		private void ThenTheActualRetryDurationShouldCalculated(int retryAttempt, int waitTimeBetweenRetryAttempts)
+		private void ThenTheActualRetryDurationShouldCalculated(int retryAttempt, int expectedWaitTimeBetweenRetryAttempts)
 		{
-			TimeSpan actualRetryDuraction = this.actualRetryDurationFunc(retryAttempt);
-			Assert.That(
-				actualRetryDuraction,
-				retryAttempt == 1 ? Is.EqualTo(TimeSpan.FromSeconds(0)) : Is.EqualTo(TimeSpan.FromSeconds(waitTimeBetweenRetryAttempts)));
+			int actualRetryDuration = this.ioReporterInstance.CalculateWaitTimeInSeconds(retryAttempt);
+			Assert.That(actualRetryDuration, Is.EqualTo(expectedWaitTimeBetweenRetryAttempts));
 		}
 
 		private void ThenTheActualFileLengthShouldEqual(int expectedLength)
@@ -530,7 +460,7 @@ namespace Relativity.DataExchange.NUnit
 
 		private void ThenTheLoggerInformationShouldBeInvoked(int expectedCount)
 		{
-			this.mockLogger.Verify(logger => logger.LogInformation(It.IsAny<string>()), Times.Exactly(expectedCount));
+			this.mockLogger.Verify(logger => logger.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()), Times.Exactly(expectedCount));
 			Assert.That(
 				this.actualLoggedInformationMessage,
 				expectedCount == 0 ? Is.Null.Or.Empty : Is.Not.Null.Or.Empty);

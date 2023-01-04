@@ -76,7 +76,7 @@
 		End Sub
 	End Class
 
-	Public Class ClientCrendentialsException
+	Public Class ClientCredentialsException
 		Inherits RdcBaseException
 
 		Public Sub New()
@@ -124,7 +124,7 @@
 		End Sub
 
 		Public Sub New(ByVal encoding As Int32, ByVal detectedEncoding As Int32, ByVal innerException As System.Exception)
-			MyBase.New(String.Format("The Encoding id - {0} - selected for your load file does not match the detected Encoding - {1}.  Please select the correct Encoding for your load file.", encoding, detectedEncoding, innerException))
+			MyBase.New(String.Format("The Encoding id - {0} - selected for your load file does not match the detected Encoding - {1}.  Please select the correct Encoding for your load file.", encoding, detectedEncoding), innerException)
 		End Sub
 	End Class
 

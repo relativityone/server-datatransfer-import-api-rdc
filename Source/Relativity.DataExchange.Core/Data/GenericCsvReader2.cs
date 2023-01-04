@@ -11,8 +11,6 @@ namespace Relativity.DataExchange.Data
 	using System.Text;
 	using System.Threading;
 
-	using Microsoft.VisualBasic.CompilerServices;
-
 	using Relativity.DataExchange.Io;
 	using Relativity.Logging;
 
@@ -118,7 +116,7 @@ namespace Relativity.DataExchange.Data
 			IoReporterContext context,
 			ILog logger,
 			CancellationToken token)
-			: base(",", "\"", Conversions.ToString(Microsoft.VisualBasic.Strings.ChrW(10)), context, logger, token)
+			: base(',', '"', Microsoft.VisualBasic.Strings.ChrW(10), context, logger, token)
 		{
 			this.Reader = new StreamReader(file, encoding);
 		}

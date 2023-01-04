@@ -4,6 +4,7 @@
 
 	using kCura.WinEDDS;
 
+	using Relativity.DataExchange.Export.VolumeManagerV2.Container;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
@@ -18,7 +19,7 @@
 			_logger = logger;
 		}
 
-		public NativeRepositoryBuilder Create(ExportFile exportSettings, IWindsorContainer container)
+		public IRepositoryBuilder Create(ExportFile exportSettings, IWindsorContainer container)
 		{
 			IExportRequestBuilder nativeExportRequestBuilder;
 
@@ -41,7 +42,9 @@
 				nativeExportRequestBuilder = container.Resolve<EmptyExportRequestBuilder>();
 			}
 
-			return new NativeRepositoryBuilder(container.Resolve<NativeRepository>(), container.Resolve<ILabelManagerForArtifact>(), nativeExportRequestBuilder, _logger);
+			return new FileRepositoryBuilder(
+				container.Resolve<FileRequestRepository>(ExportInstaller.GetServiceNameByExportType(typeof(FileRequestRepository), ExportFileTypes.Native)), 
+				container.Resolve<ILabelManagerForArtifact>(), nativeExportRequestBuilder, _logger);
 		}
 	}
 }

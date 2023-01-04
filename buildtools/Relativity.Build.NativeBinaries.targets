@@ -2,19 +2,17 @@
   <Choose>
     <When Condition=" '$(Platform)' == 'AnyCPU' OR '$(Platform)' == 'x64' ">
       <ItemGroup>
-        <NativeBinaries Include="$(SolutionDir)..\Vendor\FreeImage\3.18.0\x64\FreeImage.dll"/>
-        <NativeBinaries Include="$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x64\itextsharp.dll"/>
+        <NativeBinaries Include="$(SolutionDir)..\Vendor\iTextSharp\5.5.13.1\x64\itextsharp.dll"/>
       </ItemGroup>
     </When>
     <Otherwise>
       <ItemGroup>
-        <NativeBinaries Include="$(SolutionDir)..\Vendor\FreeImage\3.18.0\x86\FreeImage.dll"/>
-        <NativeBinaries Include="$(SolutionDir)..\Vendor\iTextSharp\5.1.2\x86\itextsharp.dll"/>
+        <NativeBinaries Include="$(SolutionDir)..\Vendor\iTextSharp\5.5.13.1\x86\itextsharp.dll"/>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <Target Name="CopyNativeBinariesTarget" AfterTargets="CoreCompile">
-    <Message Text="Copying the FreeImage and iTextSharp native binaries to $(TargetDir)" Importance="High" />
+    <Message Text="Copying the iTextSharp native binaries to $(TargetDir)" Importance="High" />
     <Copy SourceFiles="@(NativeBinaries)"
           DestinationFolder="$(TargetDir)"/>
   </Target>

@@ -12,14 +12,12 @@ namespace Relativity.DataExchange.NUnit
 
 	using global::NUnit.Framework;
 
-	using kCura.WinEDDS.Monitoring;
-
 	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ImportApiMetricSinkConfigTest
 	{
-		private IMetricsSinkConfig metricSinkConfig;
+		private IMetricSinkConfig metricSinkConfig;
 
 		[SetUp]
 		public void Setup()
@@ -43,15 +41,6 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetSendLiveApmMetrics()
-		{
-			Assert.That(this.metricSinkConfig.SendLiveApmMetrics, Is.EqualTo(AppSettings.Instance.TelemetrySubmitApmMetrics));
-			var expectedValue = RandomHelper.NextBoolean();
-			this.metricSinkConfig.SendLiveApmMetrics = expectedValue;
-			Assert.That(this.metricSinkConfig.SendLiveApmMetrics, Is.EqualTo(expectedValue));
-		}
-
-		[Test]
 		public void ShouldGetAndSetSendSumMetrics()
 		{
 			Assert.That(this.metricSinkConfig.SendSumMetrics, Is.EqualTo(AppSettings.Instance.TelemetrySubmitSumMetrics));
@@ -61,12 +50,12 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		public void ShouldGetAndSetSendSummaryApmMetrics()
+		public void ShouldGetAndSetSendApmMetrics()
 		{
-			Assert.That(this.metricSinkConfig.SendSummaryApmMetrics, Is.EqualTo(AppSettings.Instance.TelemetrySubmitApmMetrics));
+			Assert.That(this.metricSinkConfig.SendApmMetrics, Is.EqualTo(AppSettings.Instance.TelemetrySubmitApmMetrics));
 			var expectedValue = RandomHelper.NextBoolean();
-			this.metricSinkConfig.SendSummaryApmMetrics = expectedValue;
-			Assert.That(this.metricSinkConfig.SendSummaryApmMetrics, Is.EqualTo(expectedValue));
+			this.metricSinkConfig.SendApmMetrics = expectedValue;
+			Assert.That(this.metricSinkConfig.SendApmMetrics, Is.EqualTo(expectedValue));
 		}
 	}
 }

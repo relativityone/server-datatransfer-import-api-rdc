@@ -21,7 +21,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class LongTextRepositoryTests
@@ -39,7 +39,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._fileHelper = new Mock<IFile>();
 
-			this._instance = new LongTextRepository(this._fileHelper.Object, new NullLogger());
+			this._instance = new LongTextRepository(this._fileHelper.Object, new TestNullLogger());
 			this._instance.Add(this._longTexts);
 		}
 
@@ -122,6 +122,28 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileHelper.Verify(x => x.Delete("do_not_require_deletion"), Times.Never);
 		}
 
+		[Test]
+		public void ItShouldGetAnyRequestForLocation()
+		{
+			// ACT
+			bool result1 = this._instance.AnyRequestForLocation("require_deletion");
+			bool result1DiffCase = this._instance.AnyRequestForLocation("Require_Deletion");
+			bool result2 = this._instance.AnyRequestForLocation("does-not-exist");
+			bool result3 = this._instance.AnyRequestForLocation(null);
+			bool result4 = this._instance.AnyRequestForLocation(string.Empty);
+			bool result5 = this._instance.AnyRequestForLocation("do_not_require_deletion");
+			bool result5DiffCase = this._instance.AnyRequestForLocation("Do_Not_Require_Deletion");
+
+			// ASSERT
+			Assert.That(result1, Is.True);
+			Assert.That(result1DiffCase, Is.True);
+			Assert.That(result2, Is.False);
+			Assert.That(result3, Is.False);
+			Assert.That(result4, Is.False);
+			Assert.That(result5, Is.True);
+			Assert.That(result5DiffCase, Is.True);
+		}
+
 		private List<LongText> CreateDataSet()
 		{
 			ObjectExportInfo artifact1 = new ObjectExportInfo
@@ -130,7 +152,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 
 			LongText longText1 =
-				LongText.CreateFromMissingValue(artifact1.ArtifactID, 10, LongTextExportRequest.CreateRequestForLongText(artifact1, 10, "require_deletion"), Encoding.Default);
+				LongText.CreateFromMissingValue(artifact1.ArtifactID, 10, LongTextExportRequest.CreateRequestForLongText(artifact1, 10, "require_deletion"), Encoding.Default, 1);
 			longText1.ExportRequest.Order = 1;
 
 			LongText longText2 = LongText.CreateFromExistingValue(artifact1.ArtifactID, 20, "text");
@@ -145,7 +167,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				30,
 				LongTextExportRequest.CreateRequestForFullText(artifact2, 30, "do_not_require_deletion"),
 				Encoding.Default,
-				Encoding.Default);
+				Encoding.Default,
+				artifact2.LongTextLength);
 			longText3.ExportRequest.Order = 3;
 
 			return new List<LongText> { longText1, longText2, longText3 };

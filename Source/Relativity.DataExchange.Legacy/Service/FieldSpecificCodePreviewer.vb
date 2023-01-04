@@ -1,10 +1,10 @@
 Namespace kCura.WinEDDS.Service
 	Public Class FieldSpecificCodePreviewer
 		Implements Service.IHierarchicArtifactManager
-		Private _codeManager As kCura.WinEDDS.Service.CodeManager
+		Private _codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager
 		Private _codeTypeID As Int32
 
-		Public Sub New(ByVal codeManager As kCura.WinEDDS.Service.CodeManager, ByVal codeTypeID As Int32)
+		Public Sub New(ByVal codeManager As kCura.WinEDDS.Service.Replacement.ICodeManager, ByVal codeTypeID As Int32)
 			_codeManager = codeManager
 			_codeTypeID = codeTypeID
 		End Sub

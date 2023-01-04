@@ -1,17 +1,14 @@
+Imports Monitoring.Sinks
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
 Imports Relativity.DataExchange.Service
-Imports Relativity.DataTransfer.MessageService
 
 Namespace kCura.WinEDDS.ImportExtension
 	Public Class DataReaderImporterProcess
 		Inherits kCura.WinEDDS.ImportLoadFileProcess
 
-		Private _sourceData As System.Data.IDataReader
-
-		Public Sub New(ByVal sourceData As System.Data.IDataReader, ByVal messageService As IMessageService)
-			MyBase.New(messageService)
-			_sourceData = sourceData
+		Public Sub New(ByVal metricService As IMetricService, ByVal runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, correlationIdFunc)
 
 			' Use the default value for the delimiter because as a public class,
 			' users of this class may not know what value to set for this
@@ -31,7 +28,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					Dim iIndex As Integer = dr.GetOrdinal(retColumnName)
 					retColumnName = String.Concat(retColumnName, "(", iIndex + 1, ")")
 				Catch ex As IndexOutOfRangeException
-					Throw New IndexOutOfRangeException(String.Format("ERROR: {0} must be a field in the source data", columnName), ex)
+					Throw New IndexOutOfRangeException($"ERROR: {columnName} must be a field in the source data", ex)
 				End Try
 			End If
 			Return retColumnName
@@ -47,22 +44,23 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.FileSizeMapped = FileSizeMapped
 			LoadFile.FileNameColumn = FileNameColumn
 			LoadFile.SupportedByViewerColumn = SupportedByViewerColumn
-			
-            'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
+
+			'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
 			Dim importer As DataReaderImporter = New DataReaderImporter(
-				DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile), _
-				Me.Context, _
-				reporter, _
-				Me.Logger, _
-				BulkLoadFileFieldDelimiter, _
-				_temporaryLocalDirectory, _
-				Me.CancellationTokenSource, _
-				initializeArtifactReader:=False, _
-				executionSource := ExecutionSource) With
-				    {
+				DirectCast(Me.LoadFile, kCura.WinEDDS.ImportExtension.DataReaderLoadFile),
+				Me.Context,
+				reporter,
+				Me.Logger,
+				BulkLoadFileFieldDelimiter,
+				_temporaryLocalDirectory,
+				Me.CancellationTokenSource,
+				initializeArtifactReader:=False,
+				correlationIdFunc:=_correlationIdFunc,
+				runningContext:=Me.RunningContext) With
+					{
 						.OnBehalfOfUserToken = Me.OnBehalfOfUserToken,
 						.Timekeeper = Me.TimeKeeperManager
-				    }
+					}
 			importer.Initialize()
 
 			Dim dr As System.Data.IDataReader = importer.SourceData

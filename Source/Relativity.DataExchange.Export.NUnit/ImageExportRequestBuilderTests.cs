@@ -20,7 +20,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Download;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Statistics;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ImageExportRequestBuilderTests
@@ -38,7 +38,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._validator = new Mock<IExportFileValidator>();
 			this._fileProcessingStatistics = new Mock<IFileProcessingStatistics>();
 
-			this._instance = new ImageExportRequestBuilder(this._filePathProvider.Object, this._validator.Object, new NullLogger(), this._fileProcessingStatistics.Object);
+			this._instance = new ImageExportRequestBuilder(this._filePathProvider.Object, this._validator.Object, new TestNullLogger(), this._fileProcessingStatistics.Object);
 		}
 
 		[Test]

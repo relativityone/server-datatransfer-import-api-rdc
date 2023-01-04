@@ -29,7 +29,7 @@ namespace Relativity.DataExchange.Import.NUnit
 			ILog logger,
 			Guid processID,
 			bool doRetryLogic,
-			kCura.WinEDDS.Service.IBulkImportManager manager,
+			kCura.WinEDDS.Service.Replacement.IBulkImportManager manager,
 			kCura.WinEDDS.Api.IImageReader reader,
 			CancellationTokenSource tokenSource,
 			Relativity.DataExchange.Service.ExecutionSource executionSource)
@@ -41,8 +41,8 @@ namespace Relativity.DataExchange.Import.NUnit
 				logger,
 				processID,
 				doRetryLogic,
-				false,
 				tokenSource,
+				() => nameof(MockBulkImageFileImporter),
 				executionSource)
 		{
 			this._bulkImportManager = manager;

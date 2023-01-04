@@ -49,9 +49,9 @@ Namespace Relativity.Desktop.Client
 
 		Private Sub _context_OnProcessProgressEvent(ByVal sender As Object, ByVal e As ProgressEventArgs) Handles _context.Progress
 			Dim now As Long = System.DateTime.Now.Ticks
-			If now - _lastUpdated > 10000000 Then
+			If now - _lastUpdated > TimeSpan.TicksPerSecond Then
 				_lastUpdated = now
-				WriteLine(vbTab & e.TotalProcessedRecordsDisplay + " of " + e.TotalRecordsDisplay + " processed", ParsableLineType.Status)
+				WriteLine(vbTab & e.ProcessedDisplay + " of " + e.TotalDisplay + " processed", ParsableLineType.Status)
 			End If
 		End Sub
 
@@ -110,7 +110,7 @@ Namespace Relativity.Desktop.Client
 				lineTypeString = "[Error:Fatal]"
 			End If
 			stringBuilder.Append("""").Append("[").Append(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff").Replace("Z", "")).Append("]").Append(""",")
-			stringBuilder.Append("""").Append(lineTypeString).Append(""",").ToString()
+			stringBuilder.Append("""").Append(lineTypeString).Append(""",")
 			stringBuilder.Append("""").Append(line.Replace("""", """""").Replace(vbNewLine, ChrW(10))).Append("""")
 			Console.WriteLine(stringBuilder.ToString)
 		End Sub

@@ -6,102 +6,111 @@
 	using System.Threading;
 	using System.Threading.Tasks;
 
-	using Relativity.DataExchange.Transfer;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
+	using kCura.WinEDDS;
 
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
+	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Text;
+	using Relativity.DataExchange.Logger;
 	using Relativity.Logging;
 
-	public class LongTextEncodingConverter : IDisposable, ILongTextEncodingConverter
+	public class LongTextEncodingConverter : IFileDownloadSubscriber
 	{
-		private Task _conversionTask;
+		private ConcurrentBag<Task> _conversionTasks = new ConcurrentBag<Task>();
 
-		private readonly BlockingCollection<string> _longTextFilesToConvert;
 		private readonly LongTextRepository _longTextRepository;
 		private readonly IFileEncodingConverter _fileEncodingConverter;
 		private readonly ILog _logger;
-		private readonly CancellationToken _cancellationToken;
+		private readonly IStatus _status;
 
-		public LongTextEncodingConverter(LongTextRepository longTextRepository, IFileEncodingConverter fileEncodingConverter, ILog logger,
-			CancellationToken cancellationToken)
+		private CancellationToken _cancellationToken;
+		private IDisposable _fileDownloadedSubscriber;
+
+		public LongTextEncodingConverter(
+			LongTextRepository longTextRepository,
+			IFileEncodingConverter fileEncodingConverter,
+			IStatus status,
+			ILog logger)
 		{
-			_longTextRepository = longTextRepository;
-			_fileEncodingConverter = fileEncodingConverter;
-			_logger = logger;
-			_cancellationToken = cancellationToken;
-
-			_longTextFilesToConvert = new BlockingCollection<string>();
+			this._longTextRepository = longTextRepository.ThrowIfNull(nameof(longTextRepository));
+			this._fileEncodingConverter = fileEncodingConverter.ThrowIfNull(nameof(fileEncodingConverter));
+			this._logger = logger.ThrowIfNull(nameof(logger));
+			this._status = status.ThrowIfNull(nameof(status));
 		}
 
-		public void StartListening(ITapiBridge tapiBridge)
+		public void SubscribeForDownloadEvents(IFileTransferProducer fileTransferProducer, CancellationToken token)
 		{
-			_logger.LogVerbose("Start conversion task.");
-			_conversionTask = Task.Run(() => ConvertLongTextFiles(), _cancellationToken);
-			tapiBridge.TapiProgress += OnTapiProgress;
+			fileTransferProducer.ThrowIfNull(nameof(fileTransferProducer));
+
+			this._cancellationToken = token;
+
+			this._fileDownloadedSubscriber = fileTransferProducer.FileDownloaded.Subscribe(this.AddForConversion);
 		}
 
-		public void StopListening(ITapiBridge tapiBridge)
+		public async Task WaitForConversionCompletion()
 		{
-			_logger.LogVerbose("Stop listening for new files to convert.");
-			tapiBridge.TapiProgress -= OnTapiProgress;
-			_longTextFilesToConvert.CompleteAdding();
+			this._logger.LogVerbose("Waiting on large text conversion tasks to complete...");
+			await Task.WhenAll(this._conversionTasks).ConfigureAwait(false);
+			this._logger.LogVerbose("Clearing conversion tasks list...");
+
+			var newBag = new ConcurrentBag<Task>();
+			Interlocked.Exchange(ref this._conversionTasks, newBag);
 		}
 
-		private void OnTapiProgress(object sender, TapiProgressEventArgs e)
-		{
-			_longTextFilesToConvert.Add(e.FileName);
-		}
-
-		public void WaitForConversionCompletion()
-		{
-			_logger.LogVerbose("Waiting for conversion to complete.");
-			_conversionTask.ConfigureAwait(false).GetAwaiter().GetResult();
-		}
-
-		private void ConvertLongTextFiles()
+		private void AddForConversion(string longTextFileName)
 		{
 			try
 			{
-				while (_longTextFilesToConvert.TryTake(out string longTextFile, Timeout.Infinite, _cancellationToken))
+				this._logger.LogVerbose(
+					"Preparing to check whether the '{LongTextFileName}' file requires an encoding conversion...", longTextFileName.Secure());
+				LongText longText = this.GetLongTextForFile(longTextFileName);
+				if (this.ConversionRequired(longText))
 				{
-					_logger.LogVerbose("New item in conversion queue {file}. Proceeding.", longTextFile);
-					LongText longText = GetLongTextForFile(longTextFile);
-					if (ConversionRequired(longText))
-					{
-						_logger.LogVerbose("Encoding conversion required for file {file}.", longTextFile);
-						ConvertLongTextFile(longText);
-					}
+					this._logger.LogVerbose("Long text encoding conversion required for file {longTextFileName}.", longTextFileName.Secure());
+					this._conversionTasks.Add(Task.Run(() => ConvertLongText(longText), this._cancellationToken));
+				}
+				else
+				{
+					this._logger.LogVerbose("Long text encoding conversion NOT required for file {longTextFileName}.", longTextFileName.Secure());
 				}
 			}
-			catch (OperationCanceledException e)
+			catch (OperationCanceledException ex)
 			{
-				_logger.LogError(e, "LongText encoding conversion canceled.");
+				this._logger.LogInformation(ex, "The cancellation operation has been requested by the user");
 			}
-			catch (ArgumentException)
+			catch (Exception ex)
 			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to convert long text file.");
-				throw;
+				this._logger.LogError(ex, "Encoding conversion task creation issue for {longTextFileName} file", longTextFileName.Secure());
+				this._status.WriteError($"Encoding conversion task creation issue for {longTextFileName} file");
 			}
 		}
 
-		private LongText GetLongTextForFile(string longTextFile)
+		private void ConvertLongText(LongText longText)
 		{
-			foreach (LongText longText in _longTextRepository.GetLongTexts().Where(x => !string.IsNullOrEmpty(x.Location)))
+			try
 			{
-				string fileName = new System.IO.FileInfo(longText.Location).Name;
-				if (fileName == longTextFile)
+				this.ConvertLongTextFile(longText);
+			}
+			catch (Exception ex)
+			{
+				this._status.WriteError($"Encoding conversion task creation issue for {longText.Location} file");
+				this._logger.LogError(ex, "The error happened when converting {longTextFileName} file", longText.Location.Secure());
+			}
+		}
+
+		private LongText GetLongTextForFile(string longTextFileName)
+		{
+			foreach (LongText longText in _longTextRepository.GetLongTexts()
+				.Where(x => !string.IsNullOrEmpty(x.Location)))
+			{
+				string fileName = System.IO.Path.GetFileName(longText.Location);
+				if (string.Compare(fileName, longTextFileName, StringComparison.OrdinalIgnoreCase) == 0)
 				{
 					return longText;
 				}
 			}
 
-			_logger.LogError("Could not found LongText for file {file}.", longTextFile);
-			throw new ArgumentException($"Could not found LongText for file {longTextFile}.");
+			this._logger.LogError("Failed to find the LongText file {LongTextFileName} in the repository.", longTextFileName.Secure());
+			throw new ArgumentException($"The long text file {longTextFileName} cannot be converted because it doesn't exist within the export request.");
 		}
 
 		private bool ConversionRequired(LongText longText)
@@ -111,16 +120,27 @@
 
 		private void ConvertLongTextFile(LongText longText)
 		{
-			_logger.LogVerbose("Converting LongText file {file} from {sourceEncoding} to {destinationEncoding}.", longText.Location, longText.SourceEncoding, longText.DestinationEncoding);
-
-			_fileEncodingConverter.Convert(longText.Location, longText.SourceEncoding, longText.DestinationEncoding, _cancellationToken);
-
+			this._logger.LogVerbose(
+				"Preparing to convert LongText file {LongTextFile} from {SourceEncoding} to {DestinationEncoding}.",
+				longText.Location.Secure(),
+				longText.SourceEncoding,
+				longText.DestinationEncoding);
+			this._fileEncodingConverter.Convert(
+				longText.Location,
+				longText.SourceEncoding,
+				longText.DestinationEncoding,
+				_cancellationToken);
+			this._logger.LogVerbose(
+				"Successfully converted LongText file {LongTextFile} from {SourceEncoding} to {DestinationEncoding}.",
+				longText.Location.Secure(),
+				longText.SourceEncoding,
+				longText.DestinationEncoding);
 			longText.SourceEncoding = longText.DestinationEncoding;
 		}
 
 		public void Dispose()
 		{
-			_longTextFilesToConvert?.Dispose();
+			this._fileDownloadedSubscriber?.Dispose();
 		}
 	}
 }

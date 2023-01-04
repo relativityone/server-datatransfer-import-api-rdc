@@ -27,6 +27,7 @@ namespace Relativity.DataExchange.NUnit.Integration
 	/// Represents <see cref="OutsideInFileTypeIdentifierService"/> tests.
 	/// </summary>
 	[TestFixture]
+	[TestLevel.L2]
 	[Feature.DataTransfer.ImportApi]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
@@ -43,23 +44,16 @@ namespace Relativity.DataExchange.NUnit.Integration
 		{
 			OutsideInFileTypeIdentifierService.Shutdown();
 			this.service = new OutsideInFileTypeIdentifierService(timeoutSeconds);
-			string rootDirectory = Path.Combine(Path.GetTempPath(), "Relativity-Test-Datasets");
-#if RELEASE
-			if (System.IO.Directory.Exists(rootDirectory))
-			{
-				const bool Recursive = true;
-				System.IO.Directory.Delete(rootDirectory, Recursive);
-			}
-#endif
-			Directory.CreateDirectory(rootDirectory);
+			this.rootDatasetDocumentsDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestDataOI");
 
-			this.rootDatasetDocumentsDirectory = Path.Combine(rootDirectory, "Test-FileTypeId-List");
-			if (!System.IO.Directory.Exists(this.rootDatasetDocumentsDirectory))
+			if (Directory.Exists(this.rootDatasetDocumentsDirectory))
 			{
-				System.IO.Directory.CreateDirectory(this.rootDatasetDocumentsDirectory);
-				string sourceZipFile = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List.zip");
-				ZipFile.ExtractToDirectory(sourceZipFile, this.rootDatasetDocumentsDirectory);
+				Directory.Delete(this.rootDatasetDocumentsDirectory, recursive: true);
 			}
+
+			Directory.CreateDirectory(this.rootDatasetDocumentsDirectory);
+			string sourceZipFile = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List.zip");
+			ZipFile.ExtractToDirectory(sourceZipFile, this.rootDatasetDocumentsDirectory);
 		}
 
 		[TearDown]
@@ -70,17 +64,23 @@ namespace Relativity.DataExchange.NUnit.Integration
 				this.service.Dispose();
 				this.service = null;
 			}
+
+			if (this.rootDatasetDocumentsDirectory != null && Directory.Exists(this.rootDatasetDocumentsDirectory))
+			{
+				Directory.Delete(this.rootDatasetDocumentsDirectory, recursive: true);
+				this.rootDatasetDocumentsDirectory = null;
+			}
 		}
 
 		[IdentifiedTest("12b6eb4c-37f6-4a8e-b2e5-f4e0735b1c02")]
-		[Category(TestCategories.Integration)]
 		[Category(TestCategories.OutsideIn)]
 		public void ShouldVerifyTheOutsideInGoldenDataset()
 		{
 			// arrange
 			int rowIndex = 0;
-			string testCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List-2018-9.csv");
-			string goldenCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List-Golden-2018-9.csv");
+			string testCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List.csv");
+			string goldenCsvPath = ResourceFileHelper.GetResourceFilePath("OutsideIn", "Test-FileTypeId-List-Golden.csv");
+			using (DataTable csvImport = CsvEngine.CsvToDataTable(testCsvPath, ','))
 			using (DataTable goldenCsvImport = CsvEngine.CsvToDataTable(goldenCsvPath, ','))
 			using (DataTable testResults = new DataTable())
 			{
@@ -89,7 +89,6 @@ namespace Relativity.DataExchange.NUnit.Integration
 				testResults.Columns.Add("Id", typeof(int));
 				testResults.Columns.Add("Description", typeof(string));
 				testResults.Columns.Add("FileName", typeof(string));
-				DataTable csvImport = CsvEngine.CsvToDataTable(testCsvPath, ',');
 
 				// act
 				foreach (DataRow row in csvImport.Rows)

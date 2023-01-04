@@ -1,4 +1,5 @@
 Imports kCura.WinEDDS
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client
@@ -179,6 +180,7 @@ Namespace Relativity.Desktop.Client
 				foldersDataSet = Await _application.GetCaseFolders(caseInfo.ArtifactID)
 			Catch ex As System.Exception
 				Dim frm As New ErrorDialog
+				RelativityLogger.Instance.LogError(ex, "Error retrieving folder information from server")
 				frm.Initialize(ex, "Error retrieving folder information from server.  Continue?")
 				frm.ShowDialog()
 				Select Case frm.DialogResult

@@ -5,6 +5,7 @@
 	using kCura.WinEDDS.Exceptions;
 	using kCura.WinEDDS;
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 
 	public class ErrorFileDestinationPath : IDestinationPath, IErrorFile
 	{
@@ -25,7 +26,7 @@
 				if (string.IsNullOrEmpty(_errorFilePath))
 				{
 					_errorFilePath = TempFileBuilder.GetTempFileName(TempFileConstants.ErrorsFileNameSuffix);
-					_logger.LogVerbose("Creating new path {path} for error file.", _errorFilePath);
+					_logger.LogVerbose("Creating new path {path} for error file.", _errorFilePath.Secure());
 				}
 
 				return _errorFilePath;

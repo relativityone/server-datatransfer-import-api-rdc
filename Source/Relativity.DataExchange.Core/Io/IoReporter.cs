@@ -13,6 +13,7 @@ namespace Relativity.DataExchange.Io
 	using System.Globalization;
 	using System.Threading;
 
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Resources;
 	using Relativity.Logging;
 
@@ -54,28 +55,15 @@ namespace Relativity.DataExchange.Io
 		/// <param name="token">
 		/// The cancellation token used to stop the process upon request.
 		/// </param>
-		public IoReporter(
-			IoReporterContext context,
-			ILog logger,
-			CancellationToken token)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage(
+			"Microsoft.Design",
+			"CA1062:Validate arguments of public methods",
+			MessageId = "0",
+			Justification = "The context argument is validated via ThrowIfNull.")]
+		public IoReporter(IoReporterContext context, ILog logger, CancellationToken token)
 		{
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			if (context == null)
-			{
-				throw new ArgumentNullException(nameof(context));
-			}
-
-			this.Logger = logger;
-			this.Context = context;
+			this.Logger = logger.ThrowIfNull(nameof(logger));
+			this.Context = context.ThrowIfNull(nameof(context));
 			this.CancellationToken = token;
 			this.CachedAppSettings = context.AppSettings.DeepCopy();
 		}
@@ -262,14 +250,10 @@ namespace Relativity.DataExchange.Io
 			{
 				throw new ArgumentOutOfRangeException(
 					nameof(lineNumber),
-					string.Format(Resources.Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
+					string.Format(Strings.LineNumberOutOfRangeExceptionMessage, nameof(lineNumber)));
 			}
 
-			this.Exec(lineNumber, sourceFileName, "Copy File", () =>
-			{
-				this.Context.FileSystem.File.Copy(sourceFileName, destFileName, overwrite);
-				return 0;
-			});
+			this.Context.FileSystem.File.Copy(sourceFileName, destFileName, overwrite);
 		}
 
 		/// <inheritdoc />
@@ -321,9 +305,18 @@ namespace Relativity.DataExchange.Io
 		}
 
 		/// <inheritdoc />
-		public virtual void PublishRetryMessage(Exception exception, TimeSpan timeSpan, int retryCount, int totalRetryCount, long lineNumber)
+		public virtual void PublishRetryMessage(
+			Exception exception,
+			TimeSpan timeSpan,
+			int retryCount,
+			int totalRetryCount,
+			long lineNumber)
 		{
-			var warningMessage = BuildIoReporterWarningMessage(exception, timeSpan.TotalSeconds, retryCount, totalRetryCount);
+			string warningMessage = BuildIoReporterWarningMessage(
+				exception,
+				timeSpan.TotalSeconds,
+				retryCount,
+				totalRetryCount);
 			this.Context.PublishIoWarningEvent(new IoWarningEventArgs(warningMessage, lineNumber));
 			this.Logger.LogWarning(exception, warningMessage);
 		}
@@ -340,6 +333,30 @@ namespace Relativity.DataExchange.Io
 			this.Logger.LogWarning(args.Message);
 		}
 
+		/// <summary>
+		/// Calculates the total number of seconds to wait between each retry attempt.
+		/// </summary>
+		/// <param name="numberOfRetries">
+		/// The number of retries left.
+		/// </param>
+		/// <returns>
+		/// The total number of seconds.
+		/// </returns>
+		internal int CalculateWaitTimeInSeconds(int numberOfRetries)
+		{
+			int waitTime = 0;
+			if (numberOfRetries < this.IoErrorNumberOfRetries - 1)
+			{
+				waitTime = this.IoErrorWaitTimeInSeconds;
+				if (waitTime < 0)
+				{
+					waitTime = 0;
+				}
+			}
+
+			return waitTime;
+		}
+
 		private bool ThrowFileInfoInvalidPathException(Exception exception)
 		{
 			return this.CachedAppSettings.DisableThrowOnIllegalCharacters
@@ -352,8 +369,27 @@ namespace Relativity.DataExchange.Io
 				CultureInfo.CurrentCulture,
 				Strings.ImportInvalidPathCharactersExceptionMessage,
 				fileName);
-			this.Logger.LogError(exception, message);
+			this.Logger.LogError(exception, "{message}", message.Secure());
 			return new FileInfoInvalidPathException(message);
+		}
+
+		private void LogWarning(
+			Exception exception,
+			TimeSpan timeSpan,
+			int retryCount,
+			int totalRetryCount)
+		{
+			var warningMessage = BuildIoReporterWarningMessage(
+				exception,
+				timeSpan.TotalSeconds,
+				retryCount,
+				totalRetryCount);
+			this.Logger.LogWarning(exception, warningMessage);
+		}
+
+		private void LogCancellation(int lineNumber, string fileName, string description)
+		{
+			this.Logger.LogInformation("The {description} I/O operation for file {fileName} and line number {lineNumber} has been canceled.", description, fileName.Secure(), lineNumber);
 		}
 
 		private T Exec<T>(
@@ -362,50 +398,66 @@ namespace Relativity.DataExchange.Io
 			string description,
 			Func<T> execFunc)
 		{
-			try
+			// REL-343213: This is performance critical code and no longer using WaitAndRetryPolicy.
+			T result = default(T);
+			int maxRetries = this.IoErrorNumberOfRetries;
+			int numberOfRetries = maxRetries;
+			Func<Exception, bool> retryPredicate = null;
+			while (numberOfRetries > 0)
 			{
-				int maxRetryAttempts = this.IoErrorNumberOfRetries;
-				int currentRetryAttempt = 0;
-				return this.Context.WaitAndRetryPolicy.WaitAndRetry(
-					RetryExceptionHelper.CreateRetryPredicate(this.Context.RetryOptions),
-					retryAttempt =>
-						{
-							currentRetryAttempt = retryAttempt;
-							return TimeSpan.FromSeconds(retryAttempt == 1 ? 0 : this.IoErrorWaitTimeInSeconds);
-						},
-					(exception, timeSpan) =>
-						{
-							this.PublishRetryMessage(
-								exception,
-								timeSpan,
-								currentRetryAttempt,
-								maxRetryAttempts,
-								lineNumber);
-						},
-					(ct) =>
-						{
-							try
-							{
-								return execFunc();
-							}
-							catch (Exception exception)
-							{
-								if (this.ThrowFileInfoInvalidPathException(exception))
-								{
-									throw this.CreateFileInfoInvalidPathException(exception, fileName);
-								}
+				if (this.CancellationToken.IsCancellationRequested)
+				{
+					this.LogCancellation(lineNumber, fileName, description);
+					break;
+				}
 
-								throw;
-							}
-						},
-					this.CancellationToken);
+				try
+				{
+					numberOfRetries--;
+					result = execFunc();
+					break;
+				}
+				catch (OperationCanceledException)
+				{
+					this.LogCancellation(lineNumber, fileName, description);
+					break;
+				}
+				catch (Exception e)
+				{
+					if (retryPredicate == null)
+					{
+						retryPredicate = RetryExceptionHelper.CreateRetryPredicate(this.Context.RetryOptions);
+					}
+
+					if (!retryPredicate(e))
+					{
+						throw;
+					}
+
+					int retryAttemptNumber = maxRetries - numberOfRetries;
+					int waitTime = this.CalculateWaitTimeInSeconds(numberOfRetries);
+					TimeSpan timeSpan = TimeSpan.FromSeconds(waitTime);
+					if (this.ThrowFileInfoInvalidPathException(e))
+					{
+						this.LogWarning(e, timeSpan, retryAttemptNumber, maxRetries);
+						throw this.CreateFileInfoInvalidPathException(e, fileName);
+					}
+
+					if (numberOfRetries == 0 || this.Context.RetryOptions == RetryOptions.None)
+					{
+						this.LogWarning(e, timeSpan, retryAttemptNumber, maxRetries);
+						throw;
+					}
+
+					this.PublishRetryMessage(e, timeSpan, retryAttemptNumber, maxRetries, lineNumber);
+					if (waitTime > 0)
+					{
+						Thread.CurrentThread.Join(1000 * waitTime);
+					}
+				}
 			}
-			catch (OperationCanceledException)
-			{
-				this.Logger.LogInformation(
-					$"The {description} I/O operation for file {fileName} and line number {lineNumber} has been canceled.");
-				return default(T);
-			}
+
+			return result;
 		}
 	}
 }

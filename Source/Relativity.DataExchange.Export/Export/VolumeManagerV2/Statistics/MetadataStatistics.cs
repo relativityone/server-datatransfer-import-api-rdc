@@ -1,19 +1,18 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
+	using System;
 	using System.Collections.Generic;
 
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public class MetadataStatistics : ITransferStatistics, IMetadataProcessingStatistics
 	{
-		private ITapiBridge _tapiBridge;
-
 		private double _savedThroughput;
 		private long _savedMetadataBytes;
-		private long _savedMetadataTime;
+		private TimeSpan _savedMetadataTransferDuration;
 		private Dictionary<string, long> _savedFilesSize;
 
 		private readonly kCura.WinEDDS.Statistics _statistics;
@@ -29,43 +28,49 @@
 			_filesSize = new Dictionary<string, long>();
 			_savedFilesSize = new Dictionary<string, long>();
 
-			_statistics = statistics;
-			_fileWrapper = fileWrapper;
-			_logger = logger;
+			_statistics = statistics.ThrowIfNull(nameof(statistics));
+			_fileWrapper = fileWrapper.ThrowIfNull(nameof(fileWrapper));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public void Attach(ITapiBridge tapiBridge)
+		public long MetadataTime => this._statistics.MetadataTransferDuration.Ticks;
+
+		public void Subscribe(ITapiBridge tapiBridge)
 		{
-			_tapiBridge = tapiBridge;
-			_tapiBridge.TapiProgress += OnProgress;
-			_tapiBridge.TapiStatistics += TapiBridgeOnTapiStatistics;
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Attached tapi bridge {TapiBridgeInstanceId} to metadata statistics.", tapiBridge.InstanceId);
+			tapiBridge.TapiProgress += this.OnProgress;
+			tapiBridge.TapiStatistics += this.TapiBridgeOnTapiStatistics;
 		}
 
 		private void TapiBridgeOnTapiStatistics(object sender, TapiStatisticsEventArgs e)
 		{
 			lock (_lock)
 			{
-				_statistics.MetadataThroughput = e.TransferRateBytes;
+				_statistics.MetadataTransferThroughput = e.TransferRateBytes;
 			}
 		}
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
 		{
-			_logger.LogVerbose("Progress event for file {FileName} with status {DidTransferSucceed}.", e.FileName, e.DidTransferSucceed);
-			if (e.DidTransferSucceed)
+			_logger.LogVerbose("Progress event for file {FileName} with status {Successful}.", e.FileName.Secure(), e.Successful);
+			if (e.Successful)
 			{
 				lock (_lock)
 				{
-					_statistics.MetadataBytes += e.FileBytes;
-					_statistics.MetadataTime += e.EndTime.Ticks - e.StartTime.Ticks;
+					_statistics.MetadataTransferredBytes += e.FileBytes;
+					_statistics.MetadataTransferDuration += (e.EndTime - e.StartTime);
+					_statistics.MetadataFilesTransferredCount++;
 				}
 			}
 		}
 
-		public void Detach()
+		public void Unsubscribe(ITapiBridge tapiBridge)
 		{
-			_tapiBridge.TapiProgress -= OnProgress;
-			_tapiBridge.TapiStatistics -= TapiBridgeOnTapiStatistics;
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Detached tapi bridge {TapiBridgeInstanceId} from metadata statistics.", tapiBridge.InstanceId);
+			tapiBridge.TapiProgress -= this.OnProgress;
+			tapiBridge.TapiStatistics -= this.TapiBridgeOnTapiStatistics;
 		}
 
 		public void UpdateStatisticsForFile(string path)
@@ -81,12 +86,33 @@
 					}
 
 					long newSize = _fileWrapper.GetFileSize(path);
-					_statistics.MetadataBytes += newSize - oldSize;
+					_statistics.MetadataTransferredBytes += newSize - oldSize;
 					_filesSize[path] = newSize;
 				}
 				else
 				{
-					_logger.LogWarning("Trying to add statistics for file {path}, but file doesn't exist.", path);
+					_logger.LogWarning("Trying to add statistics for file {path}, but file doesn't exist.", path.Secure());
+				}
+			}
+		}
+
+		public void UpdateStatistics(string fileName, bool transferResult, long transferredBytes, long totalTicks)
+		{
+			_logger.LogVerbose(
+				"Progress event for file {FileName} with status {Successful}.",
+				fileName.Secure(),
+				transferResult);
+			if (transferResult)
+			{
+				lock (_lock)
+				{
+					// Note: the ticks continually replaces the metadata time instead of adding to the existing value.
+					_statistics.MetadataFilesTransferredCount++;
+					_statistics.MetadataTransferredBytes += transferredBytes;
+					_statistics.MetadataTransferDuration = new TimeSpan(totalTicks);
+					_statistics.MetadataTransferThroughput = kCura.WinEDDS.Statistics.CalculateThroughput(
+						_statistics.MetadataTransferredBytes,
+						_statistics.MetadataTransferDuration.TotalSeconds);
 				}
 			}
 		}
@@ -95,9 +121,9 @@
 		{
 			lock (_lock)
 			{
-				_savedThroughput = _statistics.MetadataThroughput;
-				_savedMetadataBytes = _statistics.MetadataBytes;
-				_savedMetadataTime = _statistics.MetadataTime;
+				_savedThroughput = _statistics.MetadataTransferThroughput;
+				_savedMetadataBytes = _statistics.MetadataTransferredBytes;
+				_savedMetadataTransferDuration = _statistics.MetadataTransferDuration;
 				_savedFilesSize = new Dictionary<string, long>(_filesSize);
 			}
 		}
@@ -106,9 +132,9 @@
 		{
 			lock (_lock)
 			{
-				_statistics.MetadataThroughput = _savedThroughput;
-				_statistics.MetadataBytes = _savedMetadataBytes;
-				_statistics.MetadataTime = _savedMetadataTime;
+				_statistics.MetadataTransferThroughput = _savedThroughput;
+				_statistics.MetadataTransferredBytes = _savedMetadataBytes;
+				_statistics.MetadataTransferDuration = _savedMetadataTransferDuration;
 				_filesSize.Clear();
 				foreach (KeyValuePair<string, long> keyValuePair in _savedFilesSize)
 				{

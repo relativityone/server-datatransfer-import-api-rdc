@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -22,7 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>bin\Relativity.DataExchange.TestFramework.xml</DocumentationFile>
@@ -45,55 +46,158 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-ILMerge|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.DataExchange.TestFramework.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ILMerge|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;WINDOWS64</DefineConstants>
-    <DocumentationFile>bin\Relativity.DataExchange.TestFramework.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
+  <PropertyGroup>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="itextsharp, Version=5.5.13.1, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Vendor\iTextSharp\5.5.13.1\x64\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Audit.Services.Interface">
+      <HintPath>..\..\packages\Relativity.Audit.Services.SDK\lib\net462\Relativity.Audit.Services.Interface.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CryptoHelper.cs" />
+    <Compile Include="CollationStringComparer.cs" />
+    <Compile Include="DataReaderBase.cs" />
+    <Compile Include="DummyTest.cs" />
+    <Compile Include="HttpClientHelper.cs" />
+    <Compile Include="Import\JobExecutionContext\IExecutionContext.cs" />
+    <Compile Include="Import\JobExecutionContext\ImportTestJobResult.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IFieldValueSourceWithPrefix.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\MultipleValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\OneValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\SingleObjectImporter.cs" />
+    <Compile Include="Import\RdoStructureImport\FieldDefinition.cs" />
+    <Compile Include="Import\RdoStructureImport\RdoStructureDefinition.cs" />
+    <Compile Include="Import\RdoStructureImport\ObjectFieldDefinition.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\ChoicesValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\DtoBasedDataSourceConverter.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ImageSettingsBuilder.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ImportDataSourceToDataReaderAdapter.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\FileNameValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\ImageLocationValueSource.cs" />
+    <Compile Include="Extensions\CopySettingsExtenstion.cs" />
+    <Compile Include="Extensions\DataRowExtensions.cs" />
+    <Compile Include="Extensions\DataTableExtensions.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\FoldersValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IdentifierValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\IFieldValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\ObjectNameValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\TextValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\WholeNumberValueSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ImportDataSourceBuilder.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ImportDataSource.cs" />
+    <Compile Include="Import\SimpleFieldsImport\FieldValueSources\RandomPathGenerator.cs" />
+    <Compile Include="Import\SimpleFieldsImport\ISettingsBuilder.cs" />
+    <Compile Include="Import\SimpleFieldsImport\NativeImportSettingsBuilder.cs" />
+    <Compile Include="Import\RdoStructureImport\RdoStructureImporter.cs" />
+    <Compile Include="Import\JobExecutionContext\BaseExecutionContext.cs" />
+    <Compile Include="Import\JobExecutionContext\IImportApiSetup.cs" />
+    <Compile Include="Import\JobExecutionContext\ImageImportExecutionContext.cs" />
+    <Compile Include="Import\JobExecutionContext\ImportApiSetupExtensions.cs" />
+    <Compile Include="Import\JobExecutionContext\NativeImportExecutionContext.cs" />
+    <Compile Include="Import\JobExecutionContext\NativeImportSettingsProvider.cs" />
+    <Compile Include="NUnitExtensions\IgnoreIfMassImportImprovementsToggleHasValueAttribute.cs" />
+    <Compile Include="NUnitExtensions\IgnoreIfRegressionEnvironmentAttribute.cs" />
+    <Compile Include="NUnitExtensions\IgnoreIfVersionEqualToAttribute.cs" />
+    <Compile Include="RelativityHelpers\AgentHelper.cs" />
+    <Compile Include="RelativityHelpers\AuditHelper.cs" />
+    <Compile Include="RelativityHelpers\BatchSetHelper.cs" />
+    <Compile Include="RelativityHelpers\BcpFileHelper.cs" />
+    <Compile Include="RelativityHelpers\FieldsRandomHelper.cs" />
+    <Compile Include="RelativityHelpers\MassImportImprovementsToggleHelper.cs" />
+    <Compile Include="NUnitExtensions\PerformanceAttribute.cs" />
+    <Compile Include="NUnitExtensions\CollectDeadlocksAttribute.cs" />
+    <Compile Include="NUnitExtensions\IgnoreIfVersionGreaterOrEqualAttribute.cs" />
+    <Compile Include="NUnitExtensions\IgnoreIfVersionLowerThanAttribute.cs" />
+    <Compile Include="GitInformation.cs" />
+    <Compile Include="PerformanceTests\PerformanceDataCollector.cs" />
+    <Compile Include="NUnitExtensions\PerformanceTestCommand.cs" />
+    <Compile Include="NUnitExtensions\SqlComparerTestCommand.cs" />
+    <Compile Include="NUnitExtensions\UseSqlComparerAttribute.cs" />
+    <Compile Include="ObjectManagers\ClientManager.cs" />
+    <Compile Include="ObjectManagers\FileShareServerManager.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="PerformanceTests\PerformanceMetricsSender.cs" />
+    <Compile Include="RelativityHelpers\ChoiceHelper.cs" />
+    <Compile Include="RelativityHelpers\FolderHelper.cs" />
+    <Compile Include="NUnitExtensions\CollectWebApiExecutionPlansAttribute.cs" />
+    <Compile Include="NUnitExtensions\CollectWebApiSqlAttribute.cs" />
+    <Compile Include="NUnitExtensions\ProfilingSessionTestCommand.cs" />
+    <Compile Include="RelativityHelpers\GroupHelper.cs" />
+    <Compile Include="RelativityHelpers\ImportHelper.cs" />
+    <Compile Include="ObjectManagers\ServiceProxyFactory.cs" />
+    <Compile Include="RelativityHelpers\NonDefaultCollationWorkspaceHelper.cs" />
+    <Compile Include="RelativityHelpers\ObjectType.cs" />
+    <Compile Include="RelativityHelpers\PermissionsHelper.cs" />
+    <Compile Include="RelativityHelpers\SearchHelper.cs" />
+    <Compile Include="RelativityHelpers\SqlQueryHelper.cs" />
+    <Compile Include="RelativityHelpers\ViewHelper.cs" />
+    <Compile Include="RelativityVersions\RelativityVersionChecker.cs" />
+    <Compile Include="RelativityVersions\RelativityVersion.cs" />
+    <Compile Include="SqlDataComparer\SqlComparerExecutor.cs" />
+    <Compile Include="SqlDataComparer\SqlComparerInputCollector.cs" />
+    <Compile Include="SqlDataComparer\TestWorkspaceToCompareDto.cs" />
+    <Compile Include="TestFilesRepository.cs" />
+    <Compile Include="TestNullLogger.cs" />
+    <Compile Include="Validation\BaseFileHashValidator.cs" />
+    <Compile Include="Validation\ExportedFilesValidator.cs" />
+    <Compile Include="Validation\IFileValidator.cs" />
+    <Compile Include="Validation\ImageMultiPageFileHashValidator.cs" />
+    <Compile Include="Validation\ImageSinglePageFileHashValidator.cs" />
+    <Compile Include="Validation\NativeFileHashValidator.cs" />
+    <Compile Include="Validation\PdfFileValidator.cs" />
+    <Compile Include="Validation\SearchablePdfFileHashValidator.cs" />
+    <Compile Include="Validation\StringContentValidator.cs" />
+    <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectDeadlockProfilerReportSession.cs" />
+    <Compile Include="WebApiSqlProfiling\DeadlockReport\CollectedDeadlockProfilerReportBuilder.cs" />
+    <Compile Include="WebApiSqlProfiling\DeadlockReport\DeadlockReportRowDto.cs" />
+    <Compile Include="RelativityHelpers\ResourcePoolHelper.cs" />
+    <Compile Include="ObjectManagers\ResourcePoolManager.cs" />
+    <Compile Include="ObjectManagers\ResourceServerManager.cs" />
+    <Compile Include="ObjectManagers\ResourceServerTypeName.cs" />
+    <Compile Include="WebApiSqlProfiling\ExecutionPlan\CollectedExecutionPlansProfilerReportBuilder.cs" />
+    <Compile Include="WebApiSqlProfiling\SqlStatement\CollectedSqlStatementsProfilerReportBuilder.cs" />
+    <Compile Include="WebApiSqlProfiling\ExecutionPlan\CollectExecutionPlansProfilingSession.cs" />
+    <Compile Include="WebApiSqlProfiling\SqlStatement\CollectSqlStatementsProfilingSession.cs" />
+    <Compile Include="WebApiSqlProfiling\ExecutionPlan\ExecutionPlanReportRowDto.cs" />
+    <Compile Include="WebApiSqlProfiling\IProfilerReportBuilder.cs" />
+    <Compile Include="WebApiSqlProfiling\ProfilerReport.cs" />
+    <Compile Include="WebApiSqlProfiling\ProfilerReportBuilderBase.cs" />
+    <Compile Include="WebApiSqlProfiling\ProfilingSession.cs" />
+    <Compile Include="TestData.cs" />
     <Compile Include="FileDto.cs" />
     <Compile Include="IntegrationTestHelper.cs" />
-    <Compile Include="FieldHelper.cs" />
+    <Compile Include="RelativityHelpers\FieldHelper.cs" />
     <Compile Include="IntegrationTestParameterAttribute.cs" />
     <Compile Include="RelativityTestLogger.cs" />
+    <Compile Include="TapiClientModeAvailabilityChecker.cs" />
+    <Compile Include="TestDirectoryManager.cs" />
     <Compile Include="TestDirectory.cs" />
+    <Compile Include="RelativityHelpers\InstanceSettingsHelper.cs" />
+    <Compile Include="RelativityHelpers\UsersHelper.cs" />
+    <Compile Include="WebApiSqlProfiling\SqlStatement\SqlStatementRowDto.cs" />
+    <Compile Include="WebApiSqlProfiling\TextFileDto.cs" />
     <Compile Include="TestStrings.cs" />
     <Compile Include="ServiceHelper.cs" />
-    <Compile Include="ProductionHelper.cs" />
+    <Compile Include="RelativityHelpers\ProductionHelper.cs" />
     <Compile Include="RandomHelper.cs" />
     <Compile Include="ResourceFileHelper.cs" />
     <Compile Include="TestCategories.cs" />
-    <Compile Include="RdoHelper.cs" />
-    <Compile Include="WorkspaceHelper.cs" />
+    <Compile Include="RelativityHelpers\RdoHelper.cs" />
+    <Compile Include="RelativityHelpers\WorkspaceHelper.cs" />
     <Compile Include="WellKnownArtifactTypes.cs" />
+    <Compile Include="WellKnownFieldRequests.cs" />
     <Compile Include="WellKnownFields.cs" />
     <Compile Include="IntegrationTestParameters.cs" />
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
@@ -103,6 +207,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryFieldFactory.cs" />
+    <Compile Include="RelativityHelpers\WorkspaceHelperRsapi.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\buildtools\stylecop.json">
@@ -112,9 +217,66 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="app.manifest" />
+    <None Include="appSettings.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="paket.references" />
-    <EmbeddedResource Include="Resources\test-parameters-hyperv.json" />
-    <EmbeddedResource Include="Resources\test-parameters-e2e.json" />
+    <EmbeddedResource Include="Resources\test-parameters-hopper.json" />
+    <None Include="Resources\AddGroupMemberRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\CreateGroupRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\CreateInput.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\CreateMultiObjectFieldInput.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\CreateProductionInput.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample2.doc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample3.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample4.msg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample7.ppt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\FixedLengthTextFieldRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Pdfs\EDRM-Sample1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF2.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF3.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF4.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchablePdfs\SearchablePDF5.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\UpdateFixedLengthTextFieldRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlDataComparer\README.md" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -135,11 +297,263 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Content Include="Resources\Docs\EDRM-Sample10.wmf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample5.htm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample6.emf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample9.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample-000001.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample1.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample2.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\EDRM-Sample3.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\MultiPageImages\EDRM-Sample1.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ValueTuple">
+          <HintPath>..\..\packages\integration-tests\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Castle.Core">
+          <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Xml">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Castle.Windsor">
+          <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
+    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+      <Paket>True</Paket>
+    </Analyzer>
+  </ItemGroup></When></Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.SqlServer.Management.SqlParser">
+          <HintPath>..\..\packages\Microsoft.SqlServer.Management.SqlParser\lib\net462\Microsoft.SqlServer.Management.SqlParser.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.Data.Tools.Sql.BatchParser">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.Data.Tools.Sql.BatchParser.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Assessment">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Assessment.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Assessment.Types">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Assessment.Types.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.ConnectionInfo">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Dmf">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Dmf.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Dmf.Common">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Dmf.Common.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.Assessment">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.Assessment.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.Collector">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.Collector.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.CollectorEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.CollectorEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.HadrData">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.HadrData.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.HadrModel">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.HadrModel.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.RegisteredServers">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.RegisteredServers.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.SmoMetadataProvider">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.SmoMetadataProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.SqlScriptPublish">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.SqlScriptPublish.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.XEvent">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.XEvent.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.XEventDbScoped">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.XEventDbScoped.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.XEventDbScopedEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.XEventDbScopedEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Management.XEventEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Management.XEventEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.PolicyEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.PolicyEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.RegSvrEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.RegSvrEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.ServiceBrokerEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.ServiceBrokerEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Smo">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Smo.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.Smo.Notebook">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Smo.Notebook.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.SmoExtended">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.SmoExtended.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.SqlClrProvider">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.SqlClrProvider.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.SqlEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.SqlEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.SqlWmiManagement">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.SqlWmiManagement.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Microsoft.SqlServer.WmiEnum">
+          <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.WmiEnum.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Moq">
+          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -171,6 +585,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="Polly">
           <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
           <Private>True</Private>
@@ -182,19 +607,14 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.DataTransfer.MessageService">
-          <HintPath>..\..\packages\Relativity.DataTransfer.MessageService\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
-          <Private>True</Private>
+        <Reference Include="Microsoft.VisualBasic">
           <Paket>True</Paket>
         </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="FaspManager">
-          <HintPath>..\..\packages\relativity.faspmanager\lib\net40\FaspManager.dll</HintPath>
+        <Reference Include="System.Web.Services">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity">
+          <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -226,8 +646,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+        <Reference Include="Relativity.Services.ServiceProxy">
+          <HintPath>..\..\packages\Relativity.Kepler.Client.SDK\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -237,8 +657,29 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="kCura.Vendor.Castle.Core">
+          <HintPath>..\..\packages\Relativity.Kepler.Service\lib\net462\kCura.Vendor.Castle.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="kCura.Vendor.Castle.Windsor">
+          <HintPath>..\..\packages\Relativity.Kepler.Service\lib\net462\kCura.Vendor.Castle.Windsor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Logging">
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging.Interfaces\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -249,12 +690,23 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Productions.Services.Interfaces">
-          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Productions.Services.Interfaces.Private">
-          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net45\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.SecretCatalog">
+          <HintPath>..\..\packages\Relativity.SecretCatalog\lib\Relativity.SecretCatalog.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -275,8 +727,44 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Microsoft.CSharp">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Data.DataSetExtensions">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.ServiceModel">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Services.Interfaces">
           <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Interfaces.Private">
+          <HintPath>..\..\packages\Relativity.Services.Interfaces.Private\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.Services.Layout.DataContracts">
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\net462\Relativity.Services.Layout.DataContracts.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.Services.Layout.Interfaces">
+          <HintPath>..\..\packages\Relativity.Services.Layout.Interfaces\lib\net462\Relativity.Services.Layout.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -308,28 +796,43 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="FaspManager">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="Relativity.DataTransfer.Nodes">
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Transfer.Client">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Aspera">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Core">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.FileShare">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Relativity.Transfer.Client.Http">
-          <HintPath>..\..\packages\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -359,32 +862,52 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers.Unstable\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
+    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="System.Windows">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WindowsBase">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Reactive">
+          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
 </Project>

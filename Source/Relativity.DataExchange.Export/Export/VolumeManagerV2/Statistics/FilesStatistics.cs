@@ -1,17 +1,17 @@
 ﻿namespace Relativity.DataExchange.Export.VolumeManagerV2.Statistics
 {
+	using System;
+
 	using Relativity.DataExchange.Io;
+	using Relativity.DataExchange.Logger;
 	using Relativity.DataExchange.Transfer;
-	using Relativity.DataExchange.Export.VolumeManagerV2.Download.TapiHelpers;
 	using Relativity.Logging;
 
 	public class FilesStatistics : ITransferStatistics, IFileProcessingStatistics
 	{
-		private ITapiBridge _tapiBridge;
-
 		private double _savedThroughput;
 		private long _savedFileBytes;
-		private long _savedFileTime;
+		private TimeSpan _savedFileTime;
 
 		private readonly kCura.WinEDDS.Statistics _statistics;
 		private readonly IFile _fileWrapper;
@@ -21,43 +21,47 @@
 
 		public FilesStatistics(kCura.WinEDDS.Statistics statistics, IFile fileWrapper, ILog logger)
 		{
-			_statistics = statistics;
-			_fileWrapper = fileWrapper;
-			_logger = logger;
+			_statistics = statistics.ThrowIfNull(nameof(statistics));
+			_fileWrapper = fileWrapper.ThrowIfNull(nameof(fileWrapper));
+			_logger = logger.ThrowIfNull(nameof(logger));
 		}
 
-		public void Attach(ITapiBridge tapiBridge)
+		public void Subscribe(ITapiBridge tapiBridge)
 		{
-			_tapiBridge = tapiBridge;
-			_tapiBridge.TapiProgress += OnProgress;
-			_tapiBridge.TapiStatistics += TapiBridgeOnTapiStatistics;
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Attached tapi bridge {TapiBridgeInstanceId} to the file statistics.", tapiBridge.InstanceId);
+			tapiBridge.TapiProgress += this.OnProgress;
+			tapiBridge.TapiStatistics += this.TapiBridgeOnTapiStatistics;
 		}
 
 		private void TapiBridgeOnTapiStatistics(object sender, TapiStatisticsEventArgs e)
 		{
 			lock (_lock)
 			{
-				_statistics.FileThroughput = e.TransferRateBytes;
+				_statistics.FileTransferThroughput = e.TransferRateBytes;
 			}
 		}
 
 		private void OnProgress(object sender, TapiProgressEventArgs e)
 		{
-			_logger.LogVerbose("Progress event for file {fileName} with status {didTransferSucceed}.", e.FileName, e.DidTransferSucceed);
-			if (e.DidTransferSucceed)
+			_logger.LogVerbose("Progress event for file {fileName} with status {Successful}.", e.FileName.Secure(), e.Successful);
+			if (e.Successful)
 			{
 				lock (_lock)
 				{
-					_statistics.FileBytes += e.FileBytes;
-					_statistics.FileTime += e.EndTime.Ticks - e.StartTime.Ticks;
+					_statistics.FileTransferredBytes += e.FileBytes;
+					_statistics.FileTransferDuration += (e.EndTime - e.StartTime);
+					_statistics.NativeFilesTransferredCount++;
 				}
 			}
 		}
 
-		public void Detach()
+		public void Unsubscribe(ITapiBridge tapiBridge)
 		{
-			_tapiBridge.TapiProgress -= OnProgress;
-			_tapiBridge.TapiStatistics -= TapiBridgeOnTapiStatistics;
+			tapiBridge.ThrowIfNull(nameof(tapiBridge));
+			_logger.LogVerbose("Detached tapi bridge {TapiBridgeInstanceId} from the file statistics.", tapiBridge.InstanceId);
+			tapiBridge.TapiProgress -= this.OnProgress;
+			tapiBridge.TapiStatistics -= this.TapiBridgeOnTapiStatistics;
 		}
 
 		public void UpdateStatisticsForFile(string path)
@@ -66,11 +70,11 @@
 			{
 				if (_fileWrapper.Exists(path))
 				{
-					_statistics.FileBytes += _fileWrapper.GetFileSize(path);
+					_statistics.FileTransferredBytes += _fileWrapper.GetFileSize(path);
 				}
 				else
 				{
-					_logger.LogWarning("Trying to add statistics for file {path}, but file doesn't exist.", path);
+					_logger.LogWarning("Trying to add statistics for file {path}, but file doesn't exist.", path.Secure());
 				}
 			}
 		}
@@ -79,9 +83,9 @@
 		{
 			lock (_lock)
 			{
-				_savedThroughput = _statistics.FileThroughput;
-				_savedFileBytes = _statistics.FileBytes;
-				_savedFileTime = _statistics.FileTime;
+				_savedThroughput = _statistics.FileTransferThroughput;
+				_savedFileBytes = _statistics.FileTransferredBytes;
+				_savedFileTime = _statistics.FileTransferDuration;
 			}
 		}
 
@@ -89,9 +93,9 @@
 		{
 			lock (_lock)
 			{
-				_statistics.FileThroughput = _savedThroughput;
-				_statistics.FileBytes = _savedFileBytes;
-				_statistics.FileTime = _savedFileTime;
+				_statistics.FileTransferThroughput = _savedThroughput;
+				_statistics.FileTransferredBytes = _savedFileBytes;
+				_statistics.FileTransferDuration = _savedFileTime;
 			}
 		}
 	}

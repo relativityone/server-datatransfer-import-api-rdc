@@ -20,3 +20,7 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
+
+[assembly: Relativity.Testing.Identification.TestLevel.L3]
+[assembly: Relativity.Testing.Identification.Feature.DataTransfer.ImportApi.Documentation.Samples]
+[assembly: Relativity.Testing.Identification.TestExecutionCategory.CI]

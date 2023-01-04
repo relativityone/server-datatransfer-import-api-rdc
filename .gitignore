@@ -235,7 +235,7 @@ FakesAssemblies/
 
 # GhostDoc plugin setting file
 *.GhostDoc.xml
-
+ 
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
 
@@ -285,12 +285,13 @@ build/
 
 # build artifacts
 /.paket/paket*.exe
+/.paket/nuget.exe
 /.paket/Paket.Restore.targets
-/buildtools/Resharper-CA
 /paket-files
 /Logs/*
 /PDBs/*
 /TestReports/*
+Run_*.bat
 errors.xml
 
 # Allow vendor binaries
@@ -302,3 +303,10 @@ errors.xml
 
 # Visual Studio Code
 /.vscode/*
+
+# Test files
+TestInput/
+TestOutput/
+/Source/Output-Build.txt
+FunctionalTestSettings
+FunctionalTest.runsettings

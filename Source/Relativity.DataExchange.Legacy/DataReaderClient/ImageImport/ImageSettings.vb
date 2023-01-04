@@ -1,3 +1,5 @@
+Imports Relativity.DataExchange
+
 Namespace kCura.Relativity.DataReaderClient
 
 	''' <summary>
@@ -13,15 +15,18 @@ Namespace kCura.Relativity.DataReaderClient
 		Private ReadOnly _documentIDFieldDefault As String
 		Private _fileLocationField As String
 		Private ReadOnly _fileLocationFieldDefault As String
+        Private _fileNameField As String
+        Private ReadOnly _fileNameFieldDefault As String
 #End Region
 
 #Region "Constructors"
 		Friend Sub New()
 			MyBase.New()
 
-			_batesNumberFieldDefault = "BatesNumber"
-			_documentIDFieldDefault = "DocumentIdentifier"
-			_fileLocationFieldDefault = "FileLocation"
+			_batesNumberFieldDefault = DefaultImageFieldNames.BatesNumber
+			_documentIDFieldDefault = DefaultImageFieldNames.DocumentIdentifier
+			_fileLocationFieldDefault = DefaultImageFieldNames.FileLocation
+			_fileNameFieldDefault = DefaultImageFieldNames.FileName
 		End Sub
 #End Region
 
@@ -38,7 +43,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property AutoNumberImages() As Boolean
 
 		''' <summary>
-		''' Defines a column name in the source DataTable, which maps to a field used as a unique identifier.
+		''' Defines a column name in the SourceData, which maps to a field used as a unique identifier. If property is not set, default column name "BatesNumber" is used.
 		''' </summary>
 		''' <remarks>This unique identifier may be called Bates Number or Control Number in a database.</remarks>
 		Public Property BatesNumberField() As String
@@ -72,7 +77,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property DisableImageTypeValidation As Boolean?
 
 		''' <summary>
-		''' Name of the field in the data source corresponding to the DocumentIdentifier field.
+		''' Name of the field in the SourceData corresponding to the DocumentIdentifier field. If property is not set, default column name "DocumentIdentifier" is used.
 		''' </summary>
 		Public Property DocumentIdentifierField() As String
 			Get
@@ -88,7 +93,7 @@ Namespace kCura.Relativity.DataReaderClient
 		End Property
 
 		''' <summary>
-		''' Indicates the column name in the source DataTable that maps to the FileLocation field in Relativity. 
+		''' Indicates the column name in the SourceData that maps to the FileLocation field in Relativity. If property is not set, default column name "FileLocation" is used.
 		''' </summary>
 		''' <remarks>In the data set, this field value should contain a fully-qualified file location path and file name, such as C:\images\image1.jpg or \\servername\images\image1.jpg.
 		''' The Import API doesn't support multi-page TIFFs.</remarks>
@@ -102,6 +107,23 @@ Namespace kCura.Relativity.DataReaderClient
 			End Get
 			Set(value As String)
 				_fileLocationField = value
+			End Set
+		End Property
+
+		''' <summary>
+		''' Indicates the column name in the SourceData that maps to the FileName field in Relativity. If property is not set, default column name "FileName" is used.
+		''' </summary>
+		''' <remarks>In the data set, this field value should contain a original file name with its extension. Original file name is stored in Filename column in File table</remarks>
+		Public Property FileNameField() As String
+			Get
+				If _fileNameField Is Nothing Then
+					Return _fileNameFieldDefault
+				End If
+
+				Return _fileNameField
+			End Get
+			Set(value As String)
+			    _fileNameField = value
 			End Set
 		End Property
 
@@ -129,7 +151,7 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property ProductionArtifactID() As Int32
 
 		''' <summary>
-		''' Indiciates the Case's File Repository where the Images will be saved.
+		''' Indicates the Case's File Repository where the Images will be saved.
 		''' </summary>
 		''' <returns></returns>
 		Public Property SelectedCasePath() As String

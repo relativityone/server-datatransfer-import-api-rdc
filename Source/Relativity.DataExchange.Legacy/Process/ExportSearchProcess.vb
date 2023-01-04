@@ -1,9 +1,13 @@
 Imports System.Threading
 Imports kCura.WinEDDS.Exporters
 Imports kCura.WinEDDS.Service.Export
+Imports Monitoring
+Imports Monitoring.Sinks
+Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Transfer
-Imports Relativity.DataTransfer.MessageService
+Imports Relativity.Logging
 
 Namespace kCura.WinEDDS
 	Public Class ExportSearchProcess
@@ -17,44 +21,63 @@ Namespace kCura.WinEDDS
 		Private _warningCount As Int32
 		Private _uploadModeText As String = Nothing
 		Private _hasErrors As Boolean
-		Protected Overrides ReadOnly Property JobType As String = "Export"
+		Private _tapiClient As TapiClient = TapiClient.None
 
-		Protected Overrides ReadOnly Property TapiClientName As String
+		Protected Overrides ReadOnly Property TransferDirection As TelemetryConstants.TransferDirection = TelemetryConstants.TransferDirection.Export
+
+		Protected Overrides ReadOnly Property TapiClient As TapiClient
 			Get
-				Return _tapiClientName
+				Return _tapiClient
+			End Get
+		End Property
+
+		Protected Overrides ReadOnly Property Statistics As Statistics
+			Get
+				Return _searchExporter.Statistics
 			End Get
 		End Property
 
 		Public Property UserNotification As Exporters.IUserNotification
 		Public Property UserNotificationFactory As Func(Of Exporter, IUserNotification)
 
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig)
-			MyBase.New(New MessageService())
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, correlationIdFunc As Func(Of String))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, RelativityLogger.Instance, New RunningContext(), correlationIdFunc)
+		End Sub
+
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, logger As ILog, runningContext As IRunningContext, correlationIdFunc As Func(Of String))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, New MetricService(New ImportApiMetricSinkConfig), runningContext, logger, correlationIdFunc)
+		End Sub
+
+		<Obsolete("This constructor is marked for deprecation. Please use the constructor that requires a logger instance.")>
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, correlationIdFunc As Func(Of String))
+			Me.New(loadFileHeaderFormatterFactory, exportConfig, metricService, New RunningContext(), RelativityLogger.Instance, correlationIdFunc)
+		End Sub
+
+		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, metricService As IMetricService, runningContext As IRunningContext, logger As ILog, correlationIdFunc As Func(Of String))
+			MyBase.New(metricService, runningContext, logger, correlationIdFunc)
 			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
 			_exportConfig = exportConfig
 		End Sub
 
-		Public Sub New(loadFileHeaderFormatterFactory As ILoadFileHeaderFormatterFactory, exportConfig As IExportConfig, messageService As IMessageService)
-			MyBase.New(messageService)
-			_loadFileHeaderFormatterFactory = loadFileHeaderFormatterFactory
-			_exportConfig = exportConfig
-		End Sub
+		''' <inheritdoc/>
+		Protected Overrides Function GetTotalRecordsCount() As Long
+			Return _searchExporter.TotalExportArtifactCount
+		End Function
+
+		''' <inheritdoc/>
+		Protected Overrides Function GetCompletedRecordsCount() As Long
+			Return _searchExporter.DocumentsExported
+		End Function
 
 		Protected Overrides Sub OnSuccess()
 			MyBase.OnSuccess()
-			SendTransferJobCompletedMessage()
 			Me.Context.PublishStatusEvent("", "Export completed")
 			Me.Context.PublishProcessCompleted()
 		End Sub
 
-		Protected Overrides Sub OnFatalError()
-			MyBase.OnFatalError()
-			SendTransferJobFailedMessage()
-		End Sub
-
 		Protected Overrides Sub OnHasErrors()
 			MyBase.OnHasErrors()
-			SendTransferJobCompletedMessage()
 			Me.Context.PublishProcessCompleted(False, _searchExporter.ErrorLogFileName, True)
 		End Sub
 
@@ -62,17 +85,21 @@ Namespace kCura.WinEDDS
 			Return _hasErrors
 		End Function
 
+		Protected Overrides Function IsCancelled() As Boolean
+			Return _searchExporter.IsCancelledByUser
+		End Function
+
 		Private Function GetExporter() As Exporter
 			If (ExportFile.UseCustomFileNaming) Then
 				Return _
 					New ExtendedExporter(TryCast(Me.ExportFile, ExtendedExportFile), Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token, AddressOf GetCorrelationId) With {.InteractionManager = UserNotification}
 			Else
 				Return _
 					New Exporter(Me.ExportFile, Me.Context,
 										 New WebApiServiceFactory(Me.ExportFile),
-										 _loadFileHeaderFormatterFactory, _exportConfig) With {.InteractionManager = UserNotification}
+										 _loadFileHeaderFormatterFactory, _exportConfig, Me.Logger, Me.CancellationTokenSource.Token, AddressOf GetCorrelationId) With {.InteractionManager = UserNotification}
 
 			End If
 		End Function
@@ -96,28 +123,43 @@ Namespace kCura.WinEDDS
 			Return Not _hasFatalErrorOccured
 		End Function
 
-		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal mode As String) Handles _searchExporter.FileTransferModeChangeEvent
+		Protected Overrides Function BuildEndMetric(jobStatus As TelemetryConstants.JobStatus) As MetricJobEndReport
+			Dim metric As MetricJobEndReport = MyBase.BuildEndMetric(jobStatus)
+			metric.ExportedNativeCount = _searchExporter.Statistics.ExportedNativeCount
+			metric.ExportedPdfCount = _searchExporter.Statistics.ExportedPdfCount
+			metric.ExportedImageCount = _searchExporter.Statistics.ExportedImageCount
+			metric.ExportedLongTextCount = _searchExporter.Statistics.ExportedLongTextCount
+			Return metric
+		End Function
+
+		Private Sub _searchExporter_FileTransferModeChangeEvent(ByVal sender As Object, ByVal args As Global.Relativity.DataExchange.Transfer.TapiMultiClientEventArgs) Handles _searchExporter.FileTransferMultiClientModeChangeEvent
 			If _uploadModeText Is Nothing Then
-				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-				_uploadModeText = tapiObjectService.BuildFileTransferModeDocText(False)
+				_uploadModeText = TapiModeHelper.BuildDocText()
 			End If
-			_tapiClientName = mode
-			SendTransferJobStartedMessage()
-			Me.Context.PublishStatusBarChanged("File Transfer Mode: " & mode, _uploadModeText)
+
+			Dim nativeFilesCopied As Boolean = (Me.ExportFile.ExportImages AndAlso
+			                                    Me.ExportFile.VolumeInfo.CopyImageFilesFromRepository) OrElse
+			                                   (Me.ExportFile.ExportNative AndAlso
+			                                    Me.ExportFile.VolumeInfo.CopyNativeFilesFromRepository)
+			Dim statusBarText As String = TapiModeHelper.BuildExportStatusText(nativeFilesCopied, args.TransferClients)
+			_tapiClient = TapiModeHelper.GetTapiClient(args.TransferClients)
+			
+			OnTapiClientChanged()
+			Me.Context.PublishStatusBarChanged(statusBarText, _uploadModeText)
+			Me.Logger.LogInformation("Export transfer mode changed: {@TransferClients}", args.TransferClients)
 		End Sub
 
 		Private Sub _productionExporter_StatusMessage(ByVal e As ExportEventArgs) Handles _searchExporter.StatusMessage
 			Select Case e.EventType
-				Case EventType2.End
-					SendJobStatistics(e.Statistics)
 				Case EventType2.Error
 					Interlocked.Increment(_errorCount)
+					Statistics.DocsErrorsCount = _errorCount
 					Me.Context.PublishErrorEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Progress
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics, checkThrottling := True)
 					Me.Context.PublishStatusEvent("", e.Message)
 				Case EventType2.Statistics
-					SendThroughputStatistics(e.Statistics.MetadataThroughput, e.Statistics.FileThroughput)
+					SendMetricJobProgress(e.Statistics, checkThrottling := True)
 				Case EventType2.Status
 					Me.Context.PublishStatusEvent(e.DocumentsExported.ToString, e.Message)
 				Case EventType2.Warning
@@ -126,14 +168,12 @@ Namespace kCura.WinEDDS
 				Case EventType2.ResetStartTime
 					SetStartTime()
 			End Select
-			TotalRecords = e.TotalDocuments
-			CompletedRecordsCount = e.DocumentsExported
 			Dim statDict As IDictionary = Nothing
 			If Not e.AdditionalInfo Is Nothing AndAlso TypeOf e.AdditionalInfo Is IDictionary Then
 				statDict = DirectCast(e.AdditionalInfo, IDictionary)
 			End If
 
-			Me.Context.PublishProgress(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataThroughput, e.Statistics.FileThroughput, Me.ProcessID, Nothing, Nothing, statDict)
+			Me.Context.PublishProgress(e.TotalDocuments, e.DocumentsExported, _warningCount, _errorCount, StartTime, New DateTime, e.Statistics.MetadataTransferThroughput, e.Statistics.FileTransferThroughput, Me.ProcessID, Nothing, Nothing, statDict)
 		End Sub
 
 		Private Sub _productionExporter_FatalErrorEvent(ByVal message As String, ByVal ex As System.Exception) Handles _searchExporter.FatalErrorEvent

@@ -23,7 +23,6 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Service;
 	using Relativity.DataExchange.TestFramework;
-	using Relativity.Logging;
 
 	[TestFixture]
 	public class TooLongTextToLoadFileTests
@@ -39,7 +38,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			this._longTextRepository = new LongTextRepository(null, new NullLogger());
+			this._longTextRepository = new LongTextRepository(null, new TestNullLogger());
 
 			this._exportSettings = new ExportFile(1);
 
@@ -49,7 +48,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._fileWriter = new Mock<ILongTextEntryWriter>();
 
-			this._instance = new TooLongTextToLoadFile(longTextHelper, this._longTextRepository, this._fileWriter.Object, new NullLogger());
+			this._instance = new TooLongTextToLoadFile(longTextHelper, this._longTextRepository, this._fileWriter.Object, new TestNullLogger());
 		}
 
 		[Test]
@@ -70,7 +69,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				field.FieldArtifactId,
 				LongTextExportRequest.CreateRequestForLongText(artifact, field.FieldArtifactId, expectedPath),
 				Encoding.Unicode,
-				expectedEncoding);
+				expectedEncoding,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry lineEntry = new DeferredEntry();
@@ -112,7 +112,8 @@ namespace Relativity.DataExchange.Export.NUnit
 					trueTextPrecedenceField.FieldArtifactId,
 					expectedPath),
 				Encoding.Unicode,
-				expectedEncoding);
+				expectedEncoding,
+				artifact.LongTextLength);
 			this._longTextRepository.Add(longText.InList());
 
 			DeferredEntry lineEntry = new DeferredEntry();

@@ -11,7 +11,8 @@
 			Dim arePhysicalFilesBeingExported As Boolean =
 				(settings.ExportFullText AndAlso settings.ExportFullTextAsFile) OrElse
 				(settings.ExportImages AndAlso settings.VolumeInfo.CopyImageFilesFromRepository) OrElse
-				(settings.ExportNative AndAlso settings.VolumeInfo.CopyNativeFilesFromRepository)
+				(settings.ExportNative AndAlso settings.VolumeInfo.CopyNativeFilesFromRepository) OrElse
+				(settings.ExportPdf AndAlso settings.VolumeInfo.CopyPdfFilesFromRepository)
 			Dim isInvalid As Boolean = couldExportExceedLabelPadding AndAlso arePhysicalFilesBeingExported
 			If isInvalid Then
 				Dim message As New System.Text.StringBuilder

@@ -4,10 +4,16 @@
     <Recognized>
       <Word>kCura</Word>
       <Word>Relativity</Word>
+	  <Word>ImportAPI</Word>
       <Word>RDO</Word>
       <Word>nunit</Word>
       <Word>TapiBridge</Word>
       <Word>Serilog</Word>
+      <Word>datagrid</Word>
+      <Word>uploadable</Word>
+      <Word>workspaces</Word>
+      <Word>WebAPI</Word>
+      <Word>CorrelationId</Word>
     </Recognized>    
   </Words>
 </Dictionary>

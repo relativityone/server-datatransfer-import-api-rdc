@@ -38,8 +38,7 @@ Namespace kCura.WinEDDS
 
 		Public Shared ReadOnly Property FileTransferModeExplanationText(ByVal includeBulk As Boolean) As String
 			Get
-				Dim tapiObjectService As ITapiObjectService = New TapiObjectService
-				Return tapiObjectService.BuildFileTransferModeDocText(includeBulk)
+				Return TapiModeHelper.BuildDocText()
 			End Get
 		End Property
 
@@ -47,10 +46,9 @@ Namespace kCura.WinEDDS
 			Return Global.Relativity.DataExchange.AppSettingsManager.GetRegistryKeyValue(keyName)
 		End Function
 
-		Private Shared Function SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String) As String
+		Private Shared Sub SetRegistryKeyValue(ByVal keyName As String, ByVal keyVal As String)
 			Global.Relativity.DataExchange.AppSettingsManager.SetRegistryKeyValue(keyName, keyVal)
-			Return Nothing
-		End Function
+		End Sub
 
 		Public Shared Function ValidateURIFormat(ByVal returnValue As String) As String
 			Return AppSettings.Instance.ValidateUriFormat(returnValue)
@@ -102,6 +100,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+		Public Shared ReadOnly Property UseSynchronizedImportBatchMode() As Boolean      'Boolean
+			Get
+				Return AppSettings.Instance.UseSynchronizedImportBatchMode
+			End Get
+		End Property
+
 		Public Shared ReadOnly Property JobCompleteBatchSize() As Int32     'Number of records
 			Get
 				Return AppSettings.Instance.JobCompleteBatchSize
@@ -123,6 +127,12 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property PermissionErrorsRetry() As Boolean
 			Get
 				Return AppSettings.Instance.PermissionErrorsRetry
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property ExportPermissionErrorsRetry() As Boolean
+			Get
+				Return AppSettings.Instance.ExportPermissionErrorsRetry
 			End Get
 		End Property
 
@@ -179,24 +189,6 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property ExportBatchSize() As Int32      'Number of records
 			Get
 				Return AppSettings.Instance.ExportBatchSize
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property ExportThreadCount() As Int32        'Number of threads during the exporting process
-			Get
-				Return AppSettings.Instance.ExportThreadCount
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property UseOldExport() As Boolean
-			Get
-				Return AppSettings.Instance.UseOldExport
-			End Get
-		End Property
-
-		Public Shared ReadOnly Property ForceParallelismInNewExport() As Boolean
-			Get
-				Return AppSettings.Instance.ForceParallelismInNewExport
 			End Get
 		End Property
 
@@ -341,7 +333,7 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-		'This is used to disable certificates check of destiantion server on client. It should be enabled only when dealing with invalid certificates on test environments.
+		'This is used to disable certificates check of destination server on client. It should be enabled only when dealing with invalid certificates on test environments.
 		Public Shared ReadOnly Property SuppressCertificateCheckOnClient() As Boolean
 			Get
 				Return AppSettings.Instance.SuppressServerCertificateValidation
@@ -449,6 +441,12 @@ Namespace kCura.WinEDDS
 		Public Shared ReadOnly Property RetryOptions As Global.Relativity.DataExchange.Io.RetryOptions
 			Get
 				Return AppSettings.Instance.RetryOptions
+			End Get
+		End Property
+
+		Public Shared ReadOnly Property UseSearchablePDF As Boolean
+			Get
+				Return AppSettings.Instance.UseSearchablePDF
 			End Get
 		End Property
 	End Class

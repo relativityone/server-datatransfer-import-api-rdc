@@ -30,46 +30,35 @@ Namespace Relativity.Desktop.Client
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
 		Friend WithEvents TextBox As System.Windows.Forms.TextBox
-		Public WithEvents DetailsLink As System.Windows.Forms.LinkLabel
 
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-			Me.DetailsLink = New System.Windows.Forms.LinkLabel
-			Me.TextBox = New System.Windows.Forms.TextBox
-			Me.SuspendLayout()
+		Me.TextBox = New System.Windows.Forms.TextBox()
+		Me.TextBox.SuspendLayout
+		Me.SuspendLayout
+		'
+		'TextBox
+		'
+		Me.TextBox.Dock = System.Windows.Forms.DockStyle.Fill
+		Me.TextBox.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0,Byte))
+		Me.TextBox.Location = New System.Drawing.Point(0, 0)
+		Me.TextBox.Multiline = true
+		Me.TextBox.Name = "TextBox"
+		Me.TextBox.ReadOnly = true
+		Me.TextBox.Size = New System.Drawing.Size(150, 144)
+		Me.TextBox.TabIndex = 0
+		'
+		'OutputRichTextBox
+		'
+		Me.BackColor = System.Drawing.Color.White
+		Me.Controls.Add(Me.TextBox)
+		Me.Name = "OutputRichTextBox"
+		Me.Size = New System.Drawing.Size(150, 144)
+		Me.TextBox.ResumeLayout(false)
+		Me.TextBox.PerformLayout
+		Me.ResumeLayout(false)
+		Me.PerformLayout
 
-			'
-			'DetailsLink
-			'
-			Me.TextBox.Controls.Add(Me.DetailsLink)
-			Me.DetailsLink.Size = New System.Drawing.Size(0, 0)
-			Me.DetailsLink.Text = ""
-			Me.DetailsLink.SendToBack()
-			Me.DetailsLink.AutoSize = True
-
-      '
-      'TextBox
-      '
-      Me.TextBox.Dock = System.Windows.Forms.DockStyle.Fill
-      Me.TextBox.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-      Me.TextBox.Location = New System.Drawing.Point(0, 0)
-      Me.TextBox.Multiline = True
-      Me.TextBox.Name = "TextBox"
-      Me.TextBox.Size = New System.Drawing.Size(150, 144)
-      Me.TextBox.TabIndex = 0
-			Me.TextBox.Text = ""
-			Me.TextBox.ReadOnly = True
-			Me.BackColor = Drawing.Color.White
-      '
-      'OutputRichTextBox
-			'
-
-      Me.Controls.Add(Me.TextBox)
-      Me.Name = "OutputRichTextBox"
-			Me.Size = New System.Drawing.Size(150, 144)
-			Me.ResumeLayout(False)
-
-
-    End Sub
+End Sub
 
 #End Region
 
@@ -116,8 +105,6 @@ Namespace Relativity.Desktop.Client
     Public Sub Reset()
 	    _totalOutput = New List(Of String)
 	    TextBox.Text = ""
-	    Me.DetailsLink.SendToBack()
-	    Me.DetailsLink.Text = ""
     End Sub
 
     Public Sub Save(ByVal filePath As String)
@@ -151,13 +138,6 @@ Namespace Relativity.Desktop.Client
 			End SyncLock
 		End Sub
 
-		Public Sub WriteErrorDetails()
-			If Not Me.TextBox.IsDisposed Then
-				Me.DetailsLink.Text = "More Details"
-				Me.DetailsLink.BringToFront()
-			End If
-		End Sub
-
 		Private Sub DumpOutput()
 			If _visibleLineCount > 0 Then
 				Dim sb As New System.Text.StringBuilder
@@ -177,13 +157,6 @@ Namespace Relativity.Desktop.Client
 		Private Sub TextBox_Resize1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TextBox.Resize
 			_visibleLineCount = CType(System.Math.Round((Me.Height / 15), 0), Int32)
 			DumpOutput()
-			PositionDetailsLink()
-		End Sub
-
-		Public Sub PositionDetailsLink()
-			If Not Me.TextBox.IsDisposed Then
-				Me.DetailsLink.Location = Me.TextBox.GetPositionFromCharIndex(Me.TextBox.TextLength - 10)
-			End If
 		End Sub
 	End Class
 End Namespace

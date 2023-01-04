@@ -4,7 +4,7 @@
 ''' Contains summary information about the outcome of an import job, including any errors that may have occurred.
 ''' </summary>
 ''' <remarks>
-''' When an import completes successfully, it indicates that all rows were provessed, but not that all rows were imported successfully.  This class provides details about any errors which may have occurred.
+''' When an import completes successfully, it indicates that all rows were processed, but not that all rows were imported successfully.  This class provides details about any errors which may have occurred.
 ''' </remarks>
 Public Class JobReport
 
@@ -23,7 +23,7 @@ Public Class JobReport
 	Private _endTime As DateTime
 
 	''' <summary>
-	''' Import start time.;
+	''' Import start time.
 	''' </summary>
 	Public Property StartTime As DateTime
 		Get
@@ -102,6 +102,7 @@ Public Class JobReport
 
 	Public Property FileBytes As Long
 	Public Property MetadataBytes As Long
+	Public Property SqlProcessRate As Double
 
 	''' <summary>
 	''' Provides information about an error in a specific row.

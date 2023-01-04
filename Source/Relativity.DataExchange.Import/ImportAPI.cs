@@ -16,9 +16,16 @@ using Relativity.DataExchange.Service;
 namespace kCura.Relativity.ImportAPI
 {
 	using global::Relativity.DataExchange;
-	using global::Relativity.DataTransfer.MessageService;
+	using global::Relativity.DataExchange.Logger;
+	using global::Relativity.DataExchange.Logging;
+	using global::Relativity.Logging;
 
-	using Monitoring.Sinks;
+	using kCura.WinEDDS.Service.Kepler;
+	using kCura.WinEDDS.Service.Replacement;
+
+	using IAuthenticationTokenProvider = global::Relativity.Transfer.IAuthenticationTokenProvider;
+	using Constants = global::Relativity.DataExchange.Constants;
+	using Monitoring;
 
 	/// <summary>
 	/// Provides methods for developing custom import utilities for documents, images, production sets, and Dynamic Objects.
@@ -31,27 +38,39 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// The lazy-loaded case manager instance.
 		/// </summary>
-		private CaseManager _caseManager;
+		private ICaseManager _caseManager;
 
 		/// <summary>
 		/// The current Transfer API credentials.
 		/// </summary>
-		private NetworkCredential _tapiCredentials;
+		private WebApiCredential webApiCredential;
 
 		/// <summary>
 		/// The lazy-loaded object type manager instance.
 		/// </summary>
-		private ObjectTypeManager _objectTypeManager;
+		private IObjectTypeManager _objectTypeManager;
 
 		/// <summary>
 		/// The lazy-loaded production manager instance.
 		/// </summary>
-		private ProductionManager _productionManager;
+		private IProductionManager _productionManager;
 
 		/// <summary>
-		/// Sink registration.
+		/// Authentication token provider
 		/// </summary>
-		private IMetricSinkManager _metricSinkManager;
+		private IAuthenticationTokenProvider _authenticationTokenProvider = new NullAuthTokenProvider();
+
+		protected readonly IRunningContext _runningContext = new RunningContext();
+
+		/// <summary>
+		/// logger
+		/// </summary>
+		private ILog _logger = RelativityLogger.Instance;
+
+		/// <summary>
+		 /// API instance id.
+		/// </summary>
+		private Guid _apiInstanceId = Guid.NewGuid();
 
 		/// <summary>
 		/// Holds cookies for the current session.
@@ -61,32 +80,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <summary>
 		/// The current WebAPI credentials.
 		/// </summary>
-		protected ICredentials _credentials;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ImportAPI"/> class using the Integrated Authentication provider.
-		/// </summary>
-		/// <remarks>
-		/// The user will be validated against the Relativity WebAPI instance located at <paramref name="webServiceUrl"/>.
-		/// </remarks>
-		/// <param name="webServiceUrl">
-		/// The URL to the Relativity WebAPI instance.
-		/// </param>
-		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
-		/// Thrown when integrated security is not supported when running within a service process.
-		/// </exception>
-		/// <exception cref="kCura.WinEDDS.Exceptions.InvalidLoginException">
-		/// Thrown when an authentication failure occurs.
-		/// </exception>
-		/// <exception cref="RelativityNotSupportedException">
-		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
-		/// </exception>
-		public ImportAPI(string webServiceUrl)
-		{
-			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
-			this.PerformLogin(null, null, webServiceUrl);
-			this._metricSinkManager = new MetricSinkManager(new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
-		}
+		protected NetworkCredential _credentials;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ImportAPI"/> class.
@@ -111,11 +105,36 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public ImportAPI(string userName, string password)
+		public ImportAPI(string userName, string password) : this(userName, password, string.Empty, null)
 		{
-			this.ExecutionSource = ExecutionSourceEnum.ImportAPI;
-			PerformLogin(userName, password, string.Empty);
-			this._metricSinkManager = new MetricSinkManager(new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ImportAPI"/> class.
+		/// Uses the Password Authentication provider when <paramref name="userName"/> and <paramref name="password"/> are specified; otherwise, Integrated Authentication provider.
+		/// </summary>
+		/// <remarks>
+		/// User name and password are required (unless using Integrated Security) and will be validated.
+		/// The ImportAPI tries to resolve the server name by reading the WebServiceURL key from the local app.config file.  If this fails, it checks the Windows Registry for the location set by the Relativity Desktop Client.
+		/// </remarks>
+		/// <param name="userName">
+		/// The Relativity login user name.
+		/// </param>
+		/// <param name="password">
+		/// The Relativity login password.
+		/// </param>
+		/// <param name="logger">Custom logger.</param>
+		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
+		/// Thrown when integrated security is not supported when running within a service process.
+		/// </exception>
+		/// <exception cref="kCura.WinEDDS.Exceptions.InvalidLoginException">
+		/// Thrown when an authentication failure occurs.
+		/// </exception>
+		/// <exception cref="RelativityNotSupportedException">
+		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
+		/// </exception>
+		public ImportAPI(string userName, string password, ILog logger) : this(userName, password, string.Empty, logger)
+		{
 		}
 
 		/// <summary>
@@ -144,11 +163,47 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public ImportAPI(string userName, string password, string webServiceUrl)
+		public ImportAPI(string userName, string password, string webServiceUrl) : this(userName, password, webServiceUrl, null)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ImportAPI"/> class.
+		/// Uses the Password Authentication provider when <paramref name="userName"/> and <paramref name="password"/> are specified; otherwise, Integrated Authentication provider.
+		/// </summary>
+		/// <remarks>
+		/// User name and password are required (unless using Integrated Security) and will be validated
+		/// against the Relativity WebAPI instance located at <paramref name="webServiceUrl"/>.
+		/// </remarks>
+		/// <param name="userName">
+		/// The Relativity login user name.
+		/// </param>
+		/// <param name="password">
+		/// The Relativity login password.
+		/// </param>
+		/// <param name="webServiceUrl">
+		/// The URL to the Relativity WebAPI instance.
+		/// </param>
+		/// <param name="logger">Custom logger.</param>
+		/// <exception cref="kCura.WinEDDS.Exceptions.CredentialsNotSupportedException">
+		/// Thrown when integrated security is not supported when running within a service process.
+		/// </exception>
+		/// <exception cref="kCura.WinEDDS.Exceptions.InvalidLoginException">
+		/// Thrown when an authentication failure occurs.
+		/// </exception>
+		/// <exception cref="RelativityNotSupportedException">
+		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
+		/// </exception>
+		public ImportAPI(string userName, string password, string webServiceUrl, ILog logger)
 		{
 			ExecutionSource = ExecutionSourceEnum.ImportAPI;
+
+			// we need to refresh communication mode when new ImportAPI instance is created
+			WebApiVsKeplerFactory.InvalidateCache();
+			ManagerFactory.InvalidateCache();
+
 			this.PerformLogin(userName, password, webServiceUrl);
-			this._metricSinkManager = new MetricSinkManager(new MetricsManagerFactory(), ServiceFactoryFactory.Create(this._tapiCredentials));
+			this.SetUpSecureLogger(logger);
 		}
 
 		/// <summary>
@@ -159,6 +214,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="webServiceUrl">
 		/// The URL to the Relativity WebAPI instance.
 		/// </param>
+		/// <param name="logger">Custom logger.</param>
 		/// <returns>
 		/// The <see cref="ImportAPI"/> instance.
 		/// </returns>
@@ -171,15 +227,9 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public static ImportAPI CreateByRsaBearerToken(string webServiceUrl)
+		public static ImportAPI CreateByRsaBearerToken(string webServiceUrl, ILog logger = null)
 		{
-			string token = System.Security.Claims.ClaimsPrincipal.Current.Claims.AccessToken();
-			if (string.IsNullOrEmpty(token))
-			{
-				throw new InvalidLoginException("The current claims principal does not have a bearer token.");
-			}
-
-			return CreateByBearerToken(webServiceUrl, token);
+			return CreateByTokenProvider(webServiceUrl, new RsaBearerTokenAuthenticationProvider(), logger);
 		}
 
 		/// <summary>
@@ -192,6 +242,7 @@ namespace kCura.Relativity.ImportAPI
 		/// <param name="bearerToken">
 		/// The bearer token used to authenticate both WebAPI and REST API endpoints.
 		/// </param>
+		/// <param name="logger">Custom logger.</param>
 		/// <returns>
 		/// The <see cref="ImportAPI"/> instance.
 		/// </returns>
@@ -201,9 +252,9 @@ namespace kCura.Relativity.ImportAPI
 		/// <exception cref="RelativityNotSupportedException">
 		/// The exception thrown when this API version isn't supported with the specified Relativity instance.
 		/// </exception>
-		public static ImportAPI CreateByBearerToken(string webServiceUrl, string bearerToken)
+		public static ImportAPI CreateByBearerToken(string webServiceUrl, string bearerToken, ILog logger = null)
 		{
-			return new ImportAPI(kCura.WinEDDS.Credentials.Constants.OAuthWebApiBearerTokenUserName, bearerToken, webServiceUrl);
+			return new ImportAPI(Constants.OAuthWebApiBearerTokenUserName, bearerToken, webServiceUrl, logger);
 		}
 
 		/// <summary>
@@ -306,18 +357,11 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
-			var fm = new WinEDDS.Service.FieldManager(_credentials, _cookieMonster);
-			//This returned collection contains fields excluding those with one of the following FieldCategories:
-			// FieldCategory.AutoCreate
-			// FieldCategory.Batch
-			// FieldCategory.FileInfo
-			// FieldCategory.FileSize
-			// FieldCategory.MarkupSetMarker
-			// FieldCategory.MultiReflected
-			// FieldCategory.ProductionMarker
-			// FieldCategory.Reflected
-			// See kCura.WinEDDS.Service.FieldQuery.RetrieveAllAsArray -Phil S. 10/19/2011
-			var fields = fm.Query.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
+			var fq = ManagerFactory.CreateFieldQuery(_credentials, _cookieMonster, GetCorrelationId);
+
+			this._logger.LogUserContextInformation($"Call {nameof(ImportAPI)}.{nameof(GetWorkspaceFields)}", this._credentials);
+
+			var fields = fq.RetrieveAllAsDocumentFieldCollection(workspaceArtifactID, artifactTypeID);
 
 			return (from DocumentField docField in fields
 					select new Field
@@ -346,7 +390,9 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImageImportBulkArtifactJob NewImageImportJob()
 		{
-			return new ImageImportBulkArtifactJob(_credentials, _cookieMonster, _metricSinkManager, (int)ExecutionSource);
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
+			this._runningContext.ExecutionSource = (ExecutionSource)this.ExecutionSource;
+			return new ImageImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext, GetCorrelationId);
 		}
 
 		/// <summary>
@@ -364,6 +410,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImageImportBulkArtifactJob NewProductionImportJob(int productionArtifactID)
 		{
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
 			ImageImportBulkArtifactJob imgJob = this.NewImageImportJob();
 			imgJob.Settings.ForProduction = true;
 			imgJob.Settings.ProductionArtifactID = productionArtifactID;
@@ -381,6 +428,7 @@ namespace kCura.Relativity.ImportAPI
 		/// </remarks>
 		public ImportBulkArtifactJob NewNativeDocumentImportJob()
 		{
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
 			return NewObjectImportJob(10);
 		}
 
@@ -395,7 +443,9 @@ namespace kCura.Relativity.ImportAPI
 		/// </returns>
 		public ImportBulkArtifactJob NewObjectImportJob(int artifactTypeId)
 		{
-			var returnJob = new ImportBulkArtifactJob(_credentials, _tapiCredentials, _cookieMonster, _metricSinkManager, (int)ExecutionSource);
+			this._runningContext.CallingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName().Name;
+			this._runningContext.ExecutionSource = (ExecutionSource)this.ExecutionSource;
+			var returnJob = new ImportBulkArtifactJob(_credentials, this.webApiCredential, _cookieMonster, this._runningContext, GetCorrelationId);
 			returnJob.Settings.ArtifactTypeId = artifactTypeId;
 			return returnJob;
 		}
@@ -442,7 +492,53 @@ namespace kCura.Relativity.ImportAPI
 					}).ToList();
 		}
 
+		#region "Protected items"
+
+		protected static ImportAPI CreateByTokenProvider(string webServiceUrl, IRelativityTokenProvider relativityTokenProvider, ILog logger = null)
+		{
+			var token = GetToken(relativityTokenProvider);
+
+			ImportAPI importApi = CreateByBearerToken(webServiceUrl, token, logger);
+
+			// Here we override token provider so Tapi can refresh credentials on token expiration event
+			importApi.webApiCredential.TokenProvider = new AuthTokenProviderAdapter(relativityTokenProvider);
+			return importApi;
+		}
+
+		protected string GetCorrelationId()
+		{
+			return _apiInstanceId.ToString();
+		}
+
+		#endregion "Protected items"
+
 		#region "Private items"
+
+		private void SetUpSecureLogger(ILog logger)
+		{
+			ISecureLogFactory secureLogFactory = new ImportApiSecureLogFactory();
+			RelativityLogger.Instance = secureLogFactory.CreateSecureLogger(logger);
+		}
+
+		private static string GetToken(IRelativityTokenProvider relativityTokenProvider)
+		{
+			string token;
+			try
+			{
+				token = relativityTokenProvider.GetToken();
+			}
+			catch (Exception ex)
+			{
+				throw new InvalidLoginException("Error when retrieving authentication token.", ex);
+			}
+
+			if (string.IsNullOrEmpty(token))
+			{
+				throw new InvalidLoginException("The generated token should not be null or empty!");
+			}
+
+			return token;
+		}
 
 		private void PerformLogin(string userName, string password, string webServiceURL)
 		{
@@ -451,7 +547,7 @@ namespace kCura.Relativity.ImportAPI
 			try
 			{
 				ImportCredentialManager.WebServiceURL = webServiceURL;
-				credentials = ImportCredentialManager.GetCredentials(userName, password);
+				credentials = ImportCredentialManager.GetCredentials(userName, password, this._runningContext, GetCorrelationId);
 			}
 			catch (kCura.WinEDDS.Exceptions.CredentialsNotSupportedException)
 			{
@@ -471,13 +567,49 @@ namespace kCura.Relativity.ImportAPI
 			}
 
 			_credentials = credentials.Credentials;
-			_tapiCredentials = credentials.TapiCredential;
+
+			this._logger.LogUserContextInformation($"Initialized {nameof(ImportAPI)}", this._credentials);
+
+			this.webApiCredential = new WebApiCredential()
+			{
+				Credential = credentials.Credentials,
+				TokenProvider = this._authenticationTokenProvider
+			};
 			_cookieMonster = credentials.CookieMonster;
 			if (_credentials == null)
 			{
 				throw new kCura.WinEDDS.Exceptions.InvalidLoginException("Login failed.");
 			}
+
+			this.SendAuthenticationTypeMetric(credentials.Credentials, this.GetAuthenticationMethod(userName));
 		}
+
+		private TelemetryConstants.AuthenticationMethod GetAuthenticationMethod(string username)
+		{
+			return (string.IsNullOrEmpty(username)
+						? TelemetryConstants.AuthenticationMethod.Windows
+						: (username == Constants.OAuthWebApiBearerTokenUserName
+							   ? TelemetryConstants.AuthenticationMethod.BearerToken
+							   : TelemetryConstants.AuthenticationMethod.UsernamePassword));
+		}
+
+		private void SendAuthenticationTypeMetric(NetworkCredential credentials, TelemetryConstants.AuthenticationMethod authenticationMethod)
+		{
+			Monitoring.Sinks.IMetricService metricService = new Monitoring.Sinks.MetricService(new Monitoring.Sinks.ImportApiMetricSinkConfig(), KeplerProxyFactory.CreateKeplerProxy(credentials));
+			var logger = RelativityLogger.Instance;
+			var metric = new MetricAuthenticationType()
+							 {
+								 CorrelationID = Guid.NewGuid().ToString(),
+								 UnitOfMeasure = "login(s)",
+								 AuthenticationMethod = authenticationMethod,
+								 SystemType = logger.System,
+								 SubSystemType = logger.SubSystem,
+								 ImportApiVersion = this._runningContext.ImportApiSdkVersion.ToString(),
+								 RelativityVersion = this._runningContext.RelativityVersion.ToString()
+			};
+			metricService.Log(metric);
+		}
+
 
 		/// <summary>
 		/// Create a repository path based on the given workspace ArtifactID and
@@ -501,33 +633,33 @@ namespace kCura.Relativity.ImportAPI
 			return returnRepoPath;
 		}
 
-		private CaseManager GetCaseManager()
+		private ICaseManager GetCaseManager()
 		{
 			if (_caseManager == null)
 			{
-				_caseManager = new CaseManager(_credentials, _cookieMonster);
+				_caseManager = ManagerFactory.CreateCaseManager(_credentials, _cookieMonster, GetCorrelationId);
 			}
-
+			this._logger.LogUserContextInformation($"Get {nameof(CaseManager)}", this._credentials);
 			return _caseManager;
 		}
 
-		private ObjectTypeManager GetObjectTypeManager()
+		private IObjectTypeManager GetObjectTypeManager()
 		{
 			if (_objectTypeManager == null)
 			{
-				_objectTypeManager = new ObjectTypeManager(_credentials, _cookieMonster);
+				_objectTypeManager = ManagerFactory.CreateObjectTypeManager(_credentials, _cookieMonster, GetCorrelationId);
 			}
-
+			this._logger.LogUserContextInformation($"Get {nameof(ObjectTypeManager)}", this._credentials);
 			return _objectTypeManager;
 		}
 
-		private ProductionManager GetProductionManager()
+		private IProductionManager GetProductionManager()
 		{
 			if (_productionManager == null)
 			{
-				_productionManager = new ProductionManager(_credentials, _cookieMonster);
+				_productionManager = ManagerFactory.CreateProductionManager(_credentials, _cookieMonster, GetCorrelationId);
 			}
-
+			this._logger.LogUserContextInformation($"Get {nameof(ProductionManager)}", this._credentials);
 			return _productionManager;
 		}
 
@@ -557,7 +689,7 @@ namespace kCura.Relativity.ImportAPI
 				//If the destination folder path is empty, we only need to test file Read/Write permissions
 				if (!String.IsNullOrEmpty(destFolderPath))
 				{
-						System.IO.Directory.CreateDirectory(destFolderPath);
+					System.IO.Directory.CreateDirectory(destFolderPath);
 				}
 
 				System.IO.File.Create(destFolderPath + dummyText).Close();

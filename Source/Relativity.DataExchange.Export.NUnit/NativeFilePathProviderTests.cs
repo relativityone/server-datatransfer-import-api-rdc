@@ -10,7 +10,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
 	using Relativity.DataExchange.Io;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	public class NativeFilePathProviderTests : FilePathProviderTests
 	{
@@ -18,7 +18,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 		protected override FilePathProvider CreateInstance(IDirectory directoryHelper, ILabelManagerForArtifact labelManager, ExportFile exportSettings)
 		{
-			return new NativeFilePathProvider(labelManager, exportSettings, directoryHelper, new NullLogger());
+			return new NativeFilePathProvider(labelManager, exportSettings, directoryHelper, new TestNullLogger());
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using Relativity.DataExchange.Export.VolumeManagerV2.Repository;
 	using Relativity.DataExchange.Io;
 	using Relativity.DataExchange.Process;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ExportFileValidatorTests
@@ -38,7 +38,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._fileHelper = new Mock<IFile>();
 			this._exportRequestRepository = new Mock<IExportRequestRepository>();
 
-			this._instance = new ExportFileValidator(this._exportSettings, this._exportRequestRepository.Object, this._status.Object, this._fileHelper.Object, new NullLogger());
+			this._instance = new ExportFileValidator(this._exportSettings, this._exportRequestRepository.Object, this._status.Object, this._fileHelper.Object, new TestNullLogger());
 		}
 
 		[Test]

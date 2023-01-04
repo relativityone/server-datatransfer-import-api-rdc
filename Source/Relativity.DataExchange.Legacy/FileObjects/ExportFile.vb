@@ -11,60 +11,20 @@ Namespace kCura.WinEDDS
 	''' Writable properties that are not marked as ReadFromExisting are used in saving/loading these files to disk.  If one needs to add a property, and it needs to be save-able, make sure to add those settings to the serialize/deserialize methods.
 	''' </remarks>
 	<Serializable()> Public Class ExportFile
-		Implements System.Runtime.Serialization.ISerializable
+		Implements ISerializable
 
 #Region " Members "
 
-		Protected _caseInfo As CaseInfo
-		Protected _dataTable As System.Data.DataTable
-		Protected _typeOfExport As ExportType
-		Protected _folderPath As String
-		Protected _artifactID As Int32
-		Protected _viewID As Int32
-		Protected _overwrite As Boolean
-		Protected _recordDelimiter As Char
-		Protected _quoteDelimiter As Char
-		Protected _newlineDelimiter As Char
-		Protected _multiRecordDelimiter As Char
-		Protected _nestedValueDelimiter As Char
-		Protected _credential As Net.NetworkCredential
-		Protected _cookieContainer As System.Net.CookieContainer
-		Protected _exportFullText As Boolean
-		Protected _exportFullTextAsFile As Boolean
-		Protected _exportNative As Boolean
-		Protected _logFileFormat As kCura.WinEDDS.LoadFileType.FileFormat?
-		Protected _renameFilesToIdentifier As Boolean
-		Protected _identifierColumnName As String
-		Protected _volumeInfo As kCura.WinEDDS.Exporters.VolumeInfo
-		Protected _exportImages As Boolean
-		Protected _loadFileExtension As String
-		Protected _imagePrecedence As Pair()
 		Protected _loadFilesPrefix As String
-		Protected _filePrefix As String
-		Protected _typeOfExportedFilePath As ExportedFilePathType
-		Protected _typeOfImage As ImageType?
-		Private _exportNativesToFileNamedFrom As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
-		Private _appendOriginalFileName As Boolean
-		Private _loadFileIsHtml As Boolean = False
-		Protected _artifactAvfLookup As Specialized.HybridDictionary
-		Protected _allExportableFields As WinEDDS.ViewFieldInfo()
-		Protected _selectedViewFields As WinEDDS.ViewFieldInfo()
-		Protected _multicodesAsNested As Boolean
-		Protected _selectedTextFields As WinEDDS.ViewFieldInfo()
-		Protected _loadFileEncoding As System.Text.Encoding
-		Protected _textFileEncoding As System.Text.Encoding
-		Protected _volumeDigitPadding As Int32
-		Protected _subdirectoryDigitPadding As Int32
 		Protected _startAtDocument As Int32 = 0
-		Private _artifactTypeID As Int32
-		Private _fileField As DocumentField
+		Private _artifactTypeId As Int32
 
 #End Region
 
 #Region "Public Properties"
 		Public ReadOnly Property ArtifactTypeID() As Int32
 			Get
-				Return _artifactTypeID
+				Return _artifactTypeId
 			End Get
 		End Property
 
@@ -78,22 +38,8 @@ Namespace kCura.WinEDDS
 		End Property
 
 		Public Property ImagePrecedence() As Pair()
-			Get
-				Return _imagePrecedence
-			End Get
-			Set(ByVal value As Pair())
-				_imagePrecedence = value
-			End Set
-		End Property
 
 		<ReadFromExisting()> Public Property CaseInfo() As CaseInfo
-			Get
-				Return _caseInfo
-			End Get
-			Set(ByVal value As CaseInfo)
-				_caseInfo = value
-			End Set
-		End Property
 
 		Public ReadOnly Property CaseArtifactID() As Int32
 			Get
@@ -102,336 +48,81 @@ Namespace kCura.WinEDDS
 		End Property
 
 		<ReadFromExisting()> Public Property DataTable() As System.Data.DataTable
-			Get
-				Return _dataTable
-			End Get
-			Set(ByVal value As System.Data.DataTable)
-				_dataTable = value
-			End Set
-		End Property
 
 		<ReadFromExisting()> Public Property ArtifactAvfLookup() As Specialized.HybridDictionary
-			Get
-				Return _artifactAvfLookup
-			End Get
-			Set(ByVal value As Specialized.HybridDictionary)
-				_artifactAvfLookup = value
-			End Set
-		End Property
 
 		Public Property NestedValueDelimiter() As Char
-			Get
-				Return _nestedValueDelimiter
-			End Get
-			Set(ByVal value As Char)
-				_nestedValueDelimiter = value
-			End Set
-		End Property
 
 		<ReadFromExisting()> Public Property TypeOfExport() As ExportType
-			Get
-				Return _typeOfExport
-			End Get
-			Set(ByVal value As ExportType)
-				_typeOfExport = value
-			End Set
-		End Property
 
 		Public Property FolderPath() As String
-			Get
-				Return _folderPath
-			End Get
-			Set(ByVal value As String)
-				_folderPath = value
-			End Set
-		End Property
 
 		Public Property ArtifactID() As Int32
-			Get
-				Return _artifactID
-			End Get
-			Set(ByVal value As Int32)
-				_artifactID = value
-			End Set
-		End Property
 
 		Public Property ViewID() As Int32
-			Get
-				Return _viewID
-			End Get
-			Set(ByVal value As Int32)
-				_viewID = value
-			End Set
-		End Property
-
+			
 		Public Property Overwrite() As Boolean
-			Get
-				Return _overwrite
-			End Get
-			Set(ByVal value As Boolean)
-				_overwrite = value
-			End Set
-		End Property
 
 		Public Property RecordDelimiter() As Char
-			Get
-				Return _recordDelimiter
-			End Get
-			Set(ByVal value As Char)
-				_recordDelimiter = value
-			End Set
-		End Property
 
 		Public Property QuoteDelimiter() As Char
-			Get
-				Return _quoteDelimiter
-			End Get
-			Set(ByVal value As Char)
-				_quoteDelimiter = value
-			End Set
-		End Property
 
 		Public Property NewlineDelimiter() As Char
-			Get
-				Return _newlineDelimiter
-			End Get
-			Set(ByVal value As Char)
-				_newlineDelimiter = value
-			End Set
-		End Property
 
 		Public Property MultiRecordDelimiter() As Char
-			Get
-				Return _multiRecordDelimiter
-			End Get
-			Set(ByVal value As Char)
-				_multiRecordDelimiter = value
-			End Set
-		End Property
 
 		<ReadFromExisting()> Public Property Credential() As Net.NetworkCredential
-			Get
-				Return _credential
-			End Get
-			Set(ByVal value As Net.NetworkCredential)
-				_credential = value
-			End Set
-		End Property
 
 		<ReadFromExisting()> Public Property CookieContainer() As System.Net.CookieContainer
-			Get
-				Return _cookieContainer
-			End Get
-			Set(ByVal value As System.Net.CookieContainer)
-				_cookieContainer = value
-			End Set
-		End Property
 
 		Public Property ExportFullText() As Boolean
-			Get
-				Return _exportFullText
-			End Get
-			Set(ByVal value As Boolean)
-				_exportFullText = value
-			End Set
-		End Property
 
 		Public Property ExportFullTextAsFile() As Boolean
-			Get
-				Return _exportFullTextAsFile
-			End Get
-			Set(ByVal value As Boolean)
-				_exportFullTextAsFile = value
-			End Set
-		End Property
 
 		Public Property ExportNative() As Boolean
-			Get
-				Return _exportNative
-			End Get
-			Set(ByVal value As Boolean)
-				_exportNative = value
-			End Set
-		End Property
+
+		Public Property ExportPdf() As Boolean
 
 		Public Property LogFileFormat() As kCura.WinEDDS.LoadFileType.FileFormat?
-			Get
-				Return _logFileFormat
-			End Get
-			Set(ByVal value As kCura.WinEDDS.LoadFileType.FileFormat?)
-				_logFileFormat = value
-			End Set
-		End Property
 
 		Public Property RenameFilesToIdentifier() As Boolean
-			Get
-				Return _renameFilesToIdentifier
-			End Get
-			Set(ByVal value As Boolean)
-				_renameFilesToIdentifier = value
-			End Set
-		End Property
 
 		Public Property IdentifierColumnName() As String
-			Get
-				Return _identifierColumnName
-			End Get
-			Set(ByVal value As String)
-				_identifierColumnName = value
-			End Set
-		End Property
+
 
 		Public Property LoadFileExtension() As String
-			Get
-				Return _loadFileExtension
-			End Get
-			Set(ByVal value As String)
-				_loadFileExtension = value
-			End Set
-		End Property
 
 		Public Property VolumeInfo() As kCura.WinEDDS.Exporters.VolumeInfo
-			Get
-				Return _volumeInfo
-			End Get
-			Set(ByVal value As kCura.WinEDDS.Exporters.VolumeInfo)
-				_volumeInfo = value
-			End Set
-		End Property
 
 		Public Property ExportImages() As Boolean
-			Get
-				Return _exportImages
-			End Get
-			Set(ByVal value As Boolean)
-				_exportImages = value
-			End Set
-		End Property
-		Public Property ExportNativesToFileNamedFrom() As kCura.WinEDDS.ExportNativeWithFilenameFrom
-			Get
-				Return _exportNativesToFileNamedFrom
-			End Get
-			Set(ByVal value As kCura.WinEDDS.ExportNativeWithFilenameFrom)
-				_exportNativesToFileNamedFrom = value
-			End Set
-		End Property
+
+		Public Property ExportNativesToFileNamedFrom() As kCura.WinEDDS.ExportNativeWithFilenameFrom = ExportNativeWithFilenameFrom.Identifier
 
 		Public Property FilePrefix() As String
-			Get
-				Return _filePrefix
-			End Get
-			Set(ByVal value As String)
-				_filePrefix = value
-			End Set
-		End Property
 
 		Public Property TypeOfExportedFilePath() As ExportedFilePathType
-			Get
-				Return _typeOfExportedFilePath
-			End Get
-			Set(ByVal value As ExportedFilePathType)
-				_typeOfExportedFilePath = value
-			End Set
-		End Property
 
 		Public Property TypeOfImage() As ImageType?
-			Get
-				Return _typeOfImage
-			End Get
-			Set(ByVal value As ImageType?)
-				_typeOfImage = value
-			End Set
-		End Property
 
 		Public Property AppendOriginalFileName() As Boolean
-			Get
-				Return _appendOriginalFileName
-			End Get
-			Set(ByVal value As Boolean)
-				_appendOriginalFileName = value
-			End Set
-		End Property
 
 		Public Property LoadFileIsHtml() As Boolean
-			Get
-				Return _loadFileIsHtml
-			End Get
-			Set(ByVal value As Boolean)
-				_loadFileIsHtml = value
-			End Set
-		End Property
 
 		<ReadFromExisting()> Public Property AllExportableFields() As WinEDDS.ViewFieldInfo()
-			Get
-				Return _allExportableFields
-			End Get
-			Set(ByVal value As WinEDDS.ViewFieldInfo())
-				_allExportableFields = value
-			End Set
-		End Property
 
 		Public Property SelectedViewFields() As WinEDDS.ViewFieldInfo()
-			Get
-				Return _selectedViewFields
-			End Get
-			Set(ByVal value As WinEDDS.ViewFieldInfo())
-				_selectedViewFields = value
-			End Set
-		End Property
 
 		Public Property MulticodesAsNested() As Boolean
-			Get
-				Return _multicodesAsNested
-			End Get
-			Set(ByVal value As Boolean)
-				_multicodesAsNested = value
-			End Set
-		End Property
 
 		Public Property SelectedTextFields() As WinEDDS.ViewFieldInfo()
-			Get
-				Return _selectedTextFields
-			End Get
-			Set(ByVal value As WinEDDS.ViewFieldInfo())
-				_selectedTextFields = value
-			End Set
-		End Property
 
 		Public Property LoadFileEncoding() As System.Text.Encoding
-			Get
-				Return _loadFileEncoding
-			End Get
-			Set(ByVal value As System.Text.Encoding)
-				_loadFileEncoding = value
-			End Set
-		End Property
 
 		Public Property TextFileEncoding() As System.Text.Encoding
-			Get
-				Return _textFileEncoding
-			End Get
-			Set(ByVal value As System.Text.Encoding)
-				_textFileEncoding = value
-			End Set
-		End Property
 
 		Public Property VolumeDigitPadding() As Int32
-			Get
-				Return _volumeDigitPadding
-			End Get
-			Set(ByVal value As Int32)
-				_volumeDigitPadding = value
-			End Set
-		End Property
 
 		Public Property SubdirectoryDigitPadding() As Int32
-			Get
-				Return _subdirectoryDigitPadding
-			End Get
-			Set(ByVal value As Int32)
-				_subdirectoryDigitPadding = value
-			End Set
-		End Property
 
 		Public Property StartAtDocumentNumber() As Int32
 			Get
@@ -443,17 +134,10 @@ Namespace kCura.WinEDDS
 		End Property
 
 		<ReadFromExisting()> Public Property FileField() As DocumentField
-			Get
-				Return _fileField
-			End Get
-			Set(ByVal value As DocumentField)
-				_fileField = value
-			End Set
-		End Property
 
 		Public ReadOnly Property HasFileField() As Boolean
 			Get
-				Return Not _fileField Is Nothing
+				Return Not FileField Is Nothing
 			End Get
 		End Property
 
@@ -504,6 +188,7 @@ Namespace kCura.WinEDDS
 			info.AddValue("ObjectTypeName", Me.ObjectTypeName, GetType(String))
 			info.AddValue("UseCustomFileNaming", Me.UseCustomFileNaming, GetType(Boolean))
 			info.AddValue("CustomFileNaming", Me.CustomFileNaming, GetType(CustomFileNameDescriptorModel))
+			info.AddValue("ExportPdf", Me.ExportPdf, GetType(Boolean))
 		End Sub
 
 		Protected Sub New(ByVal info As System.Runtime.Serialization.SerializationInfo, ByVal context As System.Runtime.Serialization.StreamingContext)
@@ -567,6 +252,11 @@ Namespace kCura.WinEDDS
 				Catch ex As SerializationException
 					Me.CustomFileNaming = Nothing
 				End Try
+				Try
+					Me.ExportPdf = info.GetBoolean("ExportPdf")
+				Catch
+					Me.ExportPdf = False
+				End Try
 			End With
 		End Sub
 
@@ -582,7 +272,7 @@ Namespace kCura.WinEDDS
 			Me.MultiRecordDelimiter = ChrW(59)
 			Me.NestedValueDelimiter = "\"c
 			Me.MulticodesAsNested = True
-			_artifactTypeID = artifactTypeID
+			_artifactTypeId = artifactTypeID
 		End Sub
 
 #End Region

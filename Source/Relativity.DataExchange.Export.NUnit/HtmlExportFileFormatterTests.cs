@@ -12,6 +12,8 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS;
+
 	using Relativity.DataExchange.Export;
 	using Relativity.DataExchange.Service;
 
@@ -23,6 +25,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		private const string _HTML_TR_END = "</tr>";
 		private const string _IMAGE_COL_NAME = "Image Files";
 		private const string _NATIVE_COL_NAME = "Native Files";
+		private const string _PDF_COL_NAME = "PDF Files";
 		private readonly string _headerSuffix = $"{Environment.NewLine}{_HTML_TR_END}{Environment.NewLine}";
 		private string _headerPrefix;
 
@@ -49,16 +52,23 @@ namespace Relativity.DataExchange.Export.NUnit
 			};
 		}
 
-		[Test]
-		public void ItShouldReturnHeaderStringWithoutNativeAndWithoutImage()
+		[TestCase(false, false, false)]
+		[TestCase(true, true, true)]
+		[TestCase(false, true, true)]
+		[TestCase(true, false, true)]
+		[TestCase(true, true, false)]
+		[TestCase(true, false, false)]
+		[TestCase(false, true, false)]
+		[TestCase(false, false, true)]
+		public void ItShouldReturnCorrectHeaderStringForDocument(bool exportImages, bool exportNatives, bool exportPdfs)
 		{
 			// Arrange
-			this.ExpFile.ExportNative = false;
-			this.ExpFile.ExportImages = false;
+			this.ExpFile.ExportImages = exportImages;
+			this.ExpFile.ExportNative = exportNatives;
+			this.ExpFile.ExportPdf = exportPdfs;
 			this.SubjectUnderTest = new HtmlExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
 
-			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}";
-			string expectedHeader = this.GetExpectedHeaderText(expectedHeaderRow);
+			string expectedHeader = this.GetExpectedHeader(exportImages, exportNatives, exportPdfs);
 
 			// Act
 			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
@@ -68,17 +78,24 @@ namespace Relativity.DataExchange.Export.NUnit
 		}
 
 		[Test]
-		public void ItShouldReturnHeaderStringWithoutNative()
+		public void ItShouldNotIncludeImagesWhenArtifactIsNotDocument()
 		{
 			// Arrange
-			this.ExpFile.ExportNative = false;
-			this.ExpFile.ExportImages = true;
+			this.ExpFile = new ExportFile((int)ArtifactType.Field)
+			{
+				ExportImages = true,
+				ExportNative = true,
+				ExportPdf = true,
+				QuoteDelimiter = QuoteDelimiter,
+				RecordDelimiter = RecordDelimiter,
+				CaseInfo = new CaseInfo
+				{
+					Name = _WKSP_NAME
+				}
+			};
+
 			this.SubjectUnderTest = new HtmlExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
-
-			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}" +
-									   $"{_HTML_TH}{_IMAGE_COL_NAME}{_HTML_TH_END}";
-
-			string expectedHeader = this.GetExpectedHeaderText(expectedHeaderRow);
+			string expectedHeader = this.GetExpectedHeader(false, true, true);
 
 			// Act
 			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
@@ -87,24 +104,25 @@ namespace Relativity.DataExchange.Export.NUnit
 			Assert.That(header, Is.EqualTo(expectedHeader));
 		}
 
-		[Test]
-		public void ItShouldReturnHeaderStringWithoutImage()
+		private string GetExpectedHeader(bool addImages, bool addNatives, bool addPdfs)
 		{
-			// Arrange
-			this.ExpFile.ExportNative = true;
-			this.ExpFile.ExportImages = false;
-			this.SubjectUnderTest = new HtmlExportFileFormatter(this.ExpFile, this.FieldNameProviderMock.Object);
+			StringBuilder builder = new StringBuilder($"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}");
+			if (addImages)
+			{
+				builder.Append($"{_HTML_TH}{_IMAGE_COL_NAME}{_HTML_TH_END}");
+			}
 
-			string expectedHeaderRow = $"{_HTML_TH}{FileName1}{_HTML_TH_END}{_HTML_TH}{FieldName2}{_HTML_TH_END}" +
-									   $"{_HTML_TH}{_NATIVE_COL_NAME}{_HTML_TH_END}";
+			if (addNatives)
+			{
+				builder.Append($"{_HTML_TH}{_NATIVE_COL_NAME}{_HTML_TH_END}");
+			}
 
-			string expectedHeader = this.GetExpectedHeaderText(expectedHeaderRow);
+			if (addPdfs)
+			{
+				builder.Append($"{_HTML_TH}{_PDF_COL_NAME}{_HTML_TH_END}");
+			}
 
-			// Act
-			string header = this.SubjectUnderTest.GetHeader(this.Fields.ToList());
-
-			// Assert
-			Assert.That(header, Is.EqualTo(expectedHeader));
+			return this.GetExpectedHeaderText(builder.ToString());
 		}
 
 		private string GetExpectedHeaderText(string expectedHeaderRow)

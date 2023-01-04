@@ -20,7 +20,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 			Dim thrownException = Assert.Throws(Of StringImporterException)(Sub()
 				DelimitedFileImporter2.ValidateStringForVarChar(value, 2, maxLen, 10, "Test")
 			End Sub)
-			Assert.AreEqual("Error in line 10, column ""C"". The input value from the Test source field has a length of " & len & " character(s). This exceeds the limit for the Test destination field, which is currently set to " & maxLen & " character(s).", thrownException.Message)
+			Assert.AreEqual("Error in line 10, column ""C"". There was an error attempting to import this record due to the length of a metadata field not being large enough. The maximum length of the ""Test"" field is currently set to " & maxLen & " characters, but the records metadata's length is " & len & " characters. Increase the maximum length of the ""Test"" field to at least " & len & " characters and retry.", thrownException.Message)
 		End Sub
 
 		<Test>

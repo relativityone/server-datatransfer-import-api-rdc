@@ -9,7 +9,8 @@ Namespace kCura.WinEDDS.Api
 
 		Function ReadArtifact() As Api.ArtifactFieldCollection
 		Function GetColumnNames(ByVal args As Object) As String()
-		Function CountRecords() As Int64
+		Sub ValidateColumnNames(invalidNameAction As Action(Of String)) 
+		Function CountRecords() As Int64?
 		Function SourceIdentifierValue() As String
 
 		Sub AdvanceRecord()

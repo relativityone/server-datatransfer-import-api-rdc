@@ -14,7 +14,7 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Settings;
 	using Relativity.DataExchange.Service;
-	using Relativity.Logging;
+	using Relativity.DataExchange.TestFramework;
 
 	[TestFixture]
 	public class ColumnsOrdinalLookupFactoryTests
@@ -24,7 +24,7 @@ namespace Relativity.DataExchange.Export.NUnit
 		[SetUp]
 		public void SetUp()
 		{
-			this._instance = new ColumnsOrdinalLookupFactory(new NullLogger());
+			this._instance = new ColumnsOrdinalLookupFactory(new TestNullLogger());
 		}
 
 		[Test]

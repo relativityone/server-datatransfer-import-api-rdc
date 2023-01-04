@@ -17,12 +17,14 @@
 		private const string COLUMN_SUFFIX = "</td>";
 
 		private readonly IFilePathTransformer _filePathTransformer;
+		private readonly IFileNameProvider _fileNameProvider;
 		private readonly ExportFile _settings;
 
-		public HtmlCellFormatter(ExportFile settings, IFilePathTransformer filePathTransformer)
+		public HtmlCellFormatter(ExportFile settings, IFilePathTransformer filePathTransformer, IFileNameProvider fileNameProvider)
 		{
 			this._settings = settings;
 			this._filePathTransformer = filePathTransformer;
+			this._fileNameProvider = fileNameProvider;
 		}
 
 		public string TransformToCell(string contents)
@@ -50,6 +52,11 @@
 			return $"{COLUMN_PREFIX}{this.GetNativeHtmlString(artifact, location)}{COLUMN_SUFFIX}";
 		}
 
+		public string CreatePdfCell(string location, ObjectExportInfo artifact)
+		{
+			return $"{COLUMN_PREFIX}{this.GetPdfHtmlString(artifact, location)}{COLUMN_SUFFIX}";
+		}
+
 		private string GetNativeHtmlString(ObjectExportInfo artifact, string location)
 		{
 			if (this.IsDocument() && artifact.NativeCount == 0)
@@ -62,8 +69,19 @@
 				return string.Empty;
 			}
 
-			string nativeFileName = artifact.NativeFileName(this._settings.AppendOriginalFileName);
+			string nativeFileName = _fileNameProvider.GetName(artifact);
 			return this.GetLink(location, nativeFileName);
+		}
+
+		private string GetPdfHtmlString(ObjectExportInfo artifact, string location)
+		{
+			if (!this.IsDocument() || !artifact.HasPdf)
+			{
+				return string.Empty;
+			}
+
+			string pdfFileName = _fileNameProvider.GetPdfName(artifact);
+			return this.GetLink(location, pdfFileName);
 		}
 
 		private bool IsDocument()
