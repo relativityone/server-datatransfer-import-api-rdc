@@ -50,6 +50,11 @@ namespace Relativity.DataExchange
 		public const string TryAgainAdminFatalMessage = "Try again. If the problem persists please contact your system administrator for assistance.";
 
 		/// <summary>
+		/// Exception message that tells user that import of the current batch is still in progress.
+		/// </summary>
+		public const string BatchInProgressMessage = "Batch In Progress";
+
+		/// <summary>
 		/// The list of fatal exception candidates.
 		/// </summary>
 		public static readonly IReadOnlyList<Type> FatalExceptionCandidates = new List<Type>(
@@ -337,6 +342,23 @@ namespace Relativity.DataExchange
 		public static bool IsHttpStatusCodeFatalError(HttpStatusCode statusCode)
 		{
 			return DefaultFatalHttpStatusCodes.Any(x => x == statusCode);
+		}
+
+		/// <summary>
+		/// Check if exception has message indicating that batch import is in progress.
+		/// </summary>
+		/// <param name="exception">The exception to check.</param>
+		/// <returns>
+		/// <see langword="true" /> when the exception is considered fatal; otherwise, <see langword="false" />.
+		/// </returns>
+		public static bool IsBatchInProgressException(Exception exception)
+		{
+			if (exception == null)
+			{
+				throw new ArgumentNullException(nameof(exception));
+			}
+
+			return exception.GetType() == typeof(ConflictException) && exception.Message.Contains(BatchInProgressMessage);
 		}
 
 		/// <summary>
