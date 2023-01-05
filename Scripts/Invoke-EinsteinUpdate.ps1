@@ -81,6 +81,16 @@ Function Replace-VariablesInTemplate{
 			Throw "This operation cannot be performed because the message on einstein does not have a green check for '$RelVersion'. Add this check in .\Scripts\Template_einstein.txt, so our documentation is updated."
 		}
 	}
+	elseif($Branch.StartsWith("master", [System.StringComparison]::InvariantCultureIgnoreCase))
+	{
+		# This is a master branch (used for release) check to see if the name master is mentioned in the template. This is done because we need to manually opdate the template for each version, 
+		# and if you forget we want the pipeline to warn us by throwing an exception, so you actually fix it. 
+		# the documentation just needs 2 more lines of HTML if this throws.
+		if($MessageToUse.IndexOf($Branch, [System.StringComparison]::InvariantCultureIgnoreCase) -le 0)
+		{
+			Throw "This operation cannot be performed because the message on einstein does not have a green check for '$Branch'. Add this check in .\Scripts\Template_einstein.txt, so our documentation is updated."
+		}
+	}
 	
 	$MessageToUse = $MessageToUse -replace '<sdk_version_in_build>', $SdkVersion
 	$MessageToUse = $MessageToUse -replace '<rdc_version_in_build>', $RdcVersion
