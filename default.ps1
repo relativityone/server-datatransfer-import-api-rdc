@@ -424,7 +424,6 @@ task BuildVersion -Description "Retrieves the build version from powershell" {
     Write-Host "Importing powershell properties.."
 
     $majorMinorIncrease = versioning\Get-ReleaseVersion "$Branch" -omitPostFix
-    
     Write-Output "Build Url: $BuildUrl"
     $maxVersionLength = 50
     $localBuildVersion = $majorMinorIncrease

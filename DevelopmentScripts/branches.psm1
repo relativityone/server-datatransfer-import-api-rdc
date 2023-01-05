@@ -7,7 +7,8 @@ public enum BranchType {
     Trident,
 	PerformancePipeline,
 	ReleaseBranches,
-    PipelineTest
+    PipelineTest,
+	Master
 }
 '@ -Language CSharp
 
@@ -17,6 +18,10 @@ Function Get-CurrentBranchType{
     )
     
     $jiraVersionNumber = Get-JiraTicketNumberFromBranchName -branchName $currentBranch
+    If ($currentBranch.ToString() -eq "master" ) 
+    {
+       return [BranchType]::Master
+    }  
     If ($currentBranch.ToString() -eq "develop" ) 
     {
        return [BranchType]::Develop

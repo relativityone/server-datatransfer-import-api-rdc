@@ -135,6 +135,7 @@ Function Get-ReleaseVersion {
         ([BranchType]::Develop) {$postfix = "-dev"}
         ([BranchType]::FeatureBranch) {$postfix = "-$currentBranch"}
         ([BranchType]::Release) {$postfix = ""}
+		([BranchType]::Master) {$postfix = ""}
         ([BranchType]::HotfixRelease) {
             $numbersAtTheEnd = $currentBranch | Foreach {if ($_ -match '(\d+)$') {$matches[1]}}
             $postfix = "-Hotfix-$numbersAtTheEnd"

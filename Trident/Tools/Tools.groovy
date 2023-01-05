@@ -104,7 +104,7 @@ def createHopperInstance(String sutTemplate, String relativityBranch)
 	vmInfo = utils.createHopper("https://api.hopper.relativity.com/", "homeimprovement@relativity.com", sutTemplate, vmName, vmDescription, buildOwner, productName)
 	utils.createHopperTestSettings(vmInfo)
 
-	if(relativityBranch != null && !relativityBranch.isEmpty()) 
+	if(relativityBranch != null && !relativityBranch.isEmpty() && !relativityBranch.startsWith('current')) 
 	{
 		try{
 			stage('Install Relativity') {
