@@ -121,7 +121,7 @@ Function Get-ReleaseVersion {
     Write-Host "Current branch is $currentBranch"
     
     [BranchType]$typeOfBranch = branches\Get-CurrentBranchType "$currentBranch"
-    if (($typeOfBranch -eq [BranchType]::Release) -or ($typeOfBranch -eq [BranchType]::HotfixRelease) -or ($typeOfBranch -eq [BranchType]::Master)) {
+    if (($typeOfBranch -eq [BranchType]::Release) -or ($typeOfBranch -eq [BranchType]::HotfixRelease)) {
         if(-Not ($currentBranch.Contains("$major.$minor")))
         {
             $(Throw New-Object System.ArgumentException "Current branch should contain the latest tag : currentbranch = $currentBranch, last tag = $version, string to find = $major.$minor", "tag not found")
