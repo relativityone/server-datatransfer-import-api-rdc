@@ -11,14 +11,14 @@ def sendEmailAboutFailureToAuthor(String branchName)
 
 def sendEmailAboutFailureToTeam(String branchName)
 {
-   def recipients = 'thegoodthebadandtheugly@relativity.com'
+   def recipients = 'holydataacquisition@relativity.com'
    sendEmailAboutFailure(recipients, branchName)
 }
 
 def sendEmailAboutFailure(String recipients, String branchName)
 {
     echo "Sending ${branchName} build failure to ${recipients}"
-    def subject = "[GBU-Pipeline] ${env.JOB_NAME} - Build ${env.BUILD_DISPLAY_NAME} - Failed! On branch ${branchName}"
+    def subject = "[HDA-Pipeline] ${env.JOB_NAME} - Build ${env.BUILD_DISPLAY_NAME} - Failed! On branch ${branchName}"
     def body = """${env.JOB_NAME} - Build - Failed:
 
 	Check console output at ${env.BUILD_URL} to view the results."""
