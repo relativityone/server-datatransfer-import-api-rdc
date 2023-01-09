@@ -408,7 +408,7 @@ timestamps
 						}
 						else
 						{
-						    echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release branch."
+						    echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release or master branch."
 						}
 					}
                 }
