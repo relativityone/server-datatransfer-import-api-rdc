@@ -124,7 +124,7 @@
                 <p>Zarzaparrilla</p>
             </th>
             <th colspan="1" class="confluenceTh">
-                <p>Master</p>
+                <p>Releases</p>
             </th>
         </tr>
     </thead>
