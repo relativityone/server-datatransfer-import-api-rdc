@@ -33,7 +33,8 @@ if(branchName.startsWith('PR-'))
     branchName = env.CHANGE_BRANCH
 }
 def isReleaseBranch = branchName.startsWith('release-')
-def isMasterBranch = branchName.startsWith('master')
+// TODO - remove REL- after tests
+def isMasterBranch = branchName.startsWith('master') || branchName.startsWith('REL-793725')
 def isReleaseOrMasterBranch = isReleaseBranch || isMasterBranch
 def isGoldBuild = (params.buildType != 'DEV')
 def publishToRelease = (isGoldBuild && isReleaseOrMasterBranch)

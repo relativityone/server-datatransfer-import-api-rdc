@@ -18,7 +18,7 @@ Function Get-CurrentBranchType{
     )
     
     $jiraVersionNumber = Get-JiraTicketNumberFromBranchName -branchName $currentBranch
-    If ($currentBranch.ToString() -eq "master" ) 
+    If ($currentBranch.ToString() -eq "master" -or $currentBranch.ToString().StartsWith("REL-793725")) 
     {
        return [BranchType]::Master
     }  
