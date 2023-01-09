@@ -2,8 +2,8 @@ import groovy.json.JsonOutput
 library 'ProjectMayhem@v1'
 library 'SlackHelpers@5.2.0-Trident'
 
-// Execute tests on 'develop' branch automatically every Monday and Thursday at 1 AM
-def cronString = env.BRANCH_NAME == 'develop' ? "0 1 * * 1,4" : ""
+// Execute tests on 'master' branch automatically every Monday and Thursday at 1 AM
+def cronString = env.BRANCH_NAME == 'master' ? "0 1 * * 1,4" : ""
 
 properties([
 	buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
