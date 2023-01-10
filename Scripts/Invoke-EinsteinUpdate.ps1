@@ -83,10 +83,10 @@ Function Replace-VariablesInTemplate{
 	}
 	elseif($Branch.StartsWith("master", [System.StringComparison]::InvariantCultureIgnoreCase))
 	{
-		# This is a master branch (used for releases) check to see if the name "Releases" is mentioned in the template. This is done because we need to manually opdate the template for each version,
+		# This is a master branch (used for releases) check to see if the name "Monthly Releases" is mentioned in the template. This is done because we need to manually opdate the template for each version,
 		# and if you forget we want the pipeline to warn us by throwing an exception, so you actually fix it. 
 		# the documentation just needs 2 more lines of HTML if this throws.
-		if($MessageToUse.IndexOf("Releases", [System.StringComparison]::InvariantCultureIgnoreCase) -le 0)
+		if($MessageToUse.IndexOf("Monthly Releases", [System.StringComparison]::InvariantCultureIgnoreCase) -le 0)
 		{
 			Throw "This operation cannot be performed because the message on einstein does not have a green check for '$Branch'. Add this check in .\Scripts\Template_einstein.txt, so our documentation is updated."
 		}
@@ -113,7 +113,7 @@ Function Get-ParentPageId{
 
 	$response = Invoke-WebRequest -Uri $UrlToGetChildren -Method Get -Headers $Headers -UseBasicParsing
 	$jsonObj = ConvertFrom-Json $response.Content
-	[string]$namesToSearchFor = $Branch, "Releases"
+	[string]$namesToSearchFor = $Branch, "Monthly Releases"
 	$objectToPostUnder = $jsonObj | Select-Object -ExpandProperty results |	Where-Object { $namesToSearchFor.IndexOf($_.title, [System.StringComparison]::InvariantCultureIgnoreCase) -ge 0 }
 	$objectToPostUnderId = 0	
 	if($objectToPostUnder.id -gt 1)
