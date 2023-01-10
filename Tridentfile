@@ -9,7 +9,7 @@ properties([
         choice(defaultValue: 'DEV',choices: ["DEV", "GOLD - RDC AND SDK", "GOLD - RDC ONLY", "GOLD - SDK ONLY"], description: "Choose your build type, only gold can produce production packages.", name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: '', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
+        string(defaultValue: 'current', description: 'Relativity branch to test against, leave current for version installed on hopper image', name: 'relativityBranch'),
         booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
         booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
         booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
@@ -33,23 +33,27 @@ if(branchName.startsWith('PR-'))
     branchName = env.CHANGE_BRANCH
 }
 def isReleaseBranch = branchName.startsWith('release-')
+// TODO - remove REL- after tests
+def isMasterBranch = branchName.startsWith('master')
+def isReleaseOrMasterBranch = isReleaseBranch || isMasterBranch
 def isGoldBuild = (params.buildType != 'DEV')
-def publishToRelease = (isGoldBuild && isReleaseBranch)
-def publishRdc =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && params.buildType == 'GOLD - RDC ONLY'))
-def publishSdk =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && params.buildType == 'GOLD - SDK ONLY'))
+def publishToRelease = (isGoldBuild && isReleaseOrMasterBranch)
+def publishRdc =(!isReleaseOrMasterBranch || (isReleaseOrMasterBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMasterBranch && params.buildType == 'GOLD - RDC ONLY'))
+def publishSdk =(!isReleaseOrMasterBranch || (isReleaseOrMasterBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMasterBranch && params.buildType == 'GOLD - SDK ONLY'))
 def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
 
 // On release branches tests should be executed against newest Relativity version from specified folder in \\bld-pkgs\Packages\Relativity\
 // Example: relativityBranch = 'release-11.3-mayapple' for branchName = 'release-1.11-mayapple'
-if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
+// Example: relativityBranch = 'current' for relativity version installed on hopper - specific version installation is not performed
+if(isReleaseOrMasterBranch && (relativityBranch == null || relativityBranch.isEmpty()))
 {
 	currentBuild.result = 'FAILED' 
 	throw new Exception("Build failed because relativity installer source folder 'relativityBranch' is not defined in the script")
 }
 
 def config = [
-	sutTemplate: "aio-yarrow-eau",
+	sutTemplate: "aio-zarzaparrilla-0",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]
@@ -100,7 +104,7 @@ timestamps
                 {					
                     stage('Retrieve version')
                     {
-                        echo "Is release branch = $isReleaseBranch"
+                        echo "Is release branch = $isReleaseOrMasterBranch"
                         echo "Run integration tests = ${shouldRunIntegrationTests}"
                         echo "Is gold build = $isGoldBuild"
                         echo "Publishing to release? $publishToRelease"
@@ -404,7 +408,7 @@ timestamps
 						}
 						else
 						{
-						    echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release branch."
+						    echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release or master branch."
 						}
 					}
                 }
@@ -444,7 +448,7 @@ timestamps
             {
                 echo err.toString()
                 currentBuild.result = 'FAILED' 
-                if (branchName == 'develop' || isReleaseBranch)
+                if (branchName == 'develop' || isReleaseOrMasterBranch)
                 {
                     tools.sendEmailAboutFailureToTeam(branchName)
                 }
