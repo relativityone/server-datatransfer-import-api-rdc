@@ -25,7 +25,7 @@ namespace Relativity.DataExchange.NUnit.Logger
 	public class RdcSecureLogFactoryTests
 	{
 		private const string RdcLoggingSystem = "Relativity.Desktop.Client";
-		private const string RdcLoggingSubSystem = "Relativity.DataExchange";
+		private const string RdcLoggingSubSystem = "Startup";
 		private const string RdcLoggingApplication = "626BD889-2BFF-4407-9CE5-5CF3712E1BB7";
 
 		[TestCase(true)]

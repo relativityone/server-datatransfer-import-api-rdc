@@ -16,7 +16,6 @@ namespace Relativity.DataExchange.Logger
 	using System.Linq;
 	using System.Net;
 	using System.Reflection;
-
 	using Relativity.Logging;
 	using Relativity.Logging.Configuration;
 	using Relativity.Logging.Configuration.Serilog;
@@ -29,6 +28,7 @@ namespace Relativity.DataExchange.Logger
 	{
 		private const string RdcLoggingSystem = "Relativity.Desktop.Client";
 		private const string RdcLoggingSubSystem = "Relativity.DataExchange";
+		private const string RdcInitialLoggingSubSystem = "Startup";
 		private const string RdcLoggingApplication = "626BD889-2BFF-4407-9CE5-5CF3712E1BB7";
 
 		private readonly NetworkCredential credential;
@@ -161,7 +161,7 @@ namespace Relativity.DataExchange.Logger
 				              {
 					              Application = RdcLoggingApplication,
 					              System = RdcLoggingSystem,
-					              SubSystem = RdcLoggingSubSystem,
+					              SubSystem = credential == null ? RdcInitialLoggingSubSystem : RdcLoggingSubSystem, // RDC logger is created twice, before and after user sign in. To create new logger after sign in we need to distinguish logger options, otherwise logger is restored from cache. Logger created before sign in does not log into splunk because there no credentials at the time of creation.
 					              ConfigurationFileLocation = configFileName,
 				              };
 
