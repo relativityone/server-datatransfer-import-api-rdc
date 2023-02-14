@@ -289,7 +289,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ASSERT
 			ThenTheImportJobCompletedWithErrors(results, RowsReferencingDuplicateObject, TotalRows);
 			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
-			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - A non unique associated object is specified for this new object");
+			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - A non unique associated object 'DuplicatedObjects-duplicate' is specified for the 'AssociateObjectsTestsObject' object in the field 'referencetoobject'");
 		}
 
 		[IgnoreIfMassImportImprovementsToggleHasValue(isEnabled: false)]
@@ -313,7 +313,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// ASSERT
 			ThenTheImportJobCompletedWithErrors(results, RowsReferencingDuplicateObject, TotalRows);
 			Assert.That(results.NumberOfJobMessages, Is.Positive, () => "Wrong number of job messages.");
-			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - A non unique associated object is specified for this new object");
+			ThenTheErrorRowsHaveCorrectMessage(results.ErrorRows, " - A non unique associated object 'DuplicatedMultiObjects-duplicate' is specified for the 'AssociateObjectsTestsObject' object in the field 'referencetomultiobject'");
 		}
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]

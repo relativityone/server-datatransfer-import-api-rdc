@@ -2,6 +2,7 @@
 Imports System.Web.Services.Protocols
 Imports kCura.WinEDDS.Mapping
 Imports kCura.WinEDDS.Service.Kepler
+Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Service
 Imports Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models
 Imports Relativity.Logging
@@ -14,6 +15,9 @@ Namespace kCura.WinEDDS.Service.Replacement
         Private ReadOnly _serviceProxyFactory As IServiceProxyFactory
         Private ReadOnly _keplerProxy As IKeplerProxy
         Private ReadOnly _exceptionMapper As IServiceExceptionMapper
+        
+        ' Exception message that tells user that import of the current batch Is still in progress.
+        Private Const BatchInProgressMessage As String = "Batch In Progress"
 
         Protected ReadOnly CorrelationIdFunc As Func(Of String)
 
@@ -39,6 +43,8 @@ Namespace kCura.WinEDDS.Service.Replacement
         Private Async Function ExecuteAsync(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As Task(Of T)
             Try
                 Return Await Me._keplerProxy.ExecuteAsync(func).ConfigureAwait(False)
+            Catch ex As ConflictException When ex.Message.Contains(BatchInProgressMessage) 
+                Throw New ImportExportException($"Timeout occurred after {AppSettings.Instance.BatchInProgressNumberOfRetries} retries with {AppSettings.Instance.BatchInProgressWaitTimeInSeconds} seconds timeout.")
             Catch serviceException As ServiceException
                 Dim soapException As SoapException = _exceptionMapper.Map(serviceException)
                 UnpackSoapException(soapException)

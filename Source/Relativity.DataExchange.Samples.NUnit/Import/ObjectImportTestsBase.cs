@@ -44,7 +44,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		protected const string TransferDataSourceFieldName = "Name";
 		protected const string TransferDataSourceFieldNumber = "Number";
 		protected const string TransferDataSourceFieldConnectionString = "ConnectionString";
-		private static int objectTypeUniqueSuffix;
+
 		private readonly List<int> dataSourceArtifacts = new List<int>();
 		private readonly List<int> detailArtifacts = new List<int>();
 
@@ -107,6 +107,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 					TransferDataSourceFieldConnectionString,
 				};
 
+		protected static int ObjectTypeUniqueSuffix { get; set; }
+
 		protected int TransferArtifactTypeId
 		{
 			get;
@@ -154,7 +156,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		{
 			// Create the object types in reverse order.
 			this.AssignTestSettings();
-			objectTypeUniqueSuffix++;
+			ObjectTypeUniqueSuffix++;
 			await this.CreateTransferDetailObjectTypeAsync().ConfigureAwait(false);
 			await this.CreateTransferDataSourceObjectTypeAsync().ConfigureAwait(false);
 			await this.CreateTransferObjectTypeAsync().ConfigureAwait(false);
@@ -289,7 +291,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		protected async Task CreateTransferDetailObjectTypeAsync()
 		{
 			// This is a 1-to-1 relationship.
-			string objectType = $"{TransferDetailArtifactTypeName}-{objectTypeUniqueSuffix}";
+			string objectType = $"{TransferDetailArtifactTypeName}-{ObjectTypeUniqueSuffix}";
 			this.TransferDetailWorkspaceObjectTypeId = await this.CreateObjectTypeAsync(objectType).ConfigureAwait(false);
 			await FieldHelper.CreateDecimalFieldAsync(this.TestParameters, this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldTransferredBytes).ConfigureAwait(false);
 			await FieldHelper.CreateDecimalFieldAsync(this.TestParameters, this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldTransferredFiles).ConfigureAwait(false);
@@ -301,7 +303,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		protected async Task CreateTransferDataSourceObjectTypeAsync()
 		{
 			// This is a many-to-many relationship.
-			string objectType = $"{TransferDataSourceArtifactTypeName}-{objectTypeUniqueSuffix}";
+			string objectType = $"{TransferDataSourceArtifactTypeName}-{ObjectTypeUniqueSuffix}";
 			this.TransferDataSourceWorkspaceObjectTypeId = await this.CreateObjectTypeAsync(objectType).ConfigureAwait(false);
 			await FieldHelper.CreateDecimalFieldAsync(this.TestParameters, this.TransferDataSourceWorkspaceObjectTypeId, TransferDataSourceFieldNumber).ConfigureAwait(false);
 			await this.CreateFixedLengthTextFieldAsync(
@@ -326,7 +328,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 
 		private async Task CreateTransferObjectTypeAsync()
 		{
-			var objectType = $"{TransferArtifactTypeName}-{objectTypeUniqueSuffix}";
+			var objectType = $"{TransferArtifactTypeName}-{ObjectTypeUniqueSuffix}";
 			this.TransferWorkspaceObjectTypeId = this.CreateObjectTypeAsync(objectType).Result;
 			await this.CreateFixedLengthTextFieldAsync(this.TransferWorkspaceObjectTypeId, TransferFieldDescription, 450).ConfigureAwait(false);
 			await FieldHelper.CreateSingleObjectFieldAsync(

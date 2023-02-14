@@ -121,11 +121,12 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			Assert.That(this.PublishedJobReport.EndTime, Is.GreaterThan(this.PublishedJobReport.StartTime));
 
 			// Assert - duplicate multi-object field currently yields a item-level error.
-			const string ExpectedItemLevelErrorMessage = " - A non unique associated object is specified for this new object";
+			// TransferDataSource suffix depends on workspace state (how many TransferDataSource ObjectTypes are created, one or two) before this test is run.
+			var expectedItemLevelErrorMessage = $" - A non unique associated object 'Negative-DataSourceName-2' is specified for the 'TransferDataSource{ObjectTypeUniqueSuffix}' object in the field 'transferdatasourceid'";
 
 			Assert.That(this.PublishedJobReport.FatalException, Is.Null);
 			Assert.That(this.PublishedJobReport.ErrorRowCount, Is.EqualTo(1));
-			Assert.That(this.PublishedJobReport.ErrorRows.Single().Message, Is.EqualTo(ExpectedItemLevelErrorMessage));
+			Assert.That(this.PublishedJobReport.ErrorRows.Single().Message, Is.EqualTo(expectedItemLevelErrorMessage));
 			Assert.That(this.PublishedJobReport.ErrorRows.Single().Identifier, Is.EqualTo(identifierValue));
 			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(1));
 
