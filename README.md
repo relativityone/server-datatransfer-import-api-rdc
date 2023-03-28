@@ -417,3 +417,15 @@ The `StyleCop.Analyzers` Roslyn-based analyzer is the de-facto replacement for t
 Over the last few years, improper async/await usage caused `ASP.NET` applications to "hang" and resulted in PD alerts. After some investigation, the Resharper community developed an extension to identify this type of violation. This extension decorated offending code with squirrly red lines and crashes the build.
 
 ***Note:** The extension is limited to C# projects.*
+
+## History  
+
+The server-main branch was forked for Relativity Server by the Server Vertical.
+Tag: 1.0.0                                         
+Branch: server-main
+
+## Maintainers
+team-server-delta working on code isolation
+
+The server- branches are in the process of being transitioned to the Server Vertical.
+#help-server-architecture #team-server-delta
