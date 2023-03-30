@@ -127,8 +127,7 @@
       <Link>.editorconfig</Link>
     </None>
     <None Include="app.config" />
-    <None Include="app.manifest" />
-    <None Include="paket.references" />
+    <None Include="app.manifest" />    
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -186,23 +185,17 @@
     </Analyzer>
   </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="castle.core"  />
-		<PackageReference Include="castle.windsor"  /> 
-		<PackageReference Include="Relativity.OutsideIn"  /> 
-		<PackageReference Include="kCura.relativity.client" /> 
-		<PackageReference Include="moq"  />  
-		<PackageReference Include="nbuilder" /> 
+        <PackageReference Include="Relativity.OutsideIn"  />
 		<PackageReference Include="newtonsoft.json"  /> 
-		<PackageReference Include="nunit" /> 
-		<PackageReference Include="relativity.kepler.client"  />		 
-		<PackageReference Include="relativity.logging"/>
-		<PackageReference Include="relativity.services.datacontracts"  /> 
-		<PackageReference Include="relativity.services.interfaces"/> 
-	    <PackageReference Include="relativity.testing.identification" />  
+		<PackageReference Include="Rrelativity.kepler.client"  /> 
+		<PackageReference Include="relativity.logging" /> 
+		<PackageReference Include="relativity.oauth2client"  />  
+		<PackageReference Include="relativity.oauth2client.implicit" /> 
+		<PackageReference Include="relativity.oauth2client.interfaces"  /> 
+		<PackageReference Include="relativity.services.datacontracts" /> 
+		<PackageReference Include="relativity.services.interfaces"  />		 
+	    <PackageReference Include="relativity.telemetry.datacontracts.shared" />  
 		<PackageReference Include="relativity.transfer.client"  /> 		
-		<PackageReference Include="stylecop.analyzers" /> 
-		<PackageReference Include="ConfigureAwaitChecker.Analyzer"  /> 
-		<PackageReference Include="relativity.telemetry.datacontracts.shared" />
-		<PackageReference Include="relativity.telemetry.services.interface" /> 
+		<PackageReference Include="microsoft-windowsapicodepack-core" /> 
 </ItemGroup>
 </Project>
