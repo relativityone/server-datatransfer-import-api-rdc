@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+		<CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
+	</PropertyGroup>
+	<ItemGroup>
+		<!-- Relativity.DataExchange.Export -->
+		<PackageVersion Include="Castle.Core" Version="3.3.3" />
+		<PackageVersion Include="Castle.Windsor" Version="3.3.0" />
+		<PackageVersion Include="Newtonsoft.Json" Version="6.0.8" />
+		<PackageVersion Include="Relativity.Kepler.Client" Version="2.9.2" />
+		<PackageVersion Include="Relativity.Logging.Interfaces" Version="2019.5.1" />
+		<PackageVersion Include="Relativity.Services.Datacontracts" Version="13.4.1" />
+		<PackageVersion Include="Relativity.Services.Interfaces" Version="13.4.1" />
+		<PackageVersion Include="Relativity.Transfer.Client" Version="7.4.7" />
+		<PackageVersion Include="System.Reactive" Version="4.0.0" />
+		
+		<!-- Relativity.DataExchange.Core -->
+		<PackageVersion Include="stylecop.analyzers" Version="1.1.118" />
+		<PackageVersion Include="ConfigureAwaitChecker.Analyzer" Version="4.0.0.0" />
+		<!--<PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="0.11.0-pre.1" />-->
+		<PackageVersion Include="Relativity.OutsideIn" Version="2021.8.0" />
+		<PackageVersion Include="polly" Version="5.7.0" />
+		<PackageVersion Include="relativity.logging" Version="2019.5.1" />
+		
+		<!-- Relativity.DataExchange.NUnit -->
+		<PackageVersion Include="AutoBogus" Version="2.13.0" />
+		<PackageVersion Include="AutoMapper" Version="10.1.1" />
+		<PackageVersion Include="AutoFixture" Version="4.17.0" />
+		<PackageVersion Include="Bogus" Version="31.0.3" />
+		<PackageVersion Include="csvhelper" Version="12.1.2" />
+		<PackageVersion Include="Fare" Version="2.1.1" />
+		<PackageVersion Include="FluentAssertions" Version="5.10.0" />
+		<PackageVersion Include="moq" Version="4.5.30" />
+		<PackageVersion Include="nbuilder" Version="6.0.0" />
+		<PackageVersion Include="nunit" Version="3.12.0" />
+		<PackageVersion Include="System.ValueTuple" Version="4.5.0" />
+	</ItemGroup>
+</Project>
