@@ -20,14 +20,15 @@
 		<PackageVersion Include="stylecop.analyzers" Version="1.1.118" />
 		<PackageVersion Include="ConfigureAwaitChecker.Analyzer" Version="4.0.0.0" />		
 		<PackageVersion Include="System.ValueTuple" Version="4.5.0" />
-		
+		<PackageVersion Include="Relativity.Logging.Interfaces" Version="2019.5.1" /> 
+		<PackageVersion Include="Relativity.Telemetry.Datacontracts.Shared" Version="3003.1.0.2" /> 
+		<PackageVersion Include="Relativity.OutsideIn" Version="2021.8.0" />
+
 		<!-- Relativity.DataExchange.Export -->
-		<PackageVersion Include="Relativity.Logging.Interfaces" Version="2019.5.1" />
 		<PackageVersion Include="System.Reactive" Version="4.0.0" />
 		
 		<!-- Relativity.DataExchange.Core -->
 		<!--<PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="0.11.0-pre.1" />-->
-		<PackageVersion Include="Relativity.OutsideIn" Version="2021.8.0" />
 		<PackageVersion Include="polly" Version="5.7.0" />
 		
 		<!-- Relativity.DataExchange.NUnit -->
@@ -47,9 +48,11 @@
 		<PackageVersion Include="relativity.productions.services.interfaces" Version="11.0.7" />
 		<PackageVersion Include="relativity.services.interfaces.private" Version="11.3.11.1" />
 		<PackageVersion Include="serilog" Version="2.6.0" />
-		<PackageVersion Include="relativity.telemetry.datacontracts.shared" Version="3003.1.0.2" />
 		<PackageVersion Include="relativity.telemetry.services.interface" Version="3003.0.2" />
 		<PackageVersion Include="integration-tests" Version="4.6.26515.6" />	
+
+		<!-- Relativity.DataExchange.Legacy -->		
+		<PackageVersion Include="Relativity.Telemetry.Services.Interface" Version="3003.0.2.2" /> 	
 
 	</ItemGroup>
 </Project>

@@ -1183,7 +1183,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Castle.Core">
@@ -1193,8 +1193,8 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
-  <Choose>
+  </Choose> -->
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Castle.Windsor">
@@ -1204,8 +1204,8 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
-  <Choose>
+  </Choose> -->
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
@@ -1215,7 +1215,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -1249,7 +1249,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Services.ServiceProxy">
@@ -1259,7 +1259,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -1268,15 +1268,15 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
+        <!-- <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Logging.Interfaces">
@@ -1286,7 +1286,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -1298,7 +1298,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Services.DataContracts">
@@ -1308,7 +1308,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -1321,15 +1321,15 @@
         <Reference Include="System.ServiceModel">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.Services.Interfaces">
+        <!-- <Reference Include="Relativity.Services.Interfaces">
           <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.DataContracts.Shared">
@@ -1339,8 +1339,8 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
-  <Choose>
+  </Choose> -->
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.Services.Interface">
@@ -1350,7 +1350,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -1369,11 +1369,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.Transfer.Client">
+        <!-- <Reference Include="Relativity.Transfer.Client">
           <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
         <Reference Include="Relativity.Transfer.Client.Aspera">
           <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
           <Private>True</Private>
@@ -1426,4 +1426,17 @@
     </When>
   </Choose>
   <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" />
+  <ItemGroup> 
+		<PackageReference Include="Castle.Core" /> 
+		<PackageReference Include="Castle.Windsor" /> 
+		<PackageReference Include="Newtonsoft.Json" /> 
+		<PackageReference Include="Relativity.Kepler.Client" /> 
+		<PackageReference Include="Relativity.Logging.Interfaces" />  
+		<PackageReference Include="Relativity.Services.Datacontracts" />  
+		<PackageReference Include="Relativity.Services.Interfaces" />  
+		<PackageReference Include="Relativity.Telemetry.Datacontracts.Shared" /> 
+		<PackageReference Include="Relativity.Telemetry.Services.Interface" />  
+		<PackageReference Include="Relativity.Transfer.Client" />
+		<PackageReference Include="Relativity.Outsidein" /> 
+	</ItemGroup>
 </Project>
