@@ -1,4 +1,4 @@
-﻿FormatTaskName "------- Executing Task: {0} -------"
+FormatTaskName "------- Executing Task: {0} -------"
 Framework "4.6" #.NET framework version
 
 properties {
@@ -53,7 +53,7 @@ properties {
 	$ReportUnitExe = Join-Path $PackagesDir "ReportUnit\tools\ReportUnit.exe"
 	$nugetExe = Join-Path $PaketDir "nuget.exe"
 	$PaketExe = Join-Path $PaketDir "paket.exe"
-	$ProgetUrl = "https://proget.kcura.corp/nuget/NuGet"
+	$ProgetUrl = "https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology"
 	$SqlComparerRunner = Join-Path $SourceDir "SQLDataComparer\SQLDataComparer.Runner\bin\Release\SQLDataComparer.Runner.exe"
 
 	# Installer paths

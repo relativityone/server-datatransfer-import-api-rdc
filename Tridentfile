@@ -1,6 +1,6 @@
 #!groovy
 import groovy.json.JsonOutput 
-library 'ProjectMayhem@v1'
+library 'ProjectMayhem@vServer'
 library 'SlackHelpers@5.2.0-Trident'
 
 properties([
@@ -32,7 +32,7 @@ if(branchName.startsWith('PR-'))
 {
     branchName = env.CHANGE_BRANCH
 }
-def isReleaseBranch = branchName.startsWith('release-')
+def isReleaseBranch = branchName.startsWith('server-release-')
 def isGoldBuild = (params.buildType != 'DEV')
 def publishToRelease = (isGoldBuild && isReleaseBranch)
 def publishRdc =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && params.buildType == 'GOLD - RDC ONLY'))
@@ -72,7 +72,7 @@ timestamps
 {
     timeout(time: 3, unit: 'HOURS')
     {
-        node('role-build-agent||buildAgent')
+        node('role-build-agent-server||buildAgentServer')
         {
             try
             {
