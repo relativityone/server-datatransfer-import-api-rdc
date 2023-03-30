@@ -43,7 +43,7 @@
 		<!-- Polly is explicitly listed to avoid conflicts between TAPI and Relativity. -->
 		<PackageVersion Include="polly" Version="5.7.0" />
 		<PackageVersion Include="psake" Version="4.7.4" />
-		<PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces ~> 0.1.1-pre-4 pre" />
+		<PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="0.1.1-pre-4 pre" />
 		<PackageVersion Include="reportgenerator" Version="4.1.2" />
 
 		<!-- Serilog is only used to format the DSL message templates for integration tests. -->
@@ -69,8 +69,8 @@
 		<PackageVersion Include="relativity.oauth2client" Version="1.5.2" />
 		<PackageVersion Include="relativity.oauth2client.implicit" Version="1.5.2" />
 		<PackageVersion Include="relativity.oauth2client.interfaces" Version="1.5.2" />
-		<PackageVersion Include="relativity.telemetry.services.interface ~> 3003.0.2" />
-		<PackageVersion Include="relativity.transfer.client ~> 7.4.7" />
+		<PackageVersion Include="relativity.telemetry.services.interface" Version="3003.0.2" />
+		<PackageVersion Include="relativity.transfer.client" Version="7.4.7" />
 		<PackageVersion Include="relativity.services.interfaces.private" Version="11.3.11.1" />
 
 		<!-- The Relativity packages below are required ONLY for test projects! -->
@@ -90,6 +90,5 @@
 
 		<!-- group integration-tests -->
 		<PackageVersion Include="System.ValueTuple" Version="4.5.0" />
-
 	</ItemGroup>
 </Project>
