@@ -431,11 +431,11 @@
         <Reference Include="System.ServiceModel">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.Services.Interfaces">
-          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
+        <!-- <Reference Include="Relativity.Services.Interfaces"> -->
+          <!-- <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath> -->
+          <!-- <Private>True</Private> -->
+          <!-- <Paket>True</Paket> -->
+        <!-- </Reference> -->
       </ItemGroup>
     </When>
   </Choose>
@@ -556,7 +556,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" />
+  <!-- <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" /> -->
   <ItemGroup>
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
       <Paket>True</Paket>
