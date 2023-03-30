@@ -328,22 +328,22 @@
         <Reference Include="mscorlib">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="System.ValueTuple">
+        <!-- <Reference Include="System.ValueTuple">
           <HintPath>..\..\packages\integration-tests\System.ValueTuple\lib\net461\System.ValueTuple.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Castle.Core">
+        <!-- <Reference Include="Castle.Core">
           <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
       </ItemGroup>
     </When>
   </Choose>
@@ -353,23 +353,23 @@
         <Reference Include="System.Xml">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Castle.Windsor">
+        <!-- <Reference Include="Castle.Windsor">
           <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
       </ItemGroup>
     </When>
   </Choose>
   <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+    <!-- <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
       <Paket>True</Paket>
-    </Analyzer>
+    </Analyzer> -->
     <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup></When></Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
@@ -379,7 +379,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -409,11 +409,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Microsoft.SqlServer.ConnectionInfo">
+        <!-- <Reference Include="Microsoft.SqlServer.ConnectionInfo">
           <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
         <Reference Include="Microsoft.SqlServer.Dmf">
           <HintPath>..\..\packages\Microsoft.SqlServer.SqlManagementObjects\lib\net462\Microsoft.SqlServer.Dmf.dll</HintPath>
           <Private>True</Private>
@@ -542,7 +542,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Moq">
@@ -552,7 +552,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -564,7 +564,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
@@ -574,7 +574,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -666,11 +666,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Logging">
+        <!-- <Reference Include="Relativity.Logging">
           <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
         <Reference Include="Relativity.Logging.Interfaces">
           <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
           <Private>True</Private>
@@ -682,11 +682,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="Relativity.Productions.Services.Interfaces">
+        <!-- <Reference Include="Relativity.Productions.Services.Interfaces">
           <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
         <Reference Include="Relativity.Productions.Services.Interfaces.Private">
           <HintPath>..\..\packages\Relativity.Productions.Services.Interfaces\lib\net462\Relativity.Productions.Services.Interfaces.Private.dll</HintPath>
           <Private>True</Private>
@@ -706,7 +706,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Services.DataContracts">
@@ -716,7 +716,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -729,15 +729,15 @@
         <Reference Include="System.ServiceModel">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.Services.Interfaces">
+        <!-- <Reference Include="Relativity.Services.Interfaces">
           <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Services.Interfaces.Private">
@@ -747,7 +747,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -764,7 +764,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Relativity.Telemetry.DataContracts.Shared">
@@ -774,7 +774,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> 
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -785,7 +785,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose>-->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -804,11 +804,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="Relativity.Transfer.Client">
+        <!-- <Reference Include="Relativity.Transfer.Client">
           <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
-        </Reference>
+        </Reference> -->
         <Reference Include="Relativity.Transfer.Client.Aspera">
           <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
           <Private>True</Private>
@@ -832,7 +832,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
+  <!-- <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
         <Reference Include="Serilog">
@@ -842,7 +842,7 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
+  </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -858,9 +858,9 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
       <Paket>True</Paket>
     </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
+    <!-- <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll">
       <Paket>True</Paket>
-    </Analyzer>
+    </Analyzer> -->
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
@@ -903,4 +903,30 @@
       </ItemGroup>
     </When>
   </Choose>
+  <ItemGroup>
+		
+		<PackageReference Include="Castle.Core" />
+		<PackageReference Include="castle.windsor" />
+    <PackageReference Include="kCura.relativity.client" /> 
+    <PackageReference Include="Microsoft.SqlServer.ConnectionInfo" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="nbuilder" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="reportunit" />
+    <PackageReference Include="Relativity.Kepler.Client" />
+    <PackageReference Include="Relativity.Logging" />
+    <PackageReference Include="Relativity.Productions.Services.Interfaces" />
+    <PackageReference Include="Relativity.Services.Datacontracts" />
+    <PackageReference Include="Relativity.Services.Interfaces" />
+    <PackageReference Include="Relativity.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.Transfer.Client" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Stylecop.Analyzers" />
+    <PackageReference Include="ConfigureAwaitChecker.Analyzer" />
+    <PackageReference Include="Relativity.Telemetry.Datacontracts.Shared" />
+    <PackageReference Include="Relativity.Telemetry.Services.Interface" />
+    <PackageReference Include="Integration-Tests" />
+    <PackageReference Include="System.ValueTuple" />
+	</ItemGroup>
 </Project>
