@@ -93,5 +93,7 @@
 		
 		<!-- Relativity.DataExchange.NUnit.Integration -->	
 		<PackageVersion Include="relativity.telemetry.datacontracts" Version="3003.1.0" />
+		
+		<PackageVersion Include="Relativity.Services.Datacontracts" Version="13.4.0" />
 	</ItemGroup>
 </Project>
