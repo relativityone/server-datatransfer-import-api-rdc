@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,12 +48,67 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Transfer.Client.7.4.7\lib\net462\FaspManager.dll</HintPath>
+    </Reference>
     <Reference Include="itextsharp">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Vendor\iTextSharp\5.5.13.1\x64\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="oi, Version=2021.8.0.26, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OutsideIn.2021.8.0\lib\net40\oi.dll</HintPath>
+    </Reference>
+    <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Polly.5.7.0\lib\net45\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.DataTransfer.Legacy.SDK, Version=0.1.28.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Transfer.Client.7.4.7\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.DataTransfer.Nodes, Version=12.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Transfer.Client.7.4.7\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Kepler, Version=2.14.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.2.14.4\lib\net462\Relativity.Kepler.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Logging, Version=2019.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.2019.5.1\lib\net462\Relativity.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Logging.Interfaces, Version=2019.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.2019.5.1\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.DataContracts, Version=13.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.DataContracts.13.4.0\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces, Version=11.3.11.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.Interfaces.11.3.11.1\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=2.14.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.SDK.2.14.4\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client, Version=7.4.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Transfer.Client.7.4.7\lib\net462\Relativity.Transfer.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Aspera, Version=7.4.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Transfer.Client.7.4.7\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Core, Version=7.4.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Transfer.Client.7.4.7\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.FileShare, Version=7.4.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Transfer.Client.7.4.7\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Transfer.Client.Http, Version=7.4.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Transfer.Client.7.4.7\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>..\packages\SSH.NET.2016.0.0\lib\net40\Renci.SshNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -59,6 +116,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Reactive, Version=4.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.4.0.0\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
@@ -387,6 +447,7 @@
     </AdditionalFiles>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <None Include="packages.config" />
     <!-- <None Include="paket.references" /> -->
   </ItemGroup>
   <ItemGroup>
@@ -414,35 +475,31 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
-    <!-- <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll"> -->
-      <!-- <Paket>True</Paket> -->
-    <!-- </Analyzer> -->
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup></When></Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+    <When Condition="'$(Configuration)'!='Debug'">
       <ItemGroup>
-        <Reference Include="Newtonsoft.Json">
-          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
-          <Private>True</Private>
+        <!-- <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll"> -->
+        <!-- <Paket>True</Paket> -->
+        <!-- </Analyzer> -->
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
           <Paket>True</Paket>
-        </Reference>
+        </Analyzer>
       </ItemGroup>
     </When>
   </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
+  </Choose>
   <!-- <Choose> -->
-    <!-- <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'"> -->
-      <!-- <ItemGroup> -->
-        <!-- <Reference Include="Polly"> -->
-          <!-- <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath> -->
-          <!-- <Private>True</Private> -->
-          <!-- <Paket>True</Paket> -->
-        <!-- </Reference> -->
-      <!-- </ItemGroup> -->
-    <!-- </When> -->
+  <!-- <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'"> -->
+  <!-- <ItemGroup> -->
+  <!-- <Reference Include="Polly"> -->
+  <!-- <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath> -->
+  <!-- <Private>True</Private> -->
+  <!-- <Paket>True</Paket> -->
+  <!-- </Reference> -->
+  <!-- </ItemGroup> -->
+  <!-- </When> -->
   <!-- </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -456,26 +513,10 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Kepler">
-          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Services.ServiceProxy">
-          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -489,42 +530,29 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <!-- <Reference Include="Relativity.Logging"> -->
-          <!-- <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath> -->
-          <!-- <Private>True</Private> -->
-          <!-- <Paket>True</Paket> -->
-        <!-- </Reference> -->
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <!-- <Choose> -->
-    <!-- <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'"> -->
-      <!-- <ItemGroup> -->
-        <!-- <Reference Include="oi"> -->
-          <!-- <HintPath>..\..\packages\Relativity.OutsideIn\lib\net40\oi.dll</HintPath> -->
-          <!-- <Private>True</Private> -->
-          <!-- <Paket>True</Paket> -->
-        <!-- </Reference> -->
-      <!-- </ItemGroup> -->
-    <!-- </When> -->
+  <!-- <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'"> -->
+  <!-- <ItemGroup> -->
+  <!-- <Reference Include="oi"> -->
+  <!-- <HintPath>..\..\packages\Relativity.OutsideIn\lib\net40\oi.dll</HintPath> -->
+  <!-- <Private>True</Private> -->
+  <!-- <Paket>True</Paket> -->
+  <!-- </Reference> -->
+  <!-- </ItemGroup> -->
+  <!-- </When> -->
   <!-- </Choose> -->
   <!-- <Choose> -->
-    <!-- <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'"> -->
-      <!-- <ItemGroup> -->
-        <!-- <Reference Include="Relativity.Services.DataContracts"> -->
-          <!-- <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath> -->
-          <!-- <Private>True</Private> -->
-          <!-- <Paket>True</Paket> -->
-        <!-- </Reference> -->
-      <!-- </ItemGroup> -->
-    <!-- </When> -->
+  <!-- <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'"> -->
+  <!-- <ItemGroup> -->
+  <!-- <Reference Include="Relativity.Services.DataContracts"> -->
+  <!-- <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath> -->
+  <!-- <Private>True</Private> -->
+  <!-- <Paket>True</Paket> -->
+  <!-- </Reference> -->
+  <!-- </ItemGroup> -->
+  <!-- </When> -->
   <!-- </Choose> -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -536,69 +564,18 @@
           <Paket>True</Paket>
         </Reference>
         <!-- <Reference Include="Relativity.Services.Interfaces"> -->
-          <!-- <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath> -->
-          <!-- <Private>True</Private> -->
-          <!-- <Paket>True</Paket> -->
+        <!-- <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath> -->
+        <!-- <Private>True</Private> -->
+        <!-- <Paket>True</Paket> -->
         <!-- </Reference> -->
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="FaspManager">
-          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
-          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.DataTransfer.Nodes">
-          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <!-- <Reference Include="Relativity.Transfer.Client"> -->
-          <!-- <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.dll</HintPath> -->
-          <!-- <Private>True</Private> -->
-          <!-- <Paket>True</Paket> -->
-        <!-- </Reference> -->
-        <Reference Include="Relativity.Transfer.Client.Aspera">
-          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Aspera.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Transfer.Client.Core">
-          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Transfer.Client.FileShare">
-          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.FileShare.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Transfer.Client.Http">
-          <HintPath>..\..\packages\Relativity.Transfer.Client\lib\net462\Relativity.Transfer.Client.Http.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Renci.SshNet">
-          <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'" />
   </Choose>
   <!-- <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" /> -->
   <ItemGroup>
@@ -606,7 +583,7 @@
       <Paket>True</Paket>
     </Analyzer>
     <!-- <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.dll"> -->
-      <!-- <Paket>True</Paket> -->
+    <!-- <Paket>True</Paket> -->
     <!-- </Analyzer> -->
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
@@ -629,6 +606,9 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
       <Paket>True</Paket>
     </Analyzer>
+    <Analyzer Include="..\packages\ConfigureAwaitChecker.Analyzer.5.0.0.1\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll" />
+    <Analyzer Include="..\packages\ConfigureAwaitChecker.Analyzer.5.0.0.1\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.118\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
@@ -642,22 +622,24 @@
         <Reference Include="WindowsBase">
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="System.Reactive">
-          <HintPath>..\..\packages\System.Reactive\lib\net46\System.Reactive.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
       </ItemGroup>
     </When>
   </Choose>
- <ItemGroup>
+  <Import Project="..\packages\Relativity.OutsideIn.2021.8.0\build\Relativity.OutsideIn.targets" Condition="Exists('..\packages\Relativity.OutsideIn.2021.8.0\build\Relativity.OutsideIn.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Relativity.OutsideIn.2021.8.0\build\Relativity.OutsideIn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.OutsideIn.2021.8.0\build\Relativity.OutsideIn.targets'))" />
+  </Target>
+  <ItemGroup>
 <PackageReference Include="Relativity.OutsideIn" />
-<PackageReference Include="polly" />
-<PackageReference Include="relativity.logging" />
-<PackageReference Include="relativity.services.datacontracts" />
-<PackageReference Include="relativity.services.interfaces" />
-<PackageReference Include="relativity.transfer.client" />
-<PackageReference Include="stylecop.analyzers" />
+<PackageReference Include="Polly" />
+<PackageReference Include="Relativity.Logging" />
+<PackageReference Include="Relativity.Services.DataContracts" />
+<PackageReference Include="Relativity.Services.Interfaces" />
+<PackageReference Include="Relativity.Transfer.Client" />
+<PackageReference Include="StyleCop.Analyzers" />
 <PackageReference Include="ConfigureAwaitChecker.Analyzer" />
 <!-- <PackageReference Include="Relativity.AutomatedWorkflows.Services.Interfaces" /> -->
 </ItemGroup>
