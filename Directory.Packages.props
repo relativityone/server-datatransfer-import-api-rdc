@@ -43,7 +43,7 @@
 		<!-- Polly is explicitly listed to avoid conflicts between TAPI and Relativity. -->
 		<PackageVersion Include="polly" Version="5.7.0" />
 		<PackageVersion Include="psake" Version="4.7.4" />
-		<PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="0.1.1-pre-4 pre" />
+		<PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="0.1.1-pre-4" />
 		<PackageVersion Include="reportgenerator" Version="4.1.2" />
 
 		<!-- Serilog is only used to format the DSL message templates for integration tests. -->
