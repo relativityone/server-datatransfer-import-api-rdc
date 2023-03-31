@@ -447,7 +447,6 @@
     </AdditionalFiles>
     <None Include="app.config" />
     <None Include="app.manifest" />
-    <None Include="packages.config" />
     <!-- <None Include="paket.references" /> -->
   </ItemGroup>
   <ItemGroup>
