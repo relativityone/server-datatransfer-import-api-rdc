@@ -82,10 +82,6 @@ Skips building the solution, run Sql Comparer Tool for previous prepared compare
 Get names of folders with Relativity installers in location '\\bld-pkgs\Packages\Relativity\' for release branches in specified version.
 
 .EXAMPLE
-.\build.ps1 CheckRdcDependencies
-Checks is RDC prerequisites (C++ redistributables) are valid.
-
-.EXAMPLE
 .\build.ps1 InstallDataTransferLegacyRap -TestTarget https://p-dv-vm-yourtestvm
 Downloads latest version of the DataTransfer.Legacy app and installs it in the application library.
 
@@ -203,8 +199,6 @@ param(
     [Parameter()]
     [String]$EinsteinSecret,
     [Parameter()]
-    [String]$PackageTemplateRegex = "paket.template.*$",
-    [Parameter()]
     [nullable[bool]]$PublishToRelease,
     [Parameter()]
     [Switch]$ILMerge,
@@ -229,55 +223,26 @@ param(
 )
 
 $BaseDir = $PSScriptRoot
-$PackagesDir = Join-Path $BaseDir "packages"
-$PaketFilesDir = Join-Path $BaseDir "paket-files"
-$PaketDir = Join-Path $BaseDir ".paket"
-$PaketExe = Join-Path $PaketDir 'paket.exe'
-$NuGetExe = Join-Path $PaketDir 'nuget.exe'
-$PaketBootstrapperExe = Join-Path $PaketDir 'paket.bootstrapper.exe'
-Write-Verbose "The base directory resolves to $BaseDir"
-Write-Verbose "Checking for Paket in the .paket sub-directory..."
-if (-Not (Test-Path $PaketDir -PathType Container)) {
-    New-Item -ItemType directory -Path $PaketDir
+$ToolsDir = Join-Path $PSScriptRoot "buildtools"
+$NuGetExe = Join-Path $ToolsDir 'nuget.exe'
+$NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+Write-Progress "Checking for NuGet in tools path..."
+if (-Not (Test-Path $NuGetExe -Verbose:$VerbosePreference)) {
+	Write-Progress "Installing NuGet from $NugetUrl..."
+	Invoke-WebRequest $NuGetUrl -OutFile $NugetExe -Verbose:$VerbosePreference -ErrorAction Stop
 }
 
-if ("Clean" -in $TaskList) {
-
-    if (Test-Path $PaketExe -PathType Leaf) {
-        Remove-Item $PaketExe
-    }
-	
-	if (Test-Path $NuGetExe -PathType Leaf) {
-        Remove-Item $NuGetExe
-    }
-
-    if (Test-Path $PaketBootstrapperExe -PathType Leaf) {
-        Remove-Item $PaketBootstrapperExe
-    }
-
-    if (Test-Path $PaketFilesDir -PathType Container) {
-        Remove-Item -Recurse -Force $PaketFilesDir
-    }
-}
-
-if (-Not (Test-Path $PaketExe -PathType Leaf)) {
-	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
-    Invoke-WebRequest "https://relativity.jfrog.io/relativity/misc-files-local/paket.exe" -OutFile $PaketExe -UserAgent "curl/7.58.0"
-}
-if (-Not (Test-Path $NuGetExe -PathType Leaf)) {
-	[Net.ServicePointManager]::SecurityProtocol = ([Net.SecurityProtocolType]::Tls12)
-    Invoke-WebRequest "https://relativity.jfrog.io/artifactory/nuget-download/v5.3.0/nuget.exe" -OutFile $NuGetExe -UserAgent "curl/7.58.0"
-}
-
-
-$PaketVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "--verbose" } else { "" }
-Write-Verbose "Restoring packages via paket for $MasterSolution"
-& $PaketExe restore $PaketVerbosity
-if ($LASTEXITCODE -ne 0) 
-{
-	Throw "An error occured while restoring packages."
-}
-
+Import-Module -Force "$ToolsDir\BuildHelpers.psm1" -ErrorAction Stop
+Install-NugetPackage -Name kCura.PSBuildTools -Version 0.9.8 -ToolsDir $ToolsDir -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -ErrorAction Stop
+Install-NugetPackage -Name psake-rel -Version 5.0.0 -ToolsDir $ToolsDir -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "psake-rel\tools\psake\psake.psd1") -ErrorAction Stop
+Install-NugetPackage -Name Extent -Version 0.0.3 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name ILMerge -Version 3.0.29 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name JetBrains.DotCover.CommandLineTools -Version 2019.1.0-eap06 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name NUnit.ConsoleRunner -Version 3.16.3 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name ReportGenerator -Version 4.1.2 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name ReportUnit -Version 1.2.1 -ToolsDir $ToolsDir -ErrorAction Stop
 if (!$Branch) {
     $Branch = git rev-parse --abbrev-ref HEAD
 }
@@ -289,7 +254,7 @@ $Params = @{
     framework = "4.6.2"
     parameters = @{
         Root = $BaseDir
-        PackagesDir = $PackagesDir
+        ToolsDir = $ToolsDir
         TestReportFolderName = $TestReportFolderName
     }
     properties = @{
@@ -327,14 +292,6 @@ $Params = @{
     Verbose = $VerbosePreference
 }
 
-# Execute the build
-$PSakePath = Join-Path $PackagesDir "psake\tools\psake\psake.psm1"
-if (-Not (Test-Path $PSakePath -PathType Leaf)) {
-    Throw "The expected PSake path '$PSakePath' doesn't exist."
-}
-
-Import-Module $PSakePath
-
 Try
 {
     Invoke-PSake @Params
@@ -347,8 +304,8 @@ Finally
         $ExitCode = 1
     }
 
+    Remove-Module PSake -Force -ErrorAction SilentlyContinue
     Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
-    Remove-Module psake -Force -ErrorAction SilentlyContinue
 }
 
 Exit $ExitCode

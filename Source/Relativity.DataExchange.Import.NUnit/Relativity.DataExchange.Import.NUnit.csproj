@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -26,7 +25,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591;NU1605</NoWarn>
     <DocumentationFile>bin\Relativity.DataExchange.Import.NUnit.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -127,7 +126,7 @@
       <Link>.editorconfig</Link>
     </None>
     <None Include="app.config" />
-    <None Include="app.manifest" />    
+    <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">
@@ -158,44 +157,21 @@
       <Name>Relativity.DataExchange.TestFramework</Name>
     </ProjectReference>
   </ItemGroup>
-     <ItemGroup>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\de-DE\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\en-GB\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\es-MX\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\fr-FR\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pl-PL\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\pt-BR\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\StyleCop.Analyzers\analyzers\dotnet\cs\ru-RU\StyleCop.Analyzers.resources.dll">
-      <Paket>True</Paket>
-    </Analyzer>
+  <ItemGroup>
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NunitXml.TestLogger" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="Relativity.OutsideIn" />
+    <PackageReference Include="newtonsoft.json" />
+    <PackageReference Include="relativity.kepler.client" />
+    <PackageReference Include="relativity.logging" />
+    <PackageReference Include="relativity.oauth2client" />
+    <PackageReference Include="relativity.oauth2client.implicit" />
+    <PackageReference Include="relativity.oauth2client.interfaces" />
+    <PackageReference Include="relativity.services.datacontracts" />
+    <PackageReference Include="relativity.services.interfaces" />
+    <PackageReference Include="relativity.telemetry.datacontracts.shared" />
+    <PackageReference Include="relativity.transfer.client" />
+    <PackageReference Include="microsoft-windowsapicodepack-core" />
   </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Relativity.OutsideIn"  />
-		<PackageReference Include="newtonsoft.json"  /> 
-		<PackageReference Include="Rrelativity.kepler.client"  /> 
-		<PackageReference Include="relativity.logging" /> 
-		<PackageReference Include="relativity.oauth2client"  />  
-		<PackageReference Include="relativity.oauth2client.implicit" /> 
-		<PackageReference Include="relativity.oauth2client.interfaces"  /> 
-		<PackageReference Include="relativity.services.datacontracts" /> 
-		<PackageReference Include="relativity.services.interfaces"  />		 
-	    <PackageReference Include="relativity.telemetry.datacontracts.shared" />  
-		<PackageReference Include="relativity.transfer.client"  /> 		
-		<PackageReference Include="microsoft-windowsapicodepack-core" /> 
-</ItemGroup>
 </Project>

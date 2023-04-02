@@ -83,7 +83,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 		Public Class MockApplication
 			Inherits Relativity.Desktop.Client.Application
 
-			Public Overrides Async Function GetProductionPrecendenceList(ByVal caseInfo As CaseInfo) As Task(Of System.Data.DataTable)
+			Public Overrides Async Function GetProductionPrecendenceList(ByVal caseInfo As Relativity.DataExchange.Service.CaseInfo) As Task(Of System.Data.DataTable)
 				Dim retval As New System.Data.DataTable
 				retval.Columns.Add("Display")
 				retval.Columns.Add("Value")
@@ -700,7 +700,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 		Public Async Function LoadExportFile_ProductionPrecedence_SetWithOne() As Task
 			Dim ef As New kCura.WinEDDS.ExportFile(ArtifactType.Document) With {
 			 .ImagePrecedence = New kCura.WinEDDS.Pair() {New kCura.WinEDDS.Pair("1012345", "Name1")},
-			 .CaseInfo = New CaseInfo()}
+			 .CaseInfo = New Relativity.DataExchange.Service.CaseInfo()}
 			_form.Application = New MockApplication
 			Await _form.LoadExportFile(ef)
 			Assert.AreEqual(1, _form._productionPrecedenceList.Items.Count)
@@ -712,7 +712,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 		Public Async Function LoadExportFile_ProductionPrecedence_SetWithTwo() As Task
 			Dim ef As New kCura.WinEDDS.ExportFile(ArtifactType.Document) With {
 			 .ImagePrecedence = New kCura.WinEDDS.Pair() {New kCura.WinEDDS.Pair("1012345", "Name1"), New kCura.WinEDDS.Pair("1234567", "Name2")},
-			 .CaseInfo = New CaseInfo()}
+			 .CaseInfo = New Relativity.DataExchange.Service.CaseInfo()}
 			_form.Application = New MockApplication
 			Await _form.LoadExportFile(ef)
 			Assert.AreEqual(2, _form._productionPrecedenceList.Items.Count)
@@ -726,7 +726,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 		Public Async Function LoadExportFile_ProductionPrecedence_SetWithOne_IDDoesNotMatch_NameMatches() As Task
 			Dim ef As New kCura.WinEDDS.ExportFile(ArtifactType.Document) With {
 			 .ImagePrecedence = New kCura.WinEDDS.Pair() {New kCura.WinEDDS.Pair("14", "Name1")},
-			 .CaseInfo = New CaseInfo()}
+			 .CaseInfo = New Relativity.DataExchange.Service.CaseInfo()}
 			_form.Application = New MockApplication
 			Await _form.LoadExportFile(ef)
 			Assert.AreEqual(1, _form._productionPrecedenceList.Items.Count)
@@ -738,7 +738,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 		Public Async Function LoadExportFile_ProductionPrecedence_SetWithTwo_IDDoesNotMatch_NameMatches() As Task
 			Dim ef As New kCura.WinEDDS.ExportFile(ArtifactType.Document) With {
 			 .ImagePrecedence = New kCura.WinEDDS.Pair() {New kCura.WinEDDS.Pair("14", "Name1"), New kCura.WinEDDS.Pair("16", "Name2")},
-			 .CaseInfo = New CaseInfo()}
+			 .CaseInfo = New Relativity.DataExchange.Service.CaseInfo()}
 			_form.Application = New MockApplication
 			Await _form.LoadExportFile(ef)
 			Assert.AreEqual(2, _form._productionPrecedenceList.Items.Count)
@@ -752,7 +752,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 		Public Async Function LoadExportFile_ProductionPrecedence_SetWithOneInvalid_OnlyOriginal() As Task
 			Dim ef As New kCura.WinEDDS.ExportFile(ArtifactType.Document) With {
 			 .ImagePrecedence = New kCura.WinEDDS.Pair() {New kCura.WinEDDS.Pair("1", "Bogus")},
-			 .CaseInfo = New CaseInfo()}
+			 .CaseInfo = New Relativity.DataExchange.Service.CaseInfo()}
 			_form.Application = New MockApplication
 			Await _form.LoadExportFile(ef)
 			Assert.AreEqual(1, _form._productionPrecedenceList.Items.Count)

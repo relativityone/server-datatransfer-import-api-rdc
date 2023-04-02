@@ -3,8 +3,7 @@ Framework "4.6" #.NET framework version
 
 properties {
 	$LogsDir = Join-Path $Root "Logs"
-	$PackagesDir = Join-Path $Root "packages"
-	$PaketDir = Join-Path $Root ".paket"
+	$ToolsDir = Join-Path $Root "buildtools"
 	$SourceDir = Join-Path $Root "Source"
 	$InstallersSolution = Join-Path $SourceDir "Installers.sln"
 	$MasterSolution = Join-Path $SourceDir "Master.sln"
@@ -46,14 +45,13 @@ properties {
 	$SqlComparerOutputPath = Join-Path $TestReportsDir "SqlComparer"
 	
 #----------- end testreports ------------	
-	$ExtentCliExe = Join-Path $PackagesDir "extent\tools\extent.exe"
-	$NunitExe = Join-Path $PackagesDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
-	$DotCoverExe = Join-Path $PackagesDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
-	$ReportGeneratorExe = Join-Path $PackagesDir "ReportGenerator\tools\net47\ReportGenerator.exe"
-	$ReportUnitExe = Join-Path $PackagesDir "ReportUnit\tools\ReportUnit.exe"
-	$nugetExe = Join-Path $PaketDir "nuget.exe"
-	$PaketExe = Join-Path $PaketDir "paket.exe"
-	$ProgetUrl = "https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology"
+	$ExtentCliExe = Join-Path $ToolsDir "extent\tools\extent.exe"
+	$NunitExe = Join-Path $ToolsDir "NUnit.ConsoleRunner\tools\nunit3-console.exe"
+	$DotCoverExe = Join-Path $ToolsDir "JetBrains.dotCover.CommandLineTools\tools\dotCover.exe"
+	$ReportGeneratorExe = Join-Path $ToolsDir "ReportGenerator\tools\net47\ReportGenerator.exe"
+	$ReportUnitExe = Join-Path $ToolsDir "ReportUnit\tools\ReportUnit.exe"
+	$nugetExe = Join-Path $ToolsDir "nuget.exe"
+	$ArtifactoryUrl = "https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology"
 	$SqlComparerRunner = Join-Path $SourceDir "SQLDataComparer\SQLDataComparer.Runner\bin\Release\SQLDataComparer.Runner.exe"
 
 	# Installer paths
@@ -132,6 +130,11 @@ task Build -Description "Builds the source code"  {
     Write-Output "Build platform: $BuildPlatform"
     Write-Output "Target: $Target"
     Write-Output "Verbosity: $Verbosity"
+    Write-Output "Restoring $MasterSolution packages..."
+    exec { 
+        & $NugetExe @('restore', $MasterSolution)
+    }
+
     $lwrConfiguration = $Configuration.ToLower()
     $LogFilePath = Join-Path $LogsDir "master-buildsummary-$lwrConfiguration.log"
     $ErrorFilePath = Join-Path $LogsDir "master-builderrors-$lwrConfiguration.log"
@@ -181,6 +184,11 @@ task Build -Description "Builds the source code"  {
 task BuildInstallPackages -Description "Builds all install packages" {
     folders\Initialize-Folder $InstallersArtifactsDir
     folders\Initialize-Folder $LogsDir -Safe
+    Write-Output "Restoring $InstallersSolution packages..."
+    exec { 
+        & $NugetExe @('restore', $InstallersSolution)
+    }
+
     Write-Output "Building all RDC MSI and bootstrapper packages..."
     
     # Note: Digitally signing MSI/bootstrapper relies on MSBuild targets and a special sign script.
@@ -268,23 +276,22 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
 	
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
-    $packageLogFile = Join-Path $LogsDir "package-build.log"
 
     # Add any new package templates to the array.
-    $nuspecFiles = @("Relativity.DataExchange.Client.SDK.nuspec")
+    $nuspecFiles = @((Join-Path $SourceDir "Relativity.DataExchange.Import\Relativity.DataExchange.Client.SDK.nuspec"))
     foreach ($nuspecFile in $nuspecFiles) {
-        $nuspecFileFull = Join-Path $PaketDir $nuspecFile
+        $nuspecFileFull = $nuspecFile
         if (-Not (Test-Path $nuspecFileFull -PathType Leaf)) {
-            Throw "The package cannot be created from template file '$nuspecFileFull' because it doesn't exist."
+            Throw "The package cannot be created from nuspec file '$nuspecFileFull' because it doesn't exist."
         }
         
-        Write-Host "Creating package for template '$nuspecFileFull' and outputting to '$PackagesArtifactsDir'."
+        Write-Host "Creating package for nuspec file '$nuspecFileFull' and outputting to '$PackagesArtifactsDir'."
         Write-Host $nugetExe
         Write-Host $version 
         Write-Host $nuspecFileFull 
         exec {
              & $nugetExe pack $nuspecFileFull -ForceEnglishOutput -version $version -OutputDirectory $PackagesArtifactsDir -IncludeReferencedProjects `
-			 -Exclude "paket.exe" -Exclude "nuget.exe" -Exclude "paket.*" -Exclude "Relativity.DataExchange.Client.SDK.targets"
+			 -Exclude "nuget.exe" -Exclude "Relativity.DataExchange.Client.SDK.targets"
         } -errorMessage "There was an error creating the SDK NUGet package."
     }
 }
@@ -329,11 +336,9 @@ task BuildUIAutomation -Description "Builds the source code for UI Automation"  
     }
 }
 
-task BuildSQLDataComparer -Description "Builds the source code for SQLDataComparer"  {
+task BuildSQLDataComparer -Depends NugetRestore -Description "Builds the source code for SQLDataComparer"  {
     folders\Initialize-Folder $LogsDir -Safe
     $SolutionFile = $SQLDataComparerSolution
-    .\Source\SQLDataComparer\.paket\paket.exe restore 
-
     $SolutionConfiguration = $Configuration
     if (!$BuildPlatform) {
         $BuildPlatform = "Any CPU"
@@ -347,8 +352,10 @@ task BuildSQLDataComparer -Description "Builds the source code for SQLDataCompar
     $lwrConfiguration = $SolutionConfiguration.ToLower()
     $LogFilePath = Join-Path $LogsDir "SQLDataComparer-buildsummary-$lwrConfiguration.log"
     $ErrorFilePath = Join-Path $LogsDir "SQLDataComparer-builderrors-$lwrConfiguration.log"
+    exec { 
+        & $NugetExe @('restore', $SQLDataComparerSolution)
+    }
 
-	
     try {
         exec {            
             msbuild @(($SolutionFile),
@@ -369,12 +376,6 @@ task BuildSQLDataComparer -Description "Builds the source code for SQLDataCompar
     finally {
         testing\Remove-EmptyLogFile $ErrorFilePath
     }
-}
-
-task CheckSdkDependencies -Description "Checks if the references in ..\.paket\Relativity.DataExchange.Client.SDK.nuspec can be found in ..\paket.dependencies"{
-    exec { 
-        & "$ScriptsDir\Check-Sdk-Template.ps1" -SolutionDir $Root
-    } -errorMessage "References in ..\.paket\Relativity.DataExchange.Client.SDK.nuspec are not equal to ..\paket.dependencies."
 }
 
 task CheckRdcDependencies -Description "Checks is RDC prerequisites (C++ redistributables) are valid"{
@@ -411,12 +412,12 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     $packageVersion = versioning\Get-RdcVersion -rdcVersionWixFile $rdcVersionWixFile -branch $Branch
     Write-Host "Package version: $packageVersion"
     Write-Host "Working directory: $PSScriptRoot"
-    $packageLogFile = Join-Path $LogsDir "rdc-package-build.log"
     Write-Host "Creating the RDC package and outputting to '$PackagesArtifactsDir'."
-    $packageFile = Join-Path $PaketDir "paket.template.relativity.desktop.client"
+    $nuspecFileFull = Join-Path $SourceDir "Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.nuspec"
     exec {
-        & $PaketExe pack --template `"$packageFile`" --version $packageVersion --symbols `"$PackagesArtifactsDir`" --log-file `"$packageLogFile`" 
-    } -errorMessage "There was an error creating the RDC NuGet package."
+        & $nugetExe pack $nuspecFileFull -ForceEnglishOutput -version $packageVersion -OutputDirectory $PackagesArtifactsDir `
+        -Exclude "nuget.exe"
+   }    
 }
 
 task BuildVersion -Description "Retrieves the build version from powershell" {
@@ -702,7 +703,6 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
 }
 
 task PublishPackages -Description "Publishes packages to the NuGet feed" {
-    $packageLogFile = Join-Path $LogsDir "package-publish.log"
     $filter = "*.nupkg"
 	if([string]::IsNullOrWhiteSpace($ProgetApiKey))
 	{
@@ -716,14 +716,14 @@ task PublishPackages -Description "Publishes packages to the NuGet feed" {
     
     if ($SkipPublishRdcPackage) {
         $filter = "Relativity.DataExchange.Client.SDK*.nupkg"
-        Write-Host "Pushing just the SDK .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+        Write-Host "Pushing just the SDK .nupkg files to '$ArtifactoryUrl'."
     }
     elseif ($SkipPublishSdkPackage) {
         $filter = "*Relativity.Desktop.Client*.nupkg"
-        Write-Host "Pushing just the RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+        Write-Host "Pushing just the RDC .nupkg files to '$ArtifactoryUrl'."
     }
     else {
-        Write-Host "Pushing all SDK and RDC .nupkg files contained within '$PaketDir' to '$ProgetUrl'."
+        Write-Host "Pushing all SDK and RDC .nupkg files to '$ArtifactoryUrl'."
     }
 
     $path = Join-Path $PackagesArtifactsDir "*.*"
@@ -731,10 +731,10 @@ task PublishPackages -Description "Publishes packages to the NuGet feed" {
         $packageFile = $file.FullName
         exec { 
             if (!$Simulate) {
-                & $PaketExe push `"$packageFile`" --url `"$ProgetUrl`" --api-key `"$ProgetApiKey`" --verbose --log-file `"$packageLogFile`" 
+                & $NuGetEXE push `"$packageFile`" -src `"$ArtifactoryUrl`" -ApiKey `"$ProgetApiKey`" -Verbosity detailed
             }
             else {
-                Write-Host "Simulated pushing '$packageFile' to the '$ProgetUrl' NuGet feed."
+                Write-Host "Simulated pushing '$packageFile' to the '$ArtifactoryUrl' NuGet feed."
             }
         } -errorMessage "There was an error pushing the packages."
     }
@@ -1065,8 +1065,7 @@ task CreateTemplateTestParametersFileForRegressionTests -Description "Create tem
 }
 
 task UpdatePackages -Depends CheckSdkDependencies -Description "Updates the packages and disables the analyzers when debugging correctly" {
-    Write-Host "Updating packages and setting DisableAnalyzers"
-    exec { & $Root\.paket\paket.exe install } -errorMessage "updating paket.exe did not succeed."
+    Write-Host "Updating packages and setting DisableAnalyzers"    
 	exec { & $Root\buildtools\DisableAnalyzersForDebug.ps1 } -errorMessage "There was a problem with disabling the analyzers in debug mode."
 }
 

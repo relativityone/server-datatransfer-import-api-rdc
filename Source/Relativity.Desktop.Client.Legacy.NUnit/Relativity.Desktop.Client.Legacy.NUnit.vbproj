@@ -23,7 +23,7 @@
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>Relativity.Desktop.Client.Legacy.NUnit.xml</DocumentationFile>
-    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,NU1605</NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
@@ -36,7 +36,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>Relativity.Desktop.Client.Legacy.NUnit.xml</DocumentationFile>
-    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,NU1605</NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
@@ -123,9 +123,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
- 
   <ItemGroup>
     <PackageReference Include="newtonsoft.json" />
-    <PackageReference Include="nunit" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NunitXml.TestLogger" />
+    <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
 </Project>

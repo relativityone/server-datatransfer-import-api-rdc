@@ -510,26 +510,18 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" />
-      <ItemGroup>
-        <PackageReference Include="castle.core"  />
-		<PackageReference Include="castle.windsor"  /> 
-		<PackageReference Include="Relativity.OutsideIn"  /> 
-		<PackageReference Include="kCura.relativity.client" /> 
-		<PackageReference Include="moq"  />  
-		<PackageReference Include="nbuilder" /> 
-		<PackageReference Include="newtonsoft.json"  /> 
-		<PackageReference Include="nunit" /> 
-		<PackageReference Include="relativity.kepler.client"  />		 
-		<PackageReference Include="relativity.logging"/>
-		<PackageReference Include="relativity.services.datacontracts"  /> 
-		<PackageReference Include="relativity.services.interfaces"/> 
-	    <PackageReference Include="relativity.testing.identification" />  
-		<PackageReference Include="relativity.transfer.client"  /> 		
-		<PackageReference Include="stylecop.analyzers" /> 
-		<PackageReference Include="ConfigureAwaitChecker.Analyzer"  /> 
-		<PackageReference Include="relativity.telemetry.datacontracts.shared" />
-		<PackageReference Include="relativity.telemetry.services.interface" /> 
-</ItemGroup>
-  
+  <ItemGroup>
+    <PackageReference Include="Relativity.OutsideIn" />
+    <PackageReference Include="newtonsoft.json" />
+    <PackageReference Include="relativity.kepler.client" />
+    <PackageReference Include="relativity.logging" />
+    <PackageReference Include="relativity.oauth2client"/>
+    <PackageReference Include="relativity.oauth2client.implicit" />
+    <PackageReference Include="relativity.oauth2client.interfaces" />
+    <PackageReference Include="relativity.services.datacontracts" />
+    <PackageReference Include="relativity.services.interfaces" />
+    <PackageReference Include="relativity.telemetry.datacontracts.shared" />
+    <PackageReference Include="relativity.transfer.client" />
+    <PackageReference Include="microsoft-windowsapicodepack-core" />
+  </ItemGroup>
 </Project>
