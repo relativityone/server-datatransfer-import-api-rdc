@@ -241,6 +241,8 @@ Install-NugetPackage -Name Extent -Version 0.0.3 -ToolsDir $ToolsDir -ErrorActio
 Install-NugetPackage -Name ILMerge -Version 3.0.29 -ToolsDir $ToolsDir -ErrorAction Stop
 Install-NugetPackage -Name JetBrains.DotCover.CommandLineTools -Version 2019.1.0-eap06 -ToolsDir $ToolsDir -ErrorAction Stop
 Install-NugetPackage -Name NUnit.ConsoleRunner -Version 3.16.3 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name NUnit.Extension.VSProjectLoader -Version 3.8.0 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name NUnitExtras.HierarchicalCategories -Version 1.4.0 -ToolsDir $ToolsDir -ErrorAction Stop
 Install-NugetPackage -Name ReportGenerator -Version 4.1.2 -ToolsDir $ToolsDir -ErrorAction Stop
 Install-NugetPackage -Name ReportUnit -Version 1.2.1 -ToolsDir $ToolsDir -ErrorAction Stop
 if (!$Branch) {
