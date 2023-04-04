@@ -13,10 +13,10 @@ You can use the data exchange API to build application components that import do
 You must have the following installed in order to build the master solution.
 * Visual Studio 2017/2019
 * NUnit 3 Test Adapter v3.12.0.0 (required to run NUnit3 tests)
-* Paket for Visual Studio v0.38.3 (required for IDE builds)
+* Uses Central Package Management which centrally manages the dependencies in the project using Nuget dependencies directly within project files.
 * ConfigureAwait Checker Resharper Extension
 
-***Note:** Paket for Visual Studio adds Update|Install|Restore menu items when right-clicking a paket.dependencies file.*
+***Note:** Nuget for Visual Studio adds Update|Install|Restore menu items referring Directory.Packages.props file.*
 
 ## Building the master solution
 Generally speaking, PowerShell is used to perform initial and pre-commit builds and Visual Studio for interim builds.
@@ -50,9 +50,8 @@ Generally speaking, PowerShell is used to perform initial and pre-commit builds 
 
 ### Visual Studio
 1. Open the *Master.sln* solution
-2. Open the .paket solution folder
-3. Right-click the paket.dependencies file and click the Restore menu item
-4. Click CTRL+SHIFT+B to build the solution
+2. Using Directory.Packages.props and respective cs.proj files in the repo
+3. Click CTRL+SHIFT+B to build the solution
 
 ***Note:** VS-based builds always run the standard CA checks and StyleCop analyzer. Extended CA checks are never run due to execution time.*
 
@@ -68,8 +67,7 @@ The implementation details are as follows:
   * Unit and integration tests import this custom targets file
 * .\Scripts\Invoke-ILMerge.ps1
   * Performs all ILMERGE functionality
-  * The final assembly is stored in the .\Artifacts\binaries\sdk sub-folder
-* .\.paket\Relativity.DataExchange.Client.SDK.nuspec
+* The final assembly is stored in the .\Source\Relativity.DataExchange.Import\Relativity.DataExchange.Client.SDK.nuspec
   * Represents the new SDK package template
   * References the ILMERGE'd assembly file
 * Relativity.DataExchange.Export.csproj
@@ -279,9 +277,8 @@ The next sections provide details on relevant MSBuild and build tool details.
 The project structure is similar to other repos. Important folders and files are identified in the tree below.
 
 ```
-├───.paket
 ├───buildtools
-│   │
+│   │   BuildHelpers.psm1
 │   │   AllErrors.ruleset
 │   │   Legacy.ruleset
 │   │   stylecop.json
@@ -295,6 +292,7 @@ The project structure is similar to other repos. Important folders and files are
 │   │   test-parameters-sample.json
 │   │   TestParameters-Template.reg
 ├───Source
+    ├───Directory.Packages.props
 │   ├───Relativity.Desktop.Client.Controls.Legacy
 │   ├───Relativity.Desktop.Client.CustomActions
 │   ├───Relativity.Desktop.Client.CustomActions.NUnit
@@ -336,8 +334,6 @@ The project structure is similar to other repos. Important folders and files are
 │   .gitignore
 │   build.ps1
 │   default.ps1
-│   paket.dependencies
-│   paket.lock
 ```
 ### Projects
 |Name                                             |Project Type|Published|Description                                                                                                                 |
@@ -366,14 +362,11 @@ The project structure is similar to other repos. Important folders and files are
 ### Resharper Team Shared Layer
 To ensure that all team members use the same `Resharper` settings, `Master.sln.DotSettings` is added to source control and adjacent to the master solution file.
 
-### Paket and NuGet Packages
-The bootstrapped tools and master solution build uses [Paket](https://fsprojects.github.io/Paket/) to support all package requirements. The repo contains 3 key Paket file types:
+### NuGet Packages
+The bootstrapped tools and master solution build uses Nuget package manager to support all package requirements. The repo contains 2 key file types:
 
-* `paket.dependencies:` The file that defines all packages contained within the repo.
-* `paket.lock:` The file that gets updated whenever dependencies are added or changed.
-* `paket.references:` Each project includes this file to specify all package references.
-
-***Note:** Adding paket.lock to source control allows fast package restore and improves tracking dependency changes. It's understood that any future package changes requires a paket "install" in order to recompute the dependency graph. This is the only scenario where paket.lock should ever change.*
+* `Directory.Packages.props:` The file that defines all packages contained within the repo.
+* `cs.proj:` Each project includes this file to specify all package references.
 
 ### Assembly Versioning
 All `C#` and `VB.NET` projects contained within the master solution link in one of the following source files to control the assembly and file versions:
