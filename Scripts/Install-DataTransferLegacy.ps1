@@ -44,18 +44,12 @@ try{
 
 	$rapPath = "$PSScriptRoot\DataTransfer.Legacy\lib\DataTransfer.Legacy.rap"
 
-	if(-not (Get-Module -ListAvailable -Name RAPTools))
-	{
-		Install-Module RAPTools -Force
-	}
+	Install-Module RAPTools -Scope AllUsers -AllowClobber -Force
 	Import-Module RAPTools -Force
 	Install-RelativityLibraryApplication -HostName "$RelativityHost" -FilePath "$rapPath" -RelativityCredential $credential
 
-	if(-not (Get-Module -ListAvailable -Name R1Ops.Relativity))
-	{
-		Install-Module R1Ops.Relativity -Force
-	}
-	Import-Module R1Ops.Relativity -Force
+	Install-Module R1Ops.Relativity -RequiredVersion 1.4.4 -Scope AllUsers -AllowClobber -Force
+	Import-Module R1Ops.Relativity -RequiredVersion 1.4.4 -Force
 	Set-R1OpsInstanceSetting -Section 'DataTransfer.Legacy' -Name 'IAPICommunicationMode' -Value 'Kepler' -ValueType 'Text' -Uri "https://$RelativityHost" -Credential $credential
 }
 finally{
