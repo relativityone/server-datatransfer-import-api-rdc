@@ -304,6 +304,10 @@ task BuildUIAutomation -Description "Builds the source code for UI Automation"  
         $BuildPlatform = "Any CPU"
     }
 
+    Write-Output "Restoring $UIAutomationSolution packages..."
+    exec { 
+        & $NugetExe @('restore', $UIAutomationSolution)
+    }
 
     Write-Output "Solution: $SolutionFile"
     Write-Output "Configuration: $SolutionConfiguration"
