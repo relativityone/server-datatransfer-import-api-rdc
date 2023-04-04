@@ -382,6 +382,10 @@ task BuildSQLDataComparer -Depends NugetRestore -Description "Builds the source 
     }
 }
 
+task CheckSdkDependencies -Description "Checks if the references in ..\.nuget\Relativity.DataExchange.Client.SDK.nuspec can be found in ..\Directory.Packages.props"{
+    ## no-op. This is no longer required.    
+}
+
 task CheckRdcDependencies -Description "Checks is RDC prerequisites (C++ redistributables) are valid"{
     exec { 
         & "$ScriptsDir\Check-Rdc-Dependencies.ps1"
