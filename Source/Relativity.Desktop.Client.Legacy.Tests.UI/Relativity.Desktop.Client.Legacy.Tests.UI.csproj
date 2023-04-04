@@ -154,6 +154,10 @@
   <ItemGroup>
     <PackageReference Include="Appium.WebDriver" />
     <PackageReference Include="kCura.relativity.client" />
+    <PackageReference Include="Newtonsoft.JSON" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NunitXml.TestLogger" />
+    <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Logging.Interfaces" />
