@@ -49,7 +49,7 @@ if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
 }
 
 def config = [
-	sutTemplate: "aio-sundrop-0",
+	sutTemplate: "aio-sundrop-2",
 	hopperApiUrl: "https://api.hopper.relativity.com/",
 	hopperApiUsername: "homeimprovement@relativity.com"
 ]
@@ -140,9 +140,10 @@ timestamps
 
 					stage('Install DataTransfer.Legacy app')
 					{
-						echo "Installing DataTransfer.Legacy app"
-						output = powershell ".\\build.ps1 InstallDataTransferLegacyRap -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
-						echo output
+						echo "Skip installing the latest DataTransfer.Legacy app"
+						// echo "Installing DataTransfer.Legacy app"
+						// output = powershell ".\\build.ps1 InstallDataTransferLegacyRap -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
+						// echo output
 					}
 
 					stage('Replace variables in build')
