@@ -96,7 +96,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// act & assert
 			Assert.That(
 				() => this.sut.GetUploadableArtifactTypes(NonExistingWorkspaceId),
-				this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+				GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
 		}
 
 		[IdentifiedTest("58c73e4c-8df7-407c-b915-a023b9b71959")]
@@ -125,7 +125,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// act & assert
 			Assert.That(
 				() => this.sut.GetWorkspaceFields(NonExistingWorkspaceId, DocumentArtifactTypeId),
-				this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+				GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
 		}
 
 		[IdentifiedTest("d40d944b-850b-4183-9fd3-9d90298ad786")]
@@ -197,10 +197,10 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// act & assert
 			Assert.That(
 				() => this.sut.GetProductionSets(NonExistingWorkspaceId),
-				this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+				GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
 		}
 
-		private IResolveConstraint GetExpectedExceptionConstraintForNonExistingWorkspace(int workspaceId)
+		private static IResolveConstraint GetExpectedExceptionConstraintForNonExistingWorkspace(int workspaceId)
 		{
 			string expectedExceptionMessage =
                 "Error during interceptor action PermissionCheckInterceptor." +
