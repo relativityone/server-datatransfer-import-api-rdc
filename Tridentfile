@@ -338,12 +338,13 @@ timestamps
                                 {
 								    try
 									{
-										withCredentials([string(credentialsId: 'ProgetNugetApiKey', variable: 'key')]) 
+										def secrets = getKeyVaultSecretMapping("artifactory")
+   										withAzureKeyvault(azureKeyVaultSecrets: secrets["secrets"], keyVaultURLOverride: secrets.keyvault)
 										{
 											if (publishSdkAndRdc)  
 											{
 												echo "Publishing the SDK and RDC package(s)"
-												powershell ".\\build.ps1 PublishPackages -Branch '${branchName}'  -ProgetApiKey '$key'" 
+												powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '$nugetApiKey'" 
 											}
 											else 
 											{

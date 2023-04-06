@@ -80,7 +80,7 @@ properties {
 	$SkipPublishRdcPackage = $Null
 	$SkipPublishSdkPackage = $Null
 	$Simulate = $Null
-	$ProgetApiKey = $Null
+	$ArtifactoryApiKey = $Null
 	$MassImportImprovementsToggle = $Null
 	$EnableDataGrid = $Null
 	$SqlProfiling = $Null
@@ -712,9 +712,9 @@ task PublishBuildArtifacts -Description "Publish build artifacts" {
 
 task PublishPackages -Description "Publishes packages to the NuGet feed" {
     $filter = "*.nupkg"
-	if([string]::IsNullOrWhiteSpace($ProgetApiKey))
+	if([string]::IsNullOrWhiteSpace($ArtifactoryApiKey))
 	{
-		Throw "The api key of the proget feed is not provided. This is required for this step (push to the nuget feed)"
+		Throw "The api key of the Artifactory feed is not provided. This is required for this step (push to the nuget feed)"
 	}
 	
     if ($SkipPublishRdcPackage -and $SkipPublishSdkPackage) {
@@ -739,7 +739,7 @@ task PublishPackages -Description "Publishes packages to the NuGet feed" {
         $packageFile = $file.FullName
         exec { 
             if (!$Simulate) {
-                & $NuGetEXE push `"$packageFile`" -src `"$ArtifactoryUrl`" -ApiKey `"$ProgetApiKey`" -Verbosity detailed
+                & $NuGetEXE push `"$packageFile`" -src `"$ArtifactoryUrl`" -ApiKey `"$ArtifactoryApiKey`" -Verbosity detailed
             }
             else {
                 Write-Host "Simulated pushing '$packageFile' to the '$ArtifactoryUrl' NuGet feed."

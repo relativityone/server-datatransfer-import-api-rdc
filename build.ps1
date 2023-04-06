@@ -175,7 +175,7 @@ param(
     [Parameter()]
     [String]$Branch,
     [Parameter()]
-    [String]$ProgetApiKey,
+    [String]$ArtifactoryApiKey,
     [Parameter()]
     [String]$BuildNumber = "1",
     [Parameter()]
@@ -282,7 +282,7 @@ $Params = @{
         Sign = $Sign
         ForcePublishRdcPackage = $ForcePublishRdcPackage
         Simulate = $Simulate
-		ProgetApiKey = $ProgetApiKey
+		ArtifactoryApiKey = $ArtifactoryApiKey
 		MassImportImprovementsToggle = $MassImportImprovementsToggle
 		EnableDataGrid = $EnableDataGrid
 		SqlProfiling = $SqlProfiling
