@@ -338,7 +338,13 @@ timestamps
                                 {
 								    try
 									{
-										def secrets = getKeyVaultSecretMapping("artifactory")
+										def secrets = [
+                                                secrets: [
+                                                    [secretType: 'Secret', name: 'Relativity-Srv-NuGet-Svc-ApiKey', version: '', envVariable: 'artifactServiceApiKey']
+                                                ],
+                                                keyvault: "https://artifactory-auth-prod.vault.azure.net"
+                                        ]
+                                        
    										withAzureKeyvault(azureKeyVaultSecrets: secrets["secrets"], keyVaultURLOverride: secrets.keyvault)
 										{
 											if (publishSdkAndRdc)  
