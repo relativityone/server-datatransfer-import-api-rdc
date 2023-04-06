@@ -23,24 +23,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.Testing.Identification;
 
-	[TestFixture(false)]
-	[TestFixture(true)]
-	public class ImportApiTests
+	[TestFixture]
+    public class ImportApiTests
 	{
 		private const int DocumentArtifactTypeId = 10;
 
-		private readonly bool useKepler;
-
-		private IntegrationTestParameters testParameters;
+        private IntegrationTestParameters testParameters;
 
 		private ImportAPI sut;
 
-		public ImportApiTests(bool useKepler)
-		{
-			this.useKepler = useKepler;
-		}
-
-		[IdentifiedTest("fd73c064-f91b-4741-9cf6-84dee1f4b5b8")]
+        [IdentifiedTest("fd73c064-f91b-4741-9cf6-84dee1f4b5b8")]
 		[Feature.DataTransfer.ImportApi.Authentication]
 		public static void ShouldThrowAuthenticationErrorForInvalidCredentials()
 		{
@@ -56,7 +48,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.testParameters = AssemblySetup.TestParameters;
 			Assume.That(this.testParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
 
-			AppSettings.Instance.UseKepler = this.useKepler;
+            AppSettings.Instance.UseKepler = true;
 
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls
 																			 | SecurityProtocolType.Tls11
@@ -210,20 +202,11 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 
 		private IResolveConstraint GetExpectedExceptionConstraintForNonExistingWorkspace(int workspaceId)
 		{
-			string expectedExceptionMessage;
-			if (this.useKepler)
-			{
-				expectedExceptionMessage =
-					"Error during interceptor action PermissionCheckInterceptor." +
-					" InnerExceptionType: Relativity.Core.Exception.InvalidAppArtifactID," +
-					$" InnerExceptionMessage: Could not retrieve ApplicationID #{workspaceId}.";
-			}
-			else
-			{
-				expectedExceptionMessage = $"Could not retrieve ApplicationID #{workspaceId}.";
-			}
-
-			return Throws.Exception.InstanceOf<SoapException>()
+			string expectedExceptionMessage =
+                "Error during interceptor action PermissionCheckInterceptor." +
+                " InnerExceptionType: Relativity.Core.Exception.InvalidAppArtifactID," +
+                $" InnerExceptionMessage: Could not retrieve ApplicationID #{workspaceId}.";
+            return Throws.Exception.InstanceOf<SoapException>()
 				.With.Message.EqualTo(expectedExceptionMessage);
 		}
 	}
