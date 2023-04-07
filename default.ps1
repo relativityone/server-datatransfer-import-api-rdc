@@ -51,7 +51,7 @@ properties {
 	$ReportGeneratorExe = Join-Path $ToolsDir "ReportGenerator\tools\net47\ReportGenerator.exe"
 	$ReportUnitExe = Join-Path $ToolsDir "ReportUnit\tools\ReportUnit.exe"
 	$nugetExe = Join-Path $ToolsDir "nuget.exe"
-	$ArtifactoryUrl = "https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology"
+	$ArtifactoryUrl = "https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-local"
 	$SqlComparerRunner = Join-Path $SourceDir "SQLDataComparer\SQLDataComparer.Runner\bin\Release\SQLDataComparer.Runner.exe"
 
 	# Installer paths
