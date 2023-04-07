@@ -138,14 +138,6 @@ timestamps
 						vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
 					}	
 
-					stage('Install DataTransfer.Legacy app')
-					{
-						echo "Skip installing the latest DataTransfer.Legacy app"
-						// echo "Installing DataTransfer.Legacy app"
-						// output = powershell ".\\build.ps1 InstallDataTransferLegacyRap -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
-						// echo output
-					}
-
 					stage('Replace variables in build')
 					{
 					    echo "replacing test variables in build"
@@ -338,7 +330,7 @@ timestamps
                                 {
 								    try
 									{
-										def secrets = getKeyVaultSecretMapping("artifactory")
+										def secrets = utils.getKeyVaultSecretMapping("artifactory")
    										withAzureKeyvault(azureKeyVaultSecrets: secrets["secrets"], keyVaultURLOverride: secrets.keyvault)
 										{
 											if (publishSdkAndRdc)  
