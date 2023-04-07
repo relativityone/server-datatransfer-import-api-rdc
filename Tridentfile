@@ -324,7 +324,7 @@ timestamps
                     stage ('Publish everything') 
                     {
                         parallel(
-                            "Publish packages to proget":
+                            "Publish packages to Artifactory":
                             {
                                 if (params.publishPackages)
                                 {
@@ -336,19 +336,19 @@ timestamps
 											if (publishSdkAndRdc)  
 											{
 												echo "Publishing the SDK and RDC package(s)"
-												powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '$nugetApiKey'" 
+												powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '${nugetApiKey}'" 
 											}
 											else 
 											{
-												if(publishSdk)
+												if (publishSdk)
 												{
 													echo "Publishing the SDK only"
-													powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${branchName}'  -ProgetApiKey '$key'" 
+													powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${branchName}' -ArtifactoryApiKey '${nugetApiKey}'" 
 												}
-												else if(publishRdc)
+												else if (publishRdc)
 												{
 													echo "Publishing RDC only"
-													powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${branchName}'  -ProgetApiKey '$key'" 
+													powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${branchName}' -ArtifactoryApiKey '${nugetApiKey}'" 
 												}
 												else
 												{
@@ -361,7 +361,7 @@ timestamps
 									{
 										echo err.toString()
 										currentBuild.result = 'FAILED' 
-										echo "Something went wrong publishing the packages"
+										echo "Failed to publish the packages"
 									}
                                 }
                             },
@@ -378,7 +378,7 @@ timestamps
 								{
 									echo err.toString()
 									currentBuild.result = 'FAILED' 
-									echo "Something went wrong publishing the packages"
+									echo "Failed to publish the build artifacts"
 								}
                             },
                             failFast: true
@@ -387,7 +387,7 @@ timestamps
                     }
 					stage('Create einstein page')
 					{	
-						if(publishSdkAndRdc && publishToRelease)
+						if (publishSdkAndRdc && publishToRelease)
 						{
 							def secrets = [ 
 							[ secretType: 'Secret', name: 'Einstein-token', envVariable: 'EinsteinToken' ]
@@ -437,8 +437,9 @@ timestamps
             catch(err)
             {
                 echo err.toString()
+                echo "Failed to run the CI pipeline"
                 currentBuild.result = 'FAILED' 
-                if (branchName == 'develop' || isReleaseBranch)
+                if (branchName == 'server-develop' || isReleaseBranch)
                 {
                     tools.sendEmailAboutFailureToTeam(branchName)
                 }
