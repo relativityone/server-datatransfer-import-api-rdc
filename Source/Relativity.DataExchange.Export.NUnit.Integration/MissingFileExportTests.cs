@@ -16,20 +16,14 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[TestFixture(true)]
-	[TestFixture(false)]
-	[TestType.Error]
+	[TestFixture]
+    [TestType.Error]
 	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	public class MissingFileExportTests : ExportTestBase
 	{
 		private IntegrationTestParameters testParameters;
 
-		public MissingFileExportTests(bool useKepler)
-			: base(useKepler)
-		{
-		}
-
-		protected override IntegrationTestParameters TestParameters => testParameters;
+        protected override IntegrationTestParameters TestParameters => testParameters;
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetUp()

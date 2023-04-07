@@ -19,9 +19,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[TestFixture(true)]
-	[TestFixture(false)]
-	[TestType.MainFlow]
+	[TestFixture]
+    [TestType.MainFlow]
 	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	public class PermissionExportTests : ExportTestBase
 	{
@@ -35,12 +34,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private string oldPassword;
 		private IntegrationTestParameters testParameters;
 
-		public PermissionExportTests(bool useKepler)
-			: base(useKepler)
-		{
-		}
-
-		protected override IntegrationTestParameters TestParameters => testParameters;
+        protected override IntegrationTestParameters TestParameters => testParameters;
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetupAsync()

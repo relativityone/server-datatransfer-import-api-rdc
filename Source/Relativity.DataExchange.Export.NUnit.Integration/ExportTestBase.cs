@@ -57,15 +57,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		private CancellationTokenSource cancellationTokenSource;
 		private bool? originalUseKeplerValue;
 
-		protected ExportTestBase(bool useKepler)
+		protected ExportTestBase()
 		{
-			this.UseKepler = useKepler;
-			if (useKepler)
-			{
-				RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
-			}
-
-			ServicePointManager.SecurityProtocol =
+            RelativityVersionChecker.SkipTestIfRelativityVersionIsLowerThan(IntegrationTestHelper.IntegrationTestParameters, RelativityVersion.Sundrop);
+            ServicePointManager.SecurityProtocol =
 				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
 				| SecurityProtocolType.Tls12;
 		}
@@ -88,9 +83,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected bool CorrelationIdRetrieved { get; set; }
 
-		protected bool UseKepler { get; }
-
-		private NetworkCredential Credentials =>
+        private NetworkCredential Credentials =>
 			new NetworkCredential(TestParameters.RelativityUserName, TestParameters.RelativityPassword);
 
 		[OneTimeSetUp]
@@ -131,7 +124,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 			AppSettingsManager.Default(AppSettings.Instance);
 
-			AppSettings.Instance.UseKepler = this.UseKepler;
+			AppSettings.Instance.UseKepler = true;
 			WebApiVsKeplerFactory.InvalidateCache();
 			ManagerFactory.InvalidateCache();
 			this.CorrelationIdRetrieved = false;
@@ -462,11 +455,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		protected void ThenTheCorrelationIdWasRetrieved()
 		{
-			if (this.UseKepler)
-			{
-				Assert.That(this.CorrelationIdRetrieved, "CorrelationId should be retrieved");
-			}
-		}
+            Assert.That(this.CorrelationIdRetrieved, "CorrelationId should be retrieved");
+}
 
 		private static Dictionary<string, string> ToAuditDetails(ExtendedExportFile exportFile)
 		{
