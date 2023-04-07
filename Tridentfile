@@ -330,25 +330,31 @@ timestamps
                                 {
 								    try
 									{
-										def secrets = utils.getKeyVaultSecretMapping("artifactory")
+										echo "Getting key vault info for Artifactory..."
+										def secrets = [
+											secrets: [
+												[secretType: 'Secret', name: 'Relativity-Srv-NuGet-Svc-ApiKey', version: '', envVariable: 'artifactServiceApiKey']
+											],
+											keyvault: "https://artifactory-auth-prod.vault.azure.net"
+										]
    										withAzureKeyvault(azureKeyVaultSecrets: secrets["secrets"], keyVaultURLOverride: secrets.keyvault)
 										{
 											if (publishSdkAndRdc)  
 											{
 												echo "Publishing the SDK and RDC package(s)"
-												powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '${nugetApiKey}'" 
+												powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'" 
 											}
 											else 
 											{
 												if (publishSdk)
 												{
 													echo "Publishing the SDK only"
-													powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${branchName}' -ArtifactoryApiKey '${nugetApiKey}'" 
+													powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'" 
 												}
 												else if (publishRdc)
 												{
 													echo "Publishing RDC only"
-													powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${branchName}' -ArtifactoryApiKey '${nugetApiKey}'" 
+													powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'" 
 												}
 												else
 												{
