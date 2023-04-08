@@ -222,6 +222,7 @@ param(
 	[String]$ReleasedVersionName
 )
 
+. $profile
 $BaseDir = $PSScriptRoot
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
 $NuGetExe = Join-Path $ToolsDir 'nuget.exe'
