@@ -51,7 +51,8 @@ properties {
 	$ReportGeneratorExe = Join-Path $ToolsDir "ReportGenerator\tools\net47\ReportGenerator.exe"
 	$ReportUnitExe = Join-Path $ToolsDir "ReportUnit\tools\ReportUnit.exe"
 	$nugetExe = Join-Path $ToolsDir "nuget.exe"
-	$ArtifactoryUrl = "https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-local"
+	$ArtifactoryUrl = "https://relativityone.jfrog.io/artifactory"
+	$ArtifactoryRepositoryName = "server-nuget-local"
 	$SqlComparerRunner = Join-Path $SourceDir "SQLDataComparer\SQLDataComparer.Runner\bin\Release\SQLDataComparer.Runner.exe"
 
 	# Installer paths
@@ -734,18 +735,38 @@ task PublishPackages -Description "Publishes packages to the NuGet feed" {
         Write-Host "Pushing all SDK and RDC .nupkg files to '$ArtifactoryUrl'."
     }
 
+    # Note: using ArtifactoryTools PS module to push NuGet packages because the cloud Artifactory instance requires
+    #       an access token when using nuget.exe. This module uses the REST API directly to work around this
+    #       issue until CI scripts have been migrated to access tokens. 
+    $startTime = [System.DateTime]::Now
+    $metadata = @{
+        PackageVersion = versioning\Get-ReleaseVersion "$Branch"
+    }     
+    
+    $uploadedCount = 0
+    $totalBytes = 0
     $path = Join-Path $PackagesArtifactsDir "*.*"
-    foreach ($file in Get-ChildItem $path -Include $filter) {
-        $packageFile = $file.FullName
-        exec { 
-            if (!$Simulate) {
-                & $NuGetEXE push `"$packageFile`" -src `"$ArtifactoryUrl`" -ApiKey `"$ArtifactoryApiKey`" -Verbosity detailed
-            }
-            else {
-                Write-Host "Simulated pushing '$packageFile' to the '$ArtifactoryUrl' NuGet feed."
-            }
-        } -errorMessage "There was an error pushing the packages."
+    Get-ChildItem -Path $path -Filter $filter -File | ForEach-Object {
+        $fileToUpload = $_.FullName
+        Write-Verbose "FileToUpload = $fileToUpload"
+        $sendFileToRepoParameters = @{
+            BaseURL = $ArtifactoryURL
+            Repo = $ArtifactoryRepositoryName
+            RepoPath = $null
+            Metadata = $metadata
+            FileToUpload = $fileToUpload
+            ApiKey = $ArtifactoryApiKey
+        }
+    
+        Send-FileToRepo @sendFileToRepoParameters -Verbose
+        $uploadedCount += 1
+        $totalBytes += $_.Length
     }
+    
+    $duration = [System.DateTime]::Now - $startTime
+    $totalBytesFriendly = $totalBytes.ToString("N0")
+    $durationFriendly = $duration.ToString("c")
+    Write-Verbose "Artifactory Publish Results: $uploadedCount binaries ($totalBytesFriendly bytes total), which took $durationFriendly."
 }
 
 task SemanticVersions -Depends BuildVersion, PackageVersion -Description "Calculate and retrieve the semantic build and package versions" {

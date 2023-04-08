@@ -237,6 +237,8 @@ Install-NugetPackage -Name kCura.PSBuildTools -Version 0.9.8 -ToolsDir $ToolsDir
 Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -ErrorAction Stop
 Install-NugetPackage -Name psake-rel -Version 5.0.0 -ToolsDir $ToolsDir -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "psake-rel\tools\psake\psake.psd1") -ErrorAction Stop
+Install-NugetPackage -Name ArtifactoryTools -Version 2022.9.12.52574 -ToolsDir $ToolsDir -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "ArtifactoryTools\ArtifactoryTools.psd1") -ErrorAction Stop
 Install-NugetPackage -Name Extent -Version 0.0.3 -ToolsDir $ToolsDir -ErrorAction Stop
 Install-NugetPackage -Name ILMerge -Version 3.0.29 -ToolsDir $ToolsDir -ErrorAction Stop
 Install-NugetPackage -Name JetBrains.DotCover.CommandLineTools -Version 2019.1.0-eap06 -ToolsDir $ToolsDir -ErrorAction Stop
@@ -308,6 +310,7 @@ Finally
 
     Remove-Module PSake -Force -ErrorAction SilentlyContinue
     Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
+    Remove-Module ArtifactoryTools -Force -ErrorAction SilentlyContinue
 }
 
 Exit $ExitCode
