@@ -66,9 +66,9 @@ namespace Relativity.DataExchange.NUnit
 				yield return SerializeErrorDetails(new ValidationException("Error"));
 				yield return SerializeErrorDetails(new ValidationException("Error1", new ServiceException("Error2")));
 
-				yield return SerializeErrorDetails(new PermissionDeniedException());
-				yield return SerializeErrorDetails(new PermissionDeniedException("Invalid Permissions"));
-				yield return SerializeErrorDetails(new PermissionDeniedException("Invalid Permissions", new ServiceException("Invalid Permissions 2")));
+				yield return SerializeErrorDetails(new Relativity.Services.Objects.Exceptions.PermissionDeniedException());
+				yield return SerializeErrorDetails(new Relativity.Services.Objects.Exceptions.PermissionDeniedException("Invalid Permissions"));
+				yield return SerializeErrorDetails(new Relativity.Services.Objects.Exceptions.PermissionDeniedException("Invalid Permissions", new ServiceException("Invalid Permissions 2")));
 
 				// General
 				yield return SerializeErrorDetails(new InvalidInputException());
@@ -169,7 +169,7 @@ namespace Relativity.DataExchange.NUnit
 				// we exclude it from the list to keep the logic of ObjectManagerExceptionHelper unchanged
 				exceptions.AddRange(
 					ExceptionHelper.FatalKeplerExceptionCandidates
-						.Where(x => x != typeof(PermissionDeniedException))
+						.Where(x => x != typeof(Relativity.Services.Objects.Exceptions.PermissionDeniedException))
 						.Select(Activator.CreateInstance)
 						.Cast<Exception>());
 

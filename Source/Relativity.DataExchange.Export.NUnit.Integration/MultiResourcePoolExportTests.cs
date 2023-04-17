@@ -15,9 +15,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.Testing.Identification;
 
 	[Explicit]
-	[TestFixture(true)]
-	[TestFixture(false)]
-	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
+	[TestFixture]
+    [Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	[TestType.EdgeCase]
 	public class MultiResourcePoolExportTests : ExportTestBase
 	{
@@ -25,12 +24,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 		private IntegrationTestParameters testParameters;
 
-		public MultiResourcePoolExportTests(bool useKepler)
-			: base(useKepler)
-		{
-		}
-
-		protected override IntegrationTestParameters TestParameters => testParameters;
+        protected override IntegrationTestParameters TestParameters => testParameters;
 
 		[OneTimeSetUp]
 		public async Task OneTimeSetUp()

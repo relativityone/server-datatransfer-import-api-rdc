@@ -20,10 +20,10 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 
 	public static class SearchablePdfTestHelper
 	{
-		public static void SetupTestData(IntegrationTestParameters testParameters, bool useKepler)
+		public static void SetupTestData(IntegrationTestParameters testParameters)
 		{
 			var documentArtifactIds = GetUniqueDocumentArtifactIds(testParameters);
-			var remoteFilePaths = UploadSamplePdfFiles(testParameters, useKepler);
+			var remoteFilePaths = UploadSamplePdfFiles(testParameters);
 			InsertSamplePdfFilesToDatabase(testParameters, remoteFilePaths, documentArtifactIds);
 		}
 
@@ -48,9 +48,9 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			return documentArtifactIds;
 		}
 
-		private static List<string> UploadSamplePdfFiles(IntegrationTestParameters testParameters, bool useKepler)
+		private static List<string> UploadSamplePdfFiles(IntegrationTestParameters testParameters)
 		{
-			var bridge = SetupTapiBridge(testParameters, useKepler);
+			var bridge = SetupTapiBridge(testParameters);
 
 			List<string> sourcePaths = TestData.SampleSearchablePdfTestFiles.ToList();
 			for (int order = 0; order < sourcePaths.Count; order++)
@@ -72,7 +72,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 			return uploadedFiles;
 		}
 
-		private static UploadTapiBridge2 SetupTapiBridge(IntegrationTestParameters testParameters, bool useKepler)
+		private static UploadTapiBridge2 SetupTapiBridge(IntegrationTestParameters testParameters)
 		{
 			string workspaceDirectory = $"EDDS{testParameters.WorkspaceId}";
 			string targetPath = Path.Combine(testParameters.FileShareUncPath, workspaceDirectory);
@@ -94,8 +94,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				TargetPath = targetPath,
 			};
 
-			bool useLegacyWebApi = !useKepler;
-			ITapiObjectService objectService = new TapiObjectService(new RelativityManagerServiceFactory(), useLegacyWebApi);
+			ITapiObjectService objectService = new TapiObjectService(new RelativityManagerServiceFactory(), useLegacyWebApi: false);
 			objectService.SetTapiClient(parameters, TapiClient.Web);
 
 			UploadTapiBridge2 bridge = new UploadTapiBridge2(
@@ -103,8 +102,8 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 				new TestNullLogger(),
 				new NullAuthTokenProvider(),
 				CancellationToken.None,
-				useLegacyWebApi,
-				new RelativityManagerServiceFactory());
+				useLegacyWebApi: false,
+                new RelativityManagerServiceFactory());
 			return bridge;
 		}
 

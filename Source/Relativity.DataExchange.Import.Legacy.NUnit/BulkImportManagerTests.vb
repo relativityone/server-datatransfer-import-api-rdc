@@ -18,7 +18,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 #Region "Members"
 		Private _keyPathExistsAlready As Boolean
 		Private _keyValExistsAlready As Boolean
-		Private _settings As ImageLoadInfo
+		Private _settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo
 #End Region
 
 #Region " Setup "
@@ -35,7 +35,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 				RegKeyHelper.CreateKeyWithValueOnPath(Not _keyPathExistsAlready, RegKeyHelper.RelativityKeyPath, RegKeyHelper.RelativityServiceURLKey, RegKeyHelper.RelativityDefaultServiceURL)
 			End If
 
-			_settings = New ImageLoadInfo With {
+			_settings = New kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo With {
 	 .BulkFileName = "",
 	 .UploadFullText = False,
 	 .Overlay = OverwriteType.Both,
@@ -66,7 +66,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public Sub CheckResultsForException_should_throw_BulkImportSqlException()
 			Using manager As New MockBulkImportManager(True)
 				Dim results = New MassImportResults()
-				results.ExceptionDetail = New SoapExceptionDetail()
+				results.ExceptionDetail = New kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail()
 				results.ExceptionDetail.ExceptionMessage = "Some message --nothing specific-- rest of message"
 				Assert.Throws(Of BulkImportManager.BulkImportSqlException)(Sub() manager.CheckResultsForExceptionPublic(results))
 			End Using
@@ -76,7 +76,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public Sub CheckResultsForException_should_throw_BulkImportSqlTimeoutException()
 			Using manager As New MockBulkImportManager(True)
 				Dim results = New MassImportResults()
-				results.ExceptionDetail = New SoapExceptionDetail()
+				results.ExceptionDetail = New kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail()
 				results.ExceptionDetail.ExceptionMessage = "Some message Timeout expired rest of message"
 				Assert.Throws(Of BulkImportManager.BulkImportSqlTimeoutException)(Sub() manager.CheckResultsForExceptionPublic(results))
 			End Using
@@ -86,7 +86,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public Sub CheckResultsForException_should_throw_InsufficientPermissionsForImportException()
 			Using manager As New MockBulkImportManager(True)
 				Dim results = New MassImportResults()
-				results.ExceptionDetail = New SoapExceptionDetail()
+				results.ExceptionDetail = New kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail()
 				results.ExceptionDetail.ExceptionMessage = "Some message ##InsufficientPermissionsForImportException## rest of message"
 				Assert.Throws(Of BulkImportManager.InsufficientPermissionsForImportException)(Sub() manager.CheckResultsForExceptionPublic(results))
 			End Using
@@ -96,7 +96,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public Sub CheckResultsForException_should_add_message_for_stack_overflow()
 			Using manager As New MockBulkImportManager(True)
 				Dim results = New MassImportResults()
-				results.ExceptionDetail = New SoapExceptionDetail()
+				results.ExceptionDetail = New kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail()
 				results.ExceptionDetail.ExceptionMessage = "Some message Server stack limit has been reached rest of message"
 				Dim exception = Assert.Throws(Of BulkImportManager.BulkImportSqlException)(Sub() manager.CheckResultsForExceptionPublic(results))
 				Assert.That(exception.Message.Contains("Try to import less fields"))
@@ -202,12 +202,12 @@ Namespace Relativity.DataExchange.Import.NUnit
 		Public Class MockBulkImportManager
 			Inherits BulkImportManager
 
-			Public Property ErrorMessage As SoapExceptionDetail
+			Public Property ErrorMessage As kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail
 
 			Public Sub New(ByVal throwsException As Boolean)
 				MyBase.New(Nothing, Nothing)
 				If throwsException Then
-					Me.ErrorMessage = New SoapExceptionDetail()
+					Me.ErrorMessage = New kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail()
 				Else
 					Me.ErrorMessage = Nothing
 				End If
@@ -216,7 +216,7 @@ Namespace Relativity.DataExchange.Import.NUnit
 			Public Sub New(ByVal exceptionMessage As String)
 				MyBase.New(Nothing, Nothing)
 				If exceptionMessage IsNot Nothing Then
-					Me.ErrorMessage = New SoapExceptionDetail()
+					Me.ErrorMessage = New kCura.EDDS.WebAPI.BulkImportManagerBase.SoapExceptionDetail()
 					Me.ErrorMessage.ExceptionMessage = exceptionMessage
 				Else
 					Me.ErrorMessage = Nothing
@@ -226,25 +226,25 @@ Namespace Relativity.DataExchange.Import.NUnit
 				CheckResultsForException(results)
 			End Sub
 
-			Protected Overrides Function InvokeBulkImportImage(ByVal appID As Integer, ByVal settings As ImageLoadInfo, ByVal inRepository As Boolean) As MassImportResults
+			Protected Overrides Function InvokeBulkImportImage(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal inRepository As Boolean) As MassImportResults
 				Dim retval As New MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval
 			End Function
 
-			Protected Overrides Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
+			Protected Overrides Function InvokeBulkImportNative(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo, ByVal inRepository As Boolean, ByVal includeExtractedTextEncoding As Boolean) As MassImportResults
 				Dim retval As New MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval
 			End Function
 
-			Protected Overrides Function InvokeBulkImportObjects(ByVal appID As Integer, ByVal settings As ObjectLoadInfo, ByVal inRepository As Boolean) As MassImportResults
+			Protected Overrides Function InvokeBulkImportObjects(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ObjectLoadInfo, ByVal inRepository As Boolean) As MassImportResults
 				Dim retval As New MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval
 			End Function
 
-			Protected Overrides Function InvokeBulkImportProductionImage(ByVal appID As Integer, ByVal settings As ImageLoadInfo, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean) As MassImportResults
+			Protected Overrides Function InvokeBulkImportProductionImage(ByVal appID As Integer, ByVal settings As kCura.EDDS.WebAPI.BulkImportManagerBase.ImageLoadInfo, ByVal productionKeyFieldArtifactID As Integer, ByVal inRepository As Boolean) As MassImportResults
 				Dim retval As New MassImportResults
 				retval.ExceptionDetail = Me.ErrorMessage
 				Return retval

@@ -23,24 +23,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.Testing.Identification;
 
-	[TestFixture(false)]
-	[TestFixture(true)]
-	public class ImportApiTests
+	[TestFixture]
+    public class ImportApiTests
 	{
 		private const int DocumentArtifactTypeId = 10;
 
-		private readonly bool useKepler;
-
-		private IntegrationTestParameters testParameters;
+        private IntegrationTestParameters testParameters;
 
 		private ImportAPI sut;
 
-		public ImportApiTests(bool useKepler)
-		{
-			this.useKepler = useKepler;
-		}
-
-		[IdentifiedTest("fd73c064-f91b-4741-9cf6-84dee1f4b5b8")]
+        [IdentifiedTest("fd73c064-f91b-4741-9cf6-84dee1f4b5b8")]
 		[Feature.DataTransfer.ImportApi.Authentication]
 		public static void ShouldThrowAuthenticationErrorForInvalidCredentials()
 		{
@@ -56,7 +48,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			this.testParameters = AssemblySetup.TestParameters;
 			Assume.That(this.testParameters.WorkspaceId, Is.Positive, "The test workspace must be created or specified in order to run this integration test.");
 
-			AppSettings.Instance.UseKepler = this.useKepler;
+            AppSettings.Instance.UseKepler = true;
 
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls
 																			 | SecurityProtocolType.Tls11
@@ -104,7 +96,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// act & assert
 			Assert.That(
 				() => this.sut.GetUploadableArtifactTypes(NonExistingWorkspaceId),
-				this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+				GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
 		}
 
 		[IdentifiedTest("58c73e4c-8df7-407c-b915-a023b9b71959")]
@@ -133,7 +125,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// act & assert
 			Assert.That(
 				() => this.sut.GetWorkspaceFields(NonExistingWorkspaceId, DocumentArtifactTypeId),
-				this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+				GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
 		}
 
 		[IdentifiedTest("d40d944b-850b-4183-9fd3-9d90298ad786")]
@@ -205,25 +197,16 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 			// act & assert
 			Assert.That(
 				() => this.sut.GetProductionSets(NonExistingWorkspaceId),
-				this.GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
+				GetExpectedExceptionConstraintForNonExistingWorkspace(NonExistingWorkspaceId));
 		}
 
-		private IResolveConstraint GetExpectedExceptionConstraintForNonExistingWorkspace(int workspaceId)
+		private static IResolveConstraint GetExpectedExceptionConstraintForNonExistingWorkspace(int workspaceId)
 		{
-			string expectedExceptionMessage;
-			if (this.useKepler)
-			{
-				expectedExceptionMessage =
-					"Error during interceptor action PermissionCheckInterceptor." +
-					" InnerExceptionType: Relativity.Core.Exception.InvalidAppArtifactID," +
-					$" InnerExceptionMessage: Could not retrieve ApplicationID #{workspaceId}.";
-			}
-			else
-			{
-				expectedExceptionMessage = $"Could not retrieve ApplicationID #{workspaceId}.";
-			}
-
-			return Throws.Exception.InstanceOf<SoapException>()
+			string expectedExceptionMessage =
+                "Error during interceptor action PermissionCheckInterceptor." +
+                " InnerExceptionType: Relativity.Core.Exception.InvalidAppArtifactID," +
+                $" InnerExceptionMessage: Could not retrieve ApplicationID #{workspaceId}.";
+            return Throws.Exception.InstanceOf<SoapException>()
 				.With.Message.EqualTo(expectedExceptionMessage);
 		}
 	}

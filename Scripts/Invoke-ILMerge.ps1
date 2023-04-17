@@ -20,7 +20,7 @@ Param(
 
 $SolutionDir = $SolutionDir.Trimend('\') + '\'
 $Root = Join-Path $SolutionDir "..\"
-$PackagesDir = Join-Path $Root "packages"
+$PackagesDir = Join-Path $Root "buildtools"
 $IlMergeExe = Join-Path $PackagesDir "ILMerge\tools\net452\ilmerge.exe"
 $BuildArtifactsDir = Join-Path $Root "Artifacts"
 $BinariesArtifactsDir = Join-Path $BuildArtifactsDir "binaries"

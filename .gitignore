@@ -284,10 +284,11 @@ build/
 ################################################################################
 
 # build artifacts
-/.paket/paket*.exe
-/.paket/nuget.exe
-/.paket/Paket.Restore.targets
-/paket-files
+buildtools/*
+!buildtools/*.json
+!buildtools/*.ruleset
+!buildtools/*.targets
+!buildtools/*.xml
 /Logs/*
 /PDBs/*
 /TestReports/*

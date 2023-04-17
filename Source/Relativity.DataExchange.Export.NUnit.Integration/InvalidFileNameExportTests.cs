@@ -15,19 +15,13 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
 	using Relativity.Testing.Identification;
 
-	[TestFixture(true)]
-	[TestFixture(false)]
-	[TestType.Error]
+	[TestFixture]
+    [TestType.Error]
 	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	[IgnoreIfVersionLowerThan(RelativityVersion.Juniper)] // Older version uses older SQL that does not support TRIM operation in SQL
 	public class InvalidFileNameExportTests : ExportTestBase
 	{
 		private SqlQueryHelper queryHelper;
-
-		public InvalidFileNameExportTests(bool useKepler)
-			: base(useKepler)
-		{
-		}
 
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 
