@@ -122,7 +122,7 @@ Namespace Relativity.Desktop.Client.Legacy.NUnit
 			Dim loadFile = New LoadFile() With {
 					.FilePath = inputFilePath,
 					.FieldMap = fieldMap,
-					.CaseInfo = New CaseInfo(),
+					.CaseInfo = New Relativity.DataExchange.Service.CaseInfo(),
 					.SourceFileEncoding = New UTF8Encoding(),
 					.RecordDelimiter = "|",
 					.QuoteDelimiter = "^",

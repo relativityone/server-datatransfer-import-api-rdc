@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -23,7 +22,7 @@
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>Relativity.DataExchange.Import.Legacy.NUnit.xml</DocumentationFile>
-    <NoWarn>40000;42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <NoWarn>40000;42016,41999,42017,42018,42019,42032,42036,42020,42021,42022;NU1605</NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\Legacy.ruleset</CodeAnalysisRuleSet>
@@ -36,7 +35,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>Relativity.DataExchange.Import.Legacy.NUnit.xml</DocumentationFile>
-    <NoWarn>40000;42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <NoWarn>40000;42016,41999,42017,42018,42019,42032,42036,42020,42021,42022;NU1605</NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\buildtools\AllErrors.ruleset</CodeAnalysisRuleSet>
@@ -66,54 +65,22 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="oi\unmanaged\cmmap000.bin">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\oilink.exe">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\oilink.jar">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccca-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccch-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccda-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccex-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccfa-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccfi-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccfmt-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccfnt-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccfut-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccind-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\scclo-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\sccut-R1.dll">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="oi\unmanaged\wvcore-R1.dll">
-      <Paket>True</Paket>
-    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin"/>
+    <Content Include="oi\unmanaged\oilink.exe"/>
+    <Content Include="oi\unmanaged\oilink.jar"/>
+    <Content Include="oi\unmanaged\sccca-R1.dll"/>
+    <Content Include="oi\unmanaged\sccch-R1.dll"/>
+    <Content Include="oi\unmanaged\sccda-R1.dll"/>
+    <Content Include="oi\unmanaged\sccex-R1.dll"/>
+    <Content Include="oi\unmanaged\sccfa-R1.dll"/>
+    <Content Include="oi\unmanaged\sccfi-R1.dll"/>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll"/>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll"/>
+    <Content Include="oi\unmanaged\sccfut-R1.dll"/>
+    <Content Include="oi\unmanaged\sccind-R1.dll"/>
+    <Content Include="oi\unmanaged\scclo-R1.dll"/>
+    <Content Include="oi\unmanaged\sccut-R1.dll"/>
+    <Content Include="oi\unmanaged\wvcore-R1.dll"/>
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
     <Import Include="System.Collections" />
@@ -159,7 +126,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj">
@@ -171,170 +137,20 @@
   <Import Project="..\..\buildtools\Relativity.Build.Common.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.DynamicReferences.targets" />
   <Import Project="..\..\buildtools\Relativity.Build.NativeBinaries.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Castle.Core">
-          <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Moq">
-          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="FizzWare.NBuilder">
-          <HintPath>..\..\packages\NBuilder\lib\net40\FizzWare.NBuilder.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Newtonsoft.Json">
-          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="nunit.framework">
-          <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Kepler">
-          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Services.ServiceProxy">
-          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Logging">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Logging.Interfaces">
-          <HintPath>..\..\packages\Relativity.Logging\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="oi">
-          <HintPath>..\..\packages\Relativity.OutsideIn\lib\net40\oi.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Services.DataContracts">
-          <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.CSharp">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.ServiceModel">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Services.Interfaces">
-          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-          <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.Services.Interface">
-          <HintPath>..\..\packages\Relativity.Telemetry.Services.Interface\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Rhino.Mocks">
-          <HintPath>..\..\packages\RhinoMocks\lib\net\Rhino.Mocks.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets" Condition="Exists('..\..\packages\Relativity.OutsideIn\build\Relativity.OutsideIn.targets')" Label="Paket" />
+  <ItemGroup>
+    <PackageReference Include="Relativity.OutsideIn" />
+    <PackageReference Include="moq" />
+    <PackageReference Include="nbuilder" />
+    <PackageReference Include="newtonsoft.json" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NunitXml.TestLogger" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="relativity.kepler.client" />
+    <PackageReference Include="relativity.logging" />
+    <PackageReference Include="relativity.services.datacontracts" />
+    <PackageReference Include="relativity.services.interfaces" />
+    <PackageReference Include="relativity.telemetry.datacontracts.shared" />
+    <PackageReference Include="relativity.telemetry.services.interface" />
+    <PackageReference Include="rhinomocks" />
+  </ItemGroup>
 </Project>

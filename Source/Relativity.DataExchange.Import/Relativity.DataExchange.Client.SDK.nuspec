@@ -8,10 +8,8 @@
     <owners>Relativity ODA LLC</owners>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="file">license.txt</license>
-    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
-    <icon>relativity-nuget-logo.png</icon>
+    <icon>images\relativity-nuget-logo.png</icon>
     <projectUrl>https://platform.relativity.com/</projectUrl>
-    <iconUrl>https://www.relativity.com/images/relativity-nuget-logo.png</iconUrl>
     <description>The Relativity data exchange client SDK .NET package.</description>
     <summary>The Relativity data exchange API provides functionality for programmatically importing large numbers of documents, images, and Relativity Dynamic Objects (RDOs) into a Relativity workspace.</summary>
     <releaseNotes>https://github.com/relativitydev/relativity-api-documentation/blob/master/Relativity.DataExchange.Client.SDK.md</releaseNotes>
@@ -25,7 +23,7 @@
         <dependency id="Relativity.ObjectManager" version="12.1.171.20" />
         <dependency id="Relativity.OutsideIn" version="2021.8.0" />
         <dependency id="Relativity.Telemetry.Services.Interface" version="3003.0.2" />
-        <dependency id="Relativity.Transfer.Client" version="[7.4.7, 7.5.0)" />
+        <dependency id="Relativity.Transfer.Client" version="[7.4.9, 7.5.0)" />
       </group>
     </dependencies>
     <frameworkAssemblies>
@@ -34,10 +32,10 @@
     </frameworkAssemblies>
   </metadata>
   <files>
-    <file src=".\license.txt" />
-    <file src=".\relativity-nuget-logo.png" />
-    <file src="..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.dll" target=".\lib\net462" />
-    <file src="..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.xml" target=".\lib\net462" />
+    <file src="..\..\DevelopmentScripts\license.txt" target="" />
+    <file src="..\..\DevelopmentScripts\relativity-nuget-logo.png" target="images" />
+    <file src="..\..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.dll" target=".\lib\net462" />
+    <file src="..\..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.xml" target=".\lib\net462" />
     <file src=".\Relativity.DataExchange.Client.SDK.targets" target=".\build" />
   </files>
 </package>

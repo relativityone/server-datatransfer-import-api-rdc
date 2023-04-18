@@ -21,18 +21,12 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 	using Relativity.DataExchange.Transfer;
 	using Relativity.Testing.Identification;
 
-	[TestFixture(true)]
-	[TestFixture(false)]
-	[Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
+	[TestFixture]
+    [Feature.DataTransfer.DocumentExportApi.Operations.ExportFolderAndSubfolders]
 	[TestType.MainFlow]
 	public class SearchablePdfExportTests : ExportTestBase
 	{
 		private const RelativityVersion MinSupportedVersion = RelativityVersion.MayappleExportPDFs;
-
-		public SearchablePdfExportTests(bool useKepler)
-			: base(useKepler)
-		{
-		}
 
 		protected override IntegrationTestParameters TestParameters => AssemblySetup.TestParameters;
 
@@ -41,7 +35,7 @@ namespace Relativity.DataExchange.Export.NUnit.Integration
 		{
 			if (!IntegrationTestHelper.IsRegressionEnvironment())
 			{
-				SearchablePdfTestHelper.SetupTestData(this.TestParameters, this.UseKepler);
+				SearchablePdfTestHelper.SetupTestData(this.TestParameters);
 			}
 		}
 

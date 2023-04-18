@@ -17,7 +17,7 @@ Function Get-CurrentBranchType{
     )
     
     $jiraVersionNumber = Get-JiraTicketNumberFromBranchName -branchName $currentBranch
-    If ($currentBranch.ToString() -eq "develop" ) 
+    If ($currentBranch.ToString() -eq "server-develop" ) 
     {
        return [BranchType]::Develop
     }  
@@ -29,7 +29,7 @@ Function Get-CurrentBranchType{
 	{
         return [BranchType]::ReleaseBranches
 	}
-    elseif ($currentBranch.ToString().StartsWith("release-")) 
+    elseif ($currentBranch.ToString().StartsWith("server-release-")) 
     {
         if($currentBranch -like "*hotfix*")
         {
@@ -43,9 +43,9 @@ Function Get-CurrentBranchType{
     }
     elseif (![string]::IsNullOrEmpty($jiraVersionNumber)) 
     {
-        if(!$currentBranch.StartsWith($jiraVersionNumber))
+        if(!$currentBranch.StartsWith("server-$jiraVersionNumber") -AND !$currentBranch.StartsWith("server-rc-$jiraVersionNumber")) 
         {
-            throw "Branch should start with the jira version number, detected jira version number = '$jiraVersionNumber', and branch = '$Branch'"
+            throw "Branch should start with the jira version number, detected jira version number = '$jiraVersionNumber', and branch = '$currentBranch'"
         }
         return [BranchType]::FeatureBranch
     }

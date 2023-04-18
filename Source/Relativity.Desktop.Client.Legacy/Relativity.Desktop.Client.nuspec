@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Relativity.Desktop.Client</id>
+    <version>1.0.0.0</version>
+    <title>Relativity.Desktop.Client</title>
+    <authors>Relativity</authors>
+    <owners>Relativity ODA LLC</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">license.txt</license>
+    <icon>images\relativity-nuget-logo.png</icon>
+    <projectUrl>https://platform.relativity.com/</projectUrl>
+    <description>The Relativity desktop client MSI package.</description>
+    <summary>The Relativity desktop client package provides the x86 and x64 MSI's referenced by Relativity to build a properly versioned bootstrapper.</summary>
+    <releaseNotes>https://platform.relativity.com/9.7/Content/Import_API/Import_API_release_notes.htm</releaseNotes>
+    <copyright>Copyright (c) Relativity</copyright>
+    <tags>relativity desktop client RDC</tags>
+  </metadata>
+  <files>
+    <file src="..\..\DevelopmentScripts\license.txt" target="" />
+    <file src="..\..\DevelopmentScripts\relativity-nuget-logo.png" target="images" />
+    <file src="..\..\Artifacts\installers\Relativity.Desktop.Client.Setup.exe" target="tools" />
+  </files>
+</package>
