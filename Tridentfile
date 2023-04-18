@@ -240,7 +240,8 @@ timestamps
 								parallel(
 									"Retrieve test results":
 									{
-                                        try {
+                                        try 
+                                        {
                                             def taskCandidates = []
                                             if (shouldRunUnitTests)
                                             {
@@ -310,9 +311,7 @@ timestamps
                                             echo "Total failed: $testResultsFailed"
                                             echo "Total skipped: $testResultsSkipped"
                                         }
-                                        catch(err) {
-                                            Write-Host "Exception: Parse error $err"
-                                        }
+                                        catch(err) { }
 									},
 									
 									"Create NuGet packages":
