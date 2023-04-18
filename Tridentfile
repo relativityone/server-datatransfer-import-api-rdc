@@ -280,9 +280,10 @@ timestamps
 
 											// Search for specific tokens within the response.
 											echo "Extracting the $testDescription-test result parameters"
-											def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
-											def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
-											def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
+                                            echo "Output of method runCommandWithOutput- $testResultOutputString"
+											def int passed = tools.extractValue("testResultsPassed", testResultOutputString) -Force -ErrorAction SilentlyContinue
+											def int failed = tools.extractValue("testResultsFailed", testResultOutputString) -Force -ErrorAction SilentlyContinue
+											def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString) -Force -ErrorAction SilentlyContinue
 											echo "Extracted the $testDescription-test result parameters"
 
 											// Dump the individual test results
@@ -291,9 +292,9 @@ timestamps
 											echo "$testDescription-test skipped: $skipped"
 											
                                             // Now add to the final test results
-                                            testResultsPassed += passed
-                                            testResultsFailed += failed
-                                            testResultsSkipped += skipped
+                                            testResultsPassed += passed -Force -ErrorAction SilentlyContinue
+                                            testResultsFailed += failed -Force -ErrorAction SilentlyContinue
+                                            testResultsSkipped += skipped -Force -ErrorAction SilentlyContinue
 											
                                             if(failed > 0)
                                             {
