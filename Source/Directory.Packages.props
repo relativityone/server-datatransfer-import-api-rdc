@@ -79,7 +79,7 @@
     <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="3003.1.0" />
     <PackageVersion Include="Relativity.Telemetry.Services.Interface" Version="3003.0.2" />
     <PackageVersion Include="Relativity.Testing.Identification" Version="3.6.0" />
-    <PackageVersion Include="Relativity.Transfer.Client" Version="7.4.7" />
+    <PackageVersion Include="Relativity.Transfer.Client" Version="7.4.9" />
     <PackageVersion Include="ReportUnit" Version="1.2.1" />
     
     <!-- Only required by UI automation tests. -->
