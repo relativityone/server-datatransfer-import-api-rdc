@@ -33,16 +33,18 @@ if(branchName.startsWith('PR-'))
     branchName = env.CHANGE_BRANCH
 }
 def isReleaseBranch = branchName.startsWith('server-release-')
+def isMainBranch = branchName.startsWith('server-main')
+def isReleaseOrMainBranch = isReleaseBranch || isMainBranch
 def isGoldBuild = (params.buildType != 'DEV')
-def publishToRelease = (isGoldBuild && isReleaseBranch)
-def publishRdc =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && params.buildType == 'GOLD - RDC ONLY'))
-def publishSdk =(!isReleaseBranch || (isReleaseBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseBranch && params.buildType == 'GOLD - SDK ONLY'))
+def publishToRelease = (isGoldBuild && isReleaseOrMainBranch)
+def publishRdc =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC ONLY'))
+def publishSdk =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - SDK ONLY'))
 def publishSdkAndRdc = (publishSdk && publishRdc)
 build = params.build
 
 // On release branches tests should be executed against newest Relativity version from specified folder in \\bld-pkgs\Packages\Relativity\
 // Example: relativityBranch = 'release-11.3-mayapple' for branchName = 'release-1.11-mayapple'
-if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
+if(isReleaseOrMainBranch && (relativityBranch == null || relativityBranch.isEmpty()))
 {
 	currentBuild.result = 'FAILED' 
 	throw new Exception("Build failed because relativity installer source folder 'relativityBranch' is not defined in the script")
@@ -100,7 +102,7 @@ timestamps
                 {					
                     stage('Retrieve version')
                     {
-                        echo "Is release branch = $isReleaseBranch"
+                        echo "Is release branch = $isReleaseOrMainBranch"
                         echo "Run integration tests = ${shouldRunIntegrationTests}"
                         echo "Is gold build = $isGoldBuild"
                         echo "Publishing to release? $publishToRelease"
@@ -311,7 +313,10 @@ timestamps
                                             echo "Total failed: $testResultsFailed"
                                             echo "Total skipped: $testResultsSkipped"
                                         }
-                                        catch(err) { }
+                                        catch(err) {
+                                            echo "Parsing error"
+                                            echo err.toString()
+                                        }
 									},
 									
 									"Create NuGet packages":
@@ -372,7 +377,7 @@ timestamps
 									{
 										echo err.toString()
 										currentBuild.result = 'FAILED' 
-										echo "Failed to publish the packages"
+										echo "Something went wrong publishing the packages"
 									}
                                 }
                             },
@@ -389,7 +394,7 @@ timestamps
 								{
 									echo err.toString()
 									currentBuild.result = 'FAILED' 
-									echo "Failed to publish the build artifacts"
+									echo "Something went wrong publishing the packages"
 								}
                             },
                             failFast: true
@@ -409,7 +414,7 @@ timestamps
 						}
 						else
 						{
-						    echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release branch."
+						    echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release or server-main branch."
 						}
 					}
                 }
@@ -450,7 +455,7 @@ timestamps
                 echo err.toString()
                 echo "Failed to run the CI pipeline"
                 currentBuild.result = 'FAILED' 
-                if (branchName == 'server-develop' || isReleaseBranch)
+                if (branchName == 'server-develop' || isReleaseOrMainBranch)
                 {
                     tools.sendEmailAboutFailureToTeam(branchName)
                 }
