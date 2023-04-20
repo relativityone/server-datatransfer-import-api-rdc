@@ -57,3 +57,9 @@ and this project does *not* yet adhere to [Semantic Versioning](https://semver.o
 - WebAPI/REST service URL can fail in RelativityOne [REL-281370]
 - SQL resource locks are never released and can cause deadlocks [REL-276758]
 - Creating client-side folders can fail [REL-194231]
+
+**Code Isolation**
+
+- Isolated the code using sundrop tag 1.15.33 [REL-825271]
+- Bumped up the RDC version to 12.3.13x
+- Converted paket reference to CPM
