@@ -61,14 +61,6 @@
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <PropertyGroup>
-        <__paket__MSTest_TestAdapter_props>net45\MSTest.TestAdapter</__paket__MSTest_TestAdapter_props>
-        <__paket__MSTest_TestAdapter_targets>net45\MSTest.TestAdapter</__paket__MSTest_TestAdapter_targets>
-      </PropertyGroup>
-    </When>
-  </Choose>
   <ItemGroup>
 	   <PackageReference Include="Castle.Core" />
 	   <PackageReference Include="Moq" />

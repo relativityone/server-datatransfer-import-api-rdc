@@ -33,7 +33,6 @@
         <Reference Include="Relativity.DataExchange.Client.SDK">
           <HintPath>..\..\Artifacts\binaries\sdk\Relativity.DataExchange.Client.SDK.dll</HintPath>
           <Private>True</Private>
-          <Paket>False</Paket>
         </Reference>
       </ItemGroup>
     </Otherwise>

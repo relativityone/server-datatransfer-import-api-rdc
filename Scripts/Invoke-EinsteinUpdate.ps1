@@ -57,6 +57,7 @@ Function Get-DependencyList{
 	$results = ""
 	#fetch versions in dataexchange.client.sdk
 	$seenLineWithDependencies = $False
+	# TODO: REL-837952
 	[xml] $nuspec = Get-Content '.\.paket\Relativity.DataExchange.Client.SDK.nuspec'
 	$dependencies = $nuspec.package.metadata.dependencies.group.dependency
 	foreach($dependency in $dependencies) {

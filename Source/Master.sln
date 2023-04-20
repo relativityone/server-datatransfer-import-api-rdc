@@ -5,12 +5,6 @@ VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Import.NUnit", "Relativity.DataExchange.Import.NUnit\Relativity.DataExchange.Import.NUnit.csproj", "{10DF5B1F-2D12-4201-BA36-D074574F2510}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{44D52970-C80E-4D2F-A986-2EB046DCB96B}"
-	ProjectSection(SolutionItems) = preProject
-		..\.paket\Relativity.DataExchange.Client.SDK.nuspec = ..\.paket\Relativity.DataExchange.Client.SDK.nuspec
-		..\.paket\Relativity.DataExchange.Client.SDK.targets = ..\.paket\Relativity.DataExchange.Client.SDK.targets
-	EndProjectSection
-EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Relativity.DataExchange.Import.Legacy.NUnit", "Relativity.DataExchange.Import.Legacy.NUnit\Relativity.DataExchange.Import.Legacy.NUnit.vbproj", "{6B2E3939-E33B-4672-B420-F3B6021DDA78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.DataExchange.Export.NUnit", "Relativity.DataExchange.Export.NUnit\Relativity.DataExchange.Export.NUnit.csproj", "{7E26A5AA-2082-4D83-9E29-CE7F5E5D67F4}"
