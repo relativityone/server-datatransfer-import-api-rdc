@@ -41,7 +41,7 @@ multibranchPipelineJob('Import-API/Compatibility-pipeline') {
 		// IMPORTANT!!! Set up your branch includes/excludes filter here. Jobs will not be created for branches that aren't included
 		// IMPORTANT!!!
 		traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-			includes('Trident develop release-* pipeline-test-*') // branches that you want to include in your job
+			includes('Trident server-develop server-main release-* pipeline-test-*') // branches that you want to include in your job
 			excludes('') // branches you want to exclude from your job
 		}
 		// you shouldn't need to modify anything under here unless you have some extraordinary use case
@@ -101,7 +101,7 @@ multibranchPipelineJob('Import-API/loadtest-pipeline') {
 		// IMPORTANT!!! Set up your branch includes/excludes filter here. Jobs will not be created for branches that aren't included
 		// IMPORTANT!!!
 		traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-			includes('Performance-pipeline develop pipeline-test-*') // branches that you want to include in your job
+			includes('Performance-pipeline server-develop server-main pipeline-test-*') // branches that you want to include in your job
 			excludes('') // branches you want to exclude from your job
 		}
 		// you shouldn't need to modify anything under here unless you have some extraordinary use case
@@ -159,7 +159,7 @@ multibranchPipelineJob('Import-API/regression-pipeline') {
 		// IMPORTANT!!! Set up your branch includes/excludes filter here. Jobs will not be created for branches that aren't included
 		// IMPORTANT!!!
 		traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-			includes('develop release-* pipeline-test-*') // branches that you want to include in your job
+			includes('server-develop server-main release-* pipeline-test-*') // branches that you want to include in your job
 			excludes('') // branches you want to exclude from your job
 		}
 		// you shouldn't need to modify anything under here unless you have some extraordinary use case
@@ -186,7 +186,7 @@ multibranchPipelineJob('Import-API/regression-pipeline') {
   
 multibranchPipelineJob('Import-API/MassImportVerification-pipeline') {
 	displayName('Mass Import Verification pipeline')
-	description('Integration tests for different settings against newest Relativity version from develop')
+	description('Integration tests for different settings against newest Relativity version from server-develop or server-main')
 	branchSources {
 		branchSource {
 			source {
@@ -218,7 +218,7 @@ multibranchPipelineJob('Import-API/MassImportVerification-pipeline') {
 		// IMPORTANT!!! Set up your branch includes/excludes filter here. Jobs will not be created for branches that aren't included
 		// IMPORTANT!!!
 		traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-			includes('develop pipeline-test-*') // branches that you want to include in your job
+			includes('server-develop server-main pipeline-test-*') // branches that you want to include in your job
 			excludes('') // branches you want to exclude from your job
 		}
 		// you shouldn't need to modify anything under here unless you have some extraordinary use case
