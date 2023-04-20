@@ -112,7 +112,6 @@
       <Link>app.config</Link>
     </None>
     <None Include="app.manifest" />
-    <None Include="paket.references" />
     <Content Include="Resources\Media\AZIPPER_0011111.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
