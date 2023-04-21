@@ -106,7 +106,6 @@
       <Link>app.config</Link>
     </None>
     <None Include="app.manifest" />
-    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">

@@ -128,7 +128,6 @@
       <Link>app.config</Link>
     </None>
     <None Include="app.manifest" />
-    <None Include="paket.references" />
     <None Include="Resources\Docs\EDRM-Sample1.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

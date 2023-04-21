@@ -186,7 +186,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
-    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

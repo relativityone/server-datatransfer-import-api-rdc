@@ -184,7 +184,6 @@
     </AdditionalFiles>
     <None Include="App.config" />
     <None Include="app.manifest" />
-    <!-- <None Include="paket.references" /> -->
     <Content Include="Resources\ExportFile\ExportFile10.0.kwx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
