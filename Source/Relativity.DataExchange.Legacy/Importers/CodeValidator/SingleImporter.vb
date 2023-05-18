@@ -20,7 +20,7 @@ Namespace kCura.WinEDDS.CodeValidator
 			'TODO: 'Dim newCodeOrderValue As Int32 = System.Math.Min(lookup.MaxOrder, Int32.MaxValue - 1) + 1
 			Dim newCodeOrderValue As Int32 = 0
 			Dim code As kCura.EDDS.WebAPI.CodeManagerBase.Code = Me.CodeManager.CreateNewCodeDTOProxy(field.CodeTypeID, codeName, newCodeOrderValue, Me.CaseInfo.RootArtifactID)
-			If code.Name.Length > 200 Then Throw New CodeCreationException(False, "Proposed choice name '" & code.Name & "' exceeds 200 characters, which is the maximum allowable.")
+			If code.Name.Length > 200 Then Throw New CodeCreationException(False, "Error on field name '" & field.DisplayName & "'. Proposed choice name '" & code.Name & "' exceeds 200 characters, which is the maximum allowed. Map the choice field to a long text field and retry.")
 			Dim o As Object = Me.CodeManager.Create(Me.CaseInfo.ArtifactID, code)
 			Dim codeArtifactID As Int32
 			If TypeOf o Is Int32 Then
