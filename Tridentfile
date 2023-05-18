@@ -472,7 +472,7 @@ timestamps
                 stage('Send slack and bitbucket notification')
                 {
                     notifyBitbucket()
-                    Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, "build", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
+                    Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, "ci-server-delta", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
                 }
             }
         }
