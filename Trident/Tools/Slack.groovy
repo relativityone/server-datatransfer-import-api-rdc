@@ -5,6 +5,11 @@ def SendSlackNotification(String serverUnderTestName, String version, String bra
     def script = this
 	def email = powershell(returnStdout: true, script: "git --no-pager show -s --format='%ae'").trim()
     // Url are defined in the Import API slack application https://api.slack.com/apps/A028WEQG63F
+	//Name of the slack-app created: 'cicd-Import-API-RDC'
+	//The new slack-app created url : https://kcura-pd.slack.com/apps/A057YAY6LK1-cicd-import-api-rdc?tab=more_info
+	//Respective webhook url page: https://api.slack.com/apps/A057YAY6LK1/install-on-team?success=1
+	//Webhook url: https://hooks.slack.com/services/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
+
     def url = "https://hooks.slack.com/services/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"
 
     echo "*************************************************" +
