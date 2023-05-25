@@ -278,7 +278,7 @@ Namespace kCura.WinEDDS
 					codeString = codeString.Trim
 					If codeString <> "" Then
 						If goodCodes.Contains(codeString) Then Throw New DuplicateMulticodeValueException(Me.CurrentLineNumber, column, codeString)
-						If CheckNestedChoicesNameLength(codeString) Then Throw New CodeCreationException(Me.CurrentLineNumber, column, False, "Proposed choice name '" & codeString & "' exceeds 200 characters, which is the maximum allowable.")
+						If CheckNestedChoicesNameLength(codeString) Then Throw New CodeCreationException(Me.CurrentLineNumber, column, False, "Error on field name '" & field.DisplayName & "'. Proposed choice name '" & codeString & "' exceeds 200 characters, which is the maximum allowed. Map the choice field to a long text field and retry.")
 						goodCodes.Add(codeString)
 					End If
 				Next
