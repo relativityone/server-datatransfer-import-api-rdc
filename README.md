@@ -416,9 +416,3 @@ Over the last few years, improper async/await usage caused `ASP.NET` application
 The server-main branch was forked for Relativity Server by the Server Vertical.
 Tag: 1.0.0                                         
 Branch: server-main
-
-## Maintainers
-team-server-delta working on code isolation
-
-The server- branches are in the process of being transitioned to the Server Vertical.
-#help-server-architecture #team-server-delta
