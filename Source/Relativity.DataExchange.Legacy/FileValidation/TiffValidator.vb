@@ -74,6 +74,12 @@ Namespace kCura.WinEDDS
 
 					rdr.BaseStream.Position = newPosition
 				Next
+
+			    Dim nextIfdPosition As Long = readlong(rdr)
+			    If nextIfdPosition <> 0 Then
+			        Return New ImageValidationResult(False, $"The TIFF image file {filePath} is a Multi Page TIFF and its not supported")
+			    End If
+
 			End Using
 
 			Return New ImageValidationResult(True, $"The TIFF image file {filePath} is valid")

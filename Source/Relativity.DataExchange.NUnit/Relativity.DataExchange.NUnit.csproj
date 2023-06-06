@@ -264,6 +264,15 @@
     <Content Include="Resources\Jpeg\w3c_home_gray.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\MultiTiff\multi2.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\MultiTiff\multi3.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\MultiTiff\multi4.tif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Png\w3c_home.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
