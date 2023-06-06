@@ -5,10 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.4] - 06-02-2023
+## [1.0.4] - 06-06-2023
 ### Changed
 
-- Updated the Relativity.OutsideIn package to 2023.3.0
+- Updated the Relativity.OutsideIn package to 2023.4.0
 
 
 ## [1.0.3] - 05-23-2023
