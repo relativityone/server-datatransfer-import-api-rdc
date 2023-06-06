@@ -71,7 +71,7 @@
     <PackageVersion Include="Relativity.OAuth2Client.Implicit" Version="1.5.2" />
     <PackageVersion Include="Relativity.OAuth2Client.Interfaces" Version="1.5.2" />
     <PackageVersion Include="Relativity.ObjectManager" Version="12.1.171.20" />
-    <PackageVersion Include="Relativity.OutsideIn" Version="2023.3.0" />
+    <PackageVersion Include="Relativity.OutsideIn" Version="2023.4.0" />
     <PackageVersion Include="Relativity.Productions.Services.Interfaces" Version="11.1.0" />
     <PackageVersion Include="Relativity.Services.DataContracts" Version="13.5.1" />
     <PackageVersion Include="Relativity.Services.Interfaces" Version="13.5.1" />
