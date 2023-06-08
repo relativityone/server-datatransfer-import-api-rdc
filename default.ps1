@@ -88,6 +88,8 @@ properties {
 	$SqlDataComparer = $Null
 	$TestOnWorkspaceWithNonDefaultCollation = $Null
 	$ReleasedVersionName = $Null
+    $UtilsPackageVersion = $Null
+    
 }
 
 $code = @"
@@ -277,7 +279,10 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
 	
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
-
+    if ($UtilsPackageVersion -ne $Null){
+        Write-Host "Updating Package version using UTILS method: $version => $UtilsPackageVersion"
+        $version = $UtilsPackageVersion
+    }
     # Add any new package templates to the array.
     $nuspecFiles = @((Join-Path $SourceDir "Relativity.DataExchange.Import\Relativity.DataExchange.Client.SDK.nuspec"))
     foreach ($nuspecFile in $nuspecFiles) {
@@ -434,7 +439,6 @@ task BuildVersion -Description "Retrieves the build version from powershell" {
     Write-Host "Importing powershell properties.."
 
     $majorMinorIncrease = versioning\Get-ReleaseVersion "$Branch" -omitPostFix
-    
     Write-Output "Build Url: $BuildUrl"
     $maxVersionLength = 50
     $localBuildVersion = $majorMinorIncrease
@@ -1031,6 +1035,7 @@ task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -De
 
 task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
     $version = versioning\Get-ReleaseVersion "$Branch" -omitPostFix
+    Write-Host "UpdateSdkAssemblyInfo - $version"
     versioning\Update-AssemblyInfo "$version.0"
 }
 
@@ -1038,7 +1043,7 @@ task UpdateRdcAssemblyInfo -Description "Update the version contained within the
     exec { 
         $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
         $majorMinorPatchVersion = versioning\Get-RdcWixVersion -rdcVersionWixFile $rdcVersionWixFile
-        $postFix = versioning\Get-ReleaseVersion "$Branch" -postFixOnly
+        $postFix = versioning\Get-ReleaseVersionForRDC "$Branch" -postFixOnly
         $InformationalVersion = "$majorMinorPatchVersion$postFix"
         $VersionPath = Join-Path $Root "Version"
         $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"

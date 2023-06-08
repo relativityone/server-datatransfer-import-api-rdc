@@ -219,7 +219,9 @@ param(
 	[Parameter()]
 	[Switch]$TestOnWorkspaceWithNonDefaultCollation,
 	[Parameter()]
-	[String]$ReleasedVersionName
+	[String]$ReleasedVersionName,
+    [Parameter()]
+	[String]$UtilsPackageVersion=""
 )
 
 . $profile
@@ -292,6 +294,7 @@ $Params = @{
 		SqlDataComparer = $SqlDataComparer
 		TestOnWorkspaceWithNonDefaultCollation = $TestOnWorkspaceWithNonDefaultCollation
 		ReleasedVersionName = $ReleasedVersionName
+        UtilsPackageVersion = $UtilsPackageVersion
     }
 
     Verbose = $VerbosePreference

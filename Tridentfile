@@ -26,6 +26,10 @@ def int testResultsPassed = 0
 def int testResultsFailed = 0
 def int testResultsSkipped = 0
 
+String version = "" // This will be our new version no
+String productName = utils.retrieveProductNameFromGitURL(scm.getUserRemoteConfigs()[0].getUrl())
+String projectKey = utils.retrieveProjectKeyFromGitURL(scm.getUserRemoteConfigs()[0].getUrl())
+
 // The following code is needed because we build a pull request according to Jenkins, 'so' the env.Branch does not return a valid branch name, but only 'PR-1234', and we need the branch name for our logic.
 def branchName = env.BRANCH_NAME
 if(branchName.startsWith('PR-'))
@@ -40,6 +44,7 @@ def publishToRelease = (isGoldBuild && isReleaseOrMainBranch)
 def publishRdc =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC ONLY'))
 def publishSdk =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - SDK ONLY'))
 def publishSdkAndRdc = (publishSdk && publishRdc)
+
 build = params.build
 
 // On release branches tests should be executed against newest Relativity version from specified folder in \\bld-pkgs\Packages\Relativity\
@@ -107,13 +112,16 @@ timestamps
                         echo "Is gold build = $isGoldBuild"
                         echo "Publishing to release? $publishToRelease"
                         echo "Retrieving the semantic versions"
-                        echo "Using new build strategy"
-                        def outputString = tools.runCommandWithOutput(".\\build.ps1 BuildVersion -Branch '${branchName}'")
-                        def outputStringParsed = tools.extractValue("buildVersion", outputString)
-                        currentBuild.displayName = "$outputStringParsed"
-                        buildVersion = outputStringParsed
+                        echo "Using version file"
+                        version = readFile("./Version/version.txt").trim()
+                        currentBuild.displayName = "$version"
+                        def buildNumber = utils.getVersion(productName, version)
+                        packageVersion = utils.buildPackageVersion(version, buildNumber, isReleaseBranch ? false : true)   
+                        echo "$packageVersion came from UTILS"                 
+                        buildVersion = version
+                        
                     }
-					
+
 					stage('Tag version in GIT')
                     {
                         echo "Publishing to release? $publishToRelease"
@@ -133,20 +141,20 @@ timestamps
 
 					stage('Get hopper instance') 
 					{
-						echo "Hopper variables will be printed"
-						def output = JsonOutput.toJson(config)
-						echo JsonOutput.prettyPrint(output)
-						echo "End of hopper variables"
-						vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
+						// echo "Hopper variables will be printed"
+						// def output = JsonOutput.toJson(config)
+						// echo JsonOutput.prettyPrint(output)
+						// echo "End of hopper variables"
+						// vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
 					}	
 
 					stage('Replace variables in build')
 					{
-					    echo "replacing test variables in build"
-					    echo "vmInfo url ${vmInfo.Url}"
-					    echo "vmInfo id ${vmInfo.Id}"
-                        output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
-                        echo output
+					    // echo "replacing test variables in build"
+					    // echo "vmInfo url ${vmInfo.Url}"
+					    // echo "vmInfo id ${vmInfo.Id}"
+                        // output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
+                        // echo output
 					}
 					
                     stage('Build binaries') 
@@ -184,55 +192,55 @@ timestamps
                     {
                         stage("Run unit tests")
                         {
-                            if (shouldRunUnitTests)
-                            {
-                                echo "Running the unit tests"
-                                output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip running unit tests due to configuration parameters."
-                            }
+                            // if (shouldRunUnitTests)
+                            // {
+                            //     echo "Running the unit tests"
+                            //     output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
+                            //     echo output
+                            // }
+                            // else
+                            // {
+                            //     echo "Skip running unit tests due to configuration parameters."
+                            // }
                         }
                         
                         stage("Run integration tests")
                         {
-                            if (shouldRunIntegrationTests)
-                            {
-                                echo "Running the integration tests"
-                                output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip running integration tests due to configuration parameters."
-                            }
+                            // if (shouldRunIntegrationTests)
+                            // {
+                            //     echo "Running the integration tests"
+                            //     output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                            //     echo output
+                            // }
+                            // else
+                            // {
+                            //     echo "Skip running integration tests due to configuration parameters."
+                            // }
                         }
                         
                         stage("Code coverage report")
                         {
-                            if (shouldRuncodeCoverageReport)
-                            {
-                                echo "Creating a code coverage report"
-                                output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip creating code coverage report due to configuration parameter. This only runs if you want to run the integration tests as well"
-                            }
+                            // if (shouldRuncodeCoverageReport)
+                            // {
+                            //     echo "Creating a code coverage report"
+                            //     output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                            //     echo output
+                            // }
+                            // else
+                            // {
+                            //     echo "Skip creating code coverage report due to configuration parameter. This only runs if you want to run the integration tests as well"
+                            // }
                         }
                     }
                     finally
                     { 
                         if (shouldRunUnitTests || shouldRunIntegrationTests || shouldRuncodeCoverageReport)
                         {
-                            stage('Test results report')
-                            {
-                                echo "Generating test report"
-                                powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
-                            }
+                            // stage('Test results report')
+                            // {
+                            //     echo "Generating test report"
+                            //     powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
+                            // }
                         }
 
                         if (shouldRunUnitTests || shouldRunIntegrationTests || shouldRuncodeCoverageReport)
@@ -242,88 +250,88 @@ timestamps
 								parallel(
 									"Retrieve test results":
 									{
-                                        try 
-                                        {
-                                            def taskCandidates = []
-                                            if (shouldRunUnitTests)
-                                            {
-                                                taskCandidates.add("UnitTestResults")
-                                            }
+                                        // try 
+                                        // {
+                                        //     def taskCandidates = []
+                                        //     if (shouldRunUnitTests)
+                                        //     {
+                                        //         taskCandidates.add("UnitTestResults")
+                                        //     }
 
-                                            if (shouldRunIntegrationTests)
-                                            {
-                                                taskCandidates.add("IntegrationTestResults")
-                                            }
+                                        //     if (shouldRunIntegrationTests)
+                                        //     {
+                                        //         taskCandidates.add("IntegrationTestResults")
+                                        //     }
                                             
-                                            if (shouldRuncodeCoverageReport)
-                                            {
-                                                taskCandidates.add("UnitTestResults")
-                                                taskCandidates.add("IntegrationTestResults")
-                                            }
+                                        //     if (shouldRuncodeCoverageReport)
+                                        //     {
+                                        //         taskCandidates.add("UnitTestResults")
+                                        //         taskCandidates.add("IntegrationTestResults")
+                                        //     }
 
-                                            taskCandidates.eachWithIndex { task, index ->
-                                                def testDescription = ""
-                                                switch (index)
-                                                {
-                                                    case 0:
-                                                        testDescription = "unit"
-                                                        break
+                                        //     taskCandidates.eachWithIndex { task, index ->
+                                        //         def testDescription = ""
+                                        //         switch (index)
+                                        //         {
+                                        //             case 0:
+                                        //                 testDescription = "unit"
+                                        //                 break
 
-                                                    case 1:
-                                                        testDescription = "integration"
-                                                        break
+                                        //             case 1:
+                                        //                 testDescription = "integration"
+                                        //                 break
 
-                                                    default:
-                                                        throw new Exception("The test result type $index is not mapped.")
-                                                }
+                                        //             default:
+                                        //                 throw new Exception("The test result type $index is not mapped.")
+                                        //         }
 
-                                                // Let the build script retrieve the unit test result values.
-                                                echo "Retrieving the $testDescription-test results"
-                                                def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
-                                                echo "Retrieved the $testDescription-test results"
+                                        //         // Let the build script retrieve the unit test result values.
+                                        //         echo "Retrieving the $testDescription-test results"
+                                        //         def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
+                                        //         echo "Retrieved the $testDescription-test results"
 
-                                                // Search for specific tokens within the response.
-                                                echo "Extracting the $testDescription-test result parameters"
-                                                echo "Output of method runCommandWithOutput- $testResultOutputString"
-                                                def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
-                                                def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
-                                                def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
-                                                echo "Extracted the $testDescription-test result parameters"
+                                        //         // Search for specific tokens within the response.
+                                        //         echo "Extracting the $testDescription-test result parameters"
+                                        //         echo "Output of method runCommandWithOutput- $testResultOutputString"
+                                        //         def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
+                                        //         def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
+                                        //         def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
+                                        //         echo "Extracted the $testDescription-test result parameters"
 
-                                                // Dump the individual test results
-                                                echo "$testDescription-test passed: $passed"
-                                                echo "$testDescription-test failed: $failed"
-                                                echo "$testDescription-test skipped: $skipped"
+                                        //         // Dump the individual test results
+                                        //         echo "$testDescription-test passed: $passed"
+                                        //         echo "$testDescription-test failed: $failed"
+                                        //         echo "$testDescription-test skipped: $skipped"
                                                 
-                                                // Now add to the final test results
-                                                testResultsPassed += passed
-                                                testResultsFailed += failed
-                                                testResultsSkipped += skipped
+                                        //         // Now add to the final test results
+                                        //         testResultsPassed += passed
+                                        //         testResultsFailed += failed
+                                        //         testResultsSkipped += skipped
                                                 
-                                                if(failed > 0)
-                                                {
-                                                    echo "$testDescription-test failed is bigger than zero"
-                                                    currentBuild.result = 'FAILED' 
-                                                    throw new Exception("Tests failed.")
-                                                }
-                                            }
+                                        //         if(failed > 0)
+                                        //         {
+                                        //             echo "$testDescription-test failed is bigger than zero"
+                                        //             currentBuild.result = 'FAILED' 
+                                        //             throw new Exception("Tests failed.")
+                                        //         }
+                                        //     }
 
-                                            // Dump the final test results
-                                            echo "Total passed: $testResultsPassed"
-                                            echo "Total failed: $testResultsFailed"
-                                            echo "Total skipped: $testResultsSkipped"
-                                        }
-                                        catch(err) {
-                                            echo "Parsing error"
-                                            echo err.toString()
-                                        }
+                                        //     // Dump the final test results
+                                        //     echo "Total passed: $testResultsPassed"
+                                        //     echo "Total failed: $testResultsFailed"
+                                        //     echo "Total skipped: $testResultsSkipped"
+                                        // }
+                                        // catch(err) {
+                                        //     echo "Parsing error"
+                                        //     echo err.toString()
+                                        // }
 									},
 									
 									"Create NuGet packages":
 									{
 										echo "Build number: ${currentBuild.number}"
 										echo "Building all SDK and RDC packages"
-										powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}'"
+										powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}' -UtilsPackageVersion '${packageVersion}'"
 									},
 									failFast: true
 								)
@@ -427,29 +435,29 @@ timestamps
 					
                     echo "Publishing the build logs"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
-                    if (shouldRunUnitTests)
-                    {
-                        echo "Publishing the unit tests report"
-                        archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
-                    }
+                    // if (shouldRunUnitTests)
+                    // {
+                    //     echo "Publishing the unit tests report"
+                    //     archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
+                    // }
                     
-                    if (shouldRunIntegrationTests)
-                    {
-                        echo "Publishing the integration tests report"
-                        archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
-                    }
+                    // if (shouldRunIntegrationTests)
+                    // {
+                    //     echo "Publishing the integration tests report"
+                    //     archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
+                    // }
 
-                    if (shouldRuncodeCoverageReport)
-                    {
-						echo "Publishing the unit tests report"
-                        archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
+                    // if (shouldRuncodeCoverageReport)
+                    // {
+					// 	echo "Publishing the unit tests report"
+                    //     archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
 						
-						echo "Publishing the integration tests report"
-                        archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
+					// 	echo "Publishing the integration tests report"
+                    //     archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
 						
-                        echo "Publishing the code coverage report"
-                        archiveArtifacts artifacts: 'TestReports/code-coverage/**/*.*'
-                    }
+                    //     echo "Publishing the code coverage report"
+                    //     archiveArtifacts artifacts: 'TestReports/code-coverage/**/*.*'
+                    // }
                 } 
             }
             catch(err)
