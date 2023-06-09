@@ -276,13 +276,15 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     folders\Initialize-Folder $LogsDir -Safe
     folders\Initialize-Folder $PackagesArtifactsDir -Safe
     $version = versioning\Get-ReleaseVersion "$Branch"
-	
+    
+	Write-Host "UtilsPackageVersion: $UtilsPackageVersion"
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
-    if ($UtilsPackageVersion -ne $Null){
+    if ($UtilsPackageVersion -ne $Null && ($Branch != 'server-develop' || $Branch != 'server-main')){
         Write-Host "Updating Package version using UTILS method: $version => $UtilsPackageVersion"
         $version = $UtilsPackageVersion
     }
+    
     # Add any new package templates to the array.
     $nuspecFiles = @((Join-Path $SourceDir "Relativity.DataExchange.Import\Relativity.DataExchange.Client.SDK.nuspec"))
     foreach ($nuspecFile in $nuspecFiles) {
