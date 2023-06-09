@@ -280,9 +280,13 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
 	Write-Host "UtilsPackageVersion: $UtilsPackageVersion"
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
-    if ($UtilsPackageVersion -ne $Null -and ($Branch -ne 'server-develop' -or $Branch -ne 'server-main')){
-        Write-Host "Updating Package version using UTILS method: $version => $UtilsPackageVersion"
-        $version = $UtilsPackageVersion
+    Write-Host "Branch: $Branch"
+    if ($UtilsPackageVersion -ne $Null){
+        if(($Branch -ne 'server-develop') -and ($Branch -ne 'server-main'))
+        {
+            Write-Host "Updating Package version using UTILS method: $version => $UtilsPackageVersion"
+            $version = $UtilsPackageVersion
+        }
     }
     
     # Add any new package templates to the array.
