@@ -71,7 +71,8 @@ Function Get-RdcWixVersion {
 
     return $productVersion.Trim()
 }
-Function Get-ReleaseVersionForRDC {
+
+Function Get-ReleaseVersion {
     param(
         [string]$branchNameJenkins,
         [switch]$postFixOnly = $false,
@@ -81,18 +82,30 @@ Function Get-ReleaseVersionForRDC {
 	Write-Host "BranchName Jenkins - $branchNameJenkins"
     $host.UI.RawUI.WindowTitle = "Getting release version"
 
-    $gitVersion = git describe --tags --always
-    Write-Host $gitVersion
-    $gitVersionSplit = $gitVersion.ToString().Split('-')
-    $version = $gitVersionSplit[0] # 1.9.0
-    $commitsSinceLastTag = $gitVersionSplit[1] # 95
-    # git describe does not give the commits since tag if the numer of commits since tag is null.
-    if("$commitsSinceLastTag" -eq "")
-    {
-        $commitsSinceLastTag = "0"
+    function gitBranchName {
+        $branchName = git rev-parse --abbrev-ref HEAD
+        If($branchName -eq 'HEAD')
+        {
+            Write-Host "The branchname is not given, it is currently HEAD (meaning the code is checked out at a commit, not at a branch)"
+            return $branchNameJenkins
+        }
+        else
+        {
+            return $branchName
+        }
     }
-	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
 
+    # $gitVersion = git describe --tags --always
+    # Write-Host $gitVersion
+    # $gitVersionSplit = $gitVersion.ToString().Split('-')
+    # $version = $gitVersionSplit[0] # 1.9.0
+    # $commitsSinceLastTag = $gitVersionSplit[1] # 95
+    # # git describe does not give the commits since tag if the numer of commits since tag is null.
+    # if("$commitsSinceLastTag" -eq "")
+    # {
+    #     $commitsSinceLastTag = "0"
+    # }
+	# $commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
     $version = Get-Content ./Version/version.txt -Raw 
 	$version = $version.trim() # readFile("./Version/version.txt").trim()
     Write-Host "Version = $version"
@@ -100,11 +113,11 @@ Function Get-ReleaseVersionForRDC {
     $minor = $version.Split('.')[1] # 9
     
 
-    Write-Host "Commits since version was created = $commitsSince"
-    if($returnCommitsSinceOnly)
-    {
-        return $commitsSince
-    }
+    # Write-Host "Commits since version was created = $commitsSince"
+    # if($returnCommitsSinceOnly)
+    # {
+    #     return $commitsSince
+    # }
     $currentBranch = $branchNameJenkins
     Write-Host "Current branch is $currentBranch"
     
@@ -159,7 +172,7 @@ Function Get-ReleaseVersionForRDC {
     }
 }
 
-Function Get-ReleaseVersion {
+Function Get-ReleaseVersionForRDC {
     param(
         [string]$branchNameJenkins,
         [switch]$postFixOnly = $false,
@@ -169,30 +182,18 @@ Function Get-ReleaseVersion {
 	Write-Host "BranchName Jenkins - $branchNameJenkins"
     $host.UI.RawUI.WindowTitle = "Getting release version"
 
-    function gitBranchName {
-        $branchName = git rev-parse --abbrev-ref HEAD
-        If($branchName -eq 'HEAD')
-        {
-            Write-Host "The branchname is not given, it is currently HEAD (meaning the code is checked out at a commit, not at a branch)"
-            return $branchNameJenkins
-        }
-        else
-        {
-            return $branchName
-        }
+    $gitVersion = git describe --tags --always
+    Write-Host $gitVersion
+    $gitVersionSplit = $gitVersion.ToString().Split('-')
+    $version = $gitVersionSplit[0] # 1.9.0
+    $commitsSinceLastTag = $gitVersionSplit[1] # 95
+    # git describe does not give the commits since tag if the numer of commits since tag is null.
+    if("$commitsSinceLastTag" -eq "")
+    {
+        $commitsSinceLastTag = "0"
     }
+	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
 
-    # $gitVersion = git describe --tags --always
-    # Write-Host $gitVersion
-    # $gitVersionSplit = $gitVersion.ToString().Split('-')
-    # $version = $gitVersionSplit[0] # 1.9.0
-    # $commitsSinceLastTag = $gitVersionSplit[1] # 95
-    # # git describe does not give the commits since tag if the numer of commits since tag is null.
-    # if("$commitsSinceLastTag" -eq "")
-    # {
-    #     $commitsSinceLastTag = "0"
-    # }
-	# $commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
     $version = Get-Content ./Version/version.txt -Raw 
 	$version = $version.trim() # readFile("./Version/version.txt").trim()
     Write-Host "Version = $version"
@@ -200,11 +201,11 @@ Function Get-ReleaseVersion {
     $minor = $version.Split('.')[1] # 9
     
 
-    # Write-Host "Commits since version was created = $commitsSince"
-    # if($returnCommitsSinceOnly)
-    # {
-    #     return $commitsSince
-    # }
+    Write-Host "Commits since version was created = $commitsSince"
+    if($returnCommitsSinceOnly)
+    {
+        return $commitsSince
+    }
     $currentBranch = $branchNameJenkins
     Write-Host "Current branch is $currentBranch"
     
