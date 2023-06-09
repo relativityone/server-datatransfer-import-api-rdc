@@ -276,11 +276,11 @@ task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     folders\Initialize-Folder $LogsDir -Safe
     folders\Initialize-Folder $PackagesArtifactsDir -Safe
     $version = versioning\Get-ReleaseVersion "$Branch"
-    
+
 	Write-Host "UtilsPackageVersion: $UtilsPackageVersion"
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
-    if ($UtilsPackageVersion -ne $Null && ($Branch != 'server-develop' || $Branch != 'server-main')){
+    if ($UtilsPackageVersion -ne $Null -and ($Branch -ne 'server-develop' -or $Branch -ne 'server-main')){
         Write-Host "Updating Package version using UTILS method: $version => $UtilsPackageVersion"
         $version = $UtilsPackageVersion
     }
