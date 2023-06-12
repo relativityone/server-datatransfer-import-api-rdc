@@ -72,7 +72,7 @@ Function Get-RdcWixVersion {
     return $productVersion.Trim()
 }
 
-Function Get-ReleaseVersion {
+Function Get-ReleaseVersionForSDK {
     param(
         [string]$branchNameJenkins,
         [switch]$postFixOnly = $false,
@@ -95,39 +95,17 @@ Function Get-ReleaseVersion {
         }
     }
 
-    # $gitVersion = git describe --tags --always
-    # Write-Host $gitVersion
-    # $gitVersionSplit = $gitVersion.ToString().Split('-')
-    # $version = $gitVersionSplit[0] # 1.9.0
-    # $commitsSinceLastTag = $gitVersionSplit[1] # 95
-    # # git describe does not give the commits since tag if the numer of commits since tag is null.
-    # if("$commitsSinceLastTag" -eq "")
-    # {
-    #     $commitsSinceLastTag = "0"
-    # }
-	# $commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
     $version = Get-Content ./Version/version.txt -Raw 
-	$version = $version.trim() # readFile("./Version/version.txt").trim()
+	$version = $version.trim()
     Write-Host "Version = $version"
     $major = $version.Split('.')[0] # 1
     $minor = $version.Split('.')[1] # 9
     
 
-    # Write-Host "Commits since version was created = $commitsSince"
-    # if($returnCommitsSinceOnly)
-    # {
-    #     return $commitsSince
-    # }
     $currentBranch = $branchNameJenkins
     Write-Host "Current branch is $currentBranch"
     
     [BranchType]$typeOfBranch = branches\Get-CurrentBranchType "$currentBranch"
-    # if (($typeOfBranch -eq [BranchType]::Release) -or ($typeOfBranch -eq [BranchType]::HotfixRelease)) {
-    #     if(-Not ($currentBranch.Contains("$major.$minor")))
-    #     {
-    #         $(Throw New-Object System.ArgumentException "Current branch should contain the latest tag : currentbranch = $currentBranch, last tag = $version, string to find = $major.$minor", "tag not found")
-    #     }
-    # }
     
     Write-Host "Type of branch = $typeOfBranch"
     
@@ -195,7 +173,7 @@ Function Get-ReleaseVersionForRDC {
 	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
 
     $version = Get-Content ./Version/version.txt -Raw 
-	$version = $version.trim() # readFile("./Version/version.txt").trim()
+	$version = $version.trim()
     Write-Host "Version = $version"
     $major = $version.Split('.')[0] # 1
     $minor = $version.Split('.')[1] # 9
@@ -210,12 +188,6 @@ Function Get-ReleaseVersionForRDC {
     Write-Host "Current branch is $currentBranch"
     
     [BranchType]$typeOfBranch = branches\Get-CurrentBranchType "$currentBranch"
-    # if (($typeOfBranch -eq [BranchType]::Release) -or ($typeOfBranch -eq [BranchType]::HotfixRelease)) {
-    #     if(-Not ($currentBranch.Contains("$major.$minor")))
-    #     {
-    #         $(Throw New-Object System.ArgumentException "Current branch should contain the latest tag : currentbranch = $currentBranch, last tag = $version, string to find = $major.$minor", "tag not found")
-    #     }
-    # }
     
     Write-Host "Type of branch = $typeOfBranch"
     
