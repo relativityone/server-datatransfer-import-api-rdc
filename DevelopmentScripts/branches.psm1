@@ -25,11 +25,7 @@ Function Get-CurrentBranchType{
     If ($currentBranch.ToString() -eq "server-develop" ) 
     {
        return [BranchType]::Develop
-    }
-    If ($currentBranch.ToString().StartsWith("server-rc" ))
-    {
-       return [BranchType]::FeatureBranch
-    }    
+    }  
     If ($currentBranch.ToString() -eq "Performance-pipeline" ) 
     {
        return [BranchType]::PerformancePipeline
@@ -64,7 +60,7 @@ Function Get-CurrentBranchType{
     }
     else
     {
-        $(Throw New-Object System.ArgumentException "The branch name is not 'server-develop' or 'server-main', or starts with 'server-rc-' or 'server-release-*' (for hotfixes) or starts with a Jira number (like 'REL-123456'). The branchname supplied is '$currentBranch'", "branch name")
+        return [BranchType]::FeatureBranch
     }
 }
 

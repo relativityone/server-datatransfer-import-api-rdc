@@ -331,7 +331,7 @@ timestamps
 									{
 										echo "Build number: ${currentBuild.number}"
 										echo "Building all SDK and RDC packages"
-										powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}' -UtilsPackageVersion '${packageVersion}'"
+										powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}' -PackageVersion '${packageVersion}'"
 									},
 									failFast: true
 								)

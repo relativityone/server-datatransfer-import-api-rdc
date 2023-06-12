@@ -88,7 +88,7 @@ properties {
 	$SqlDataComparer = $Null
 	$TestOnWorkspaceWithNonDefaultCollation = $Null
 	$ReleasedVersionName = $Null
-    $UtilsPackageVersion = $Null
+    $PackageVersion = $Null
     
 }
 
@@ -275,17 +275,17 @@ task BuildPackages -Depends BuildRdcPackage,BuildSdkPackages -Description "Build
 task BuildSdkPackages -Description "Builds the SDK NuGet packages" {
     folders\Initialize-Folder $LogsDir -Safe
     folders\Initialize-Folder $PackagesArtifactsDir -Safe
-    $version = versioning\Get-ReleaseVersion "$Branch"
+    $version = versioning\Get-ReleaseVersionForSDK "$Branch"
 
-	Write-Host "UtilsPackageVersion: $UtilsPackageVersion"
+	Write-Host "PackageVersion: $PackageVersion"
     Write-Host "Package version: $version"
     Write-Host "Working directory: $PSScriptRoot"
     Write-Host "Branch: $Branch"
-    if ($UtilsPackageVersion -ne $Null){
+    if ($PackageVersion -ne $Null){
         if(($Branch -ne 'server-develop') -and ($Branch -ne 'server-main'))
         {
-            Write-Host "Updating Package version using UTILS method: $version => $UtilsPackageVersion"
-            $version = $UtilsPackageVersion
+            Write-Host "Updating Package version using UTILS method: $version => $PackageVersion"
+            $version = $PackageVersion
         }
     }
     
@@ -429,13 +429,13 @@ task BuildRdcPackage -Description "Builds the RDC NuGet package" {
     folders\Initialize-Folder $LogsDir -Safe
     folders\Initialize-Folder $PackagesArtifactsDir -Safe
     $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
-    $packageVersion = versioning\Get-RdcVersion -rdcVersionWixFile $rdcVersionWixFile -branch $Branch
-    Write-Host "Package version: $packageVersion"
+    $rdcPackageVersion = versioning\Get-RdcVersion -rdcVersionWixFile $rdcVersionWixFile -branch $Branch
+    Write-Host "Package version: $rdcPackageVersion"
     Write-Host "Working directory: $PSScriptRoot"
     Write-Host "Creating the RDC package and outputting to '$PackagesArtifactsDir'."
     $nuspecFileFull = Join-Path $SourceDir "Relativity.Desktop.Client.Legacy\Relativity.Desktop.Client.nuspec"
     exec {
-        & $nugetExe pack $nuspecFileFull -ForceEnglishOutput -version $packageVersion -OutputDirectory $PackagesArtifactsDir `
+        & $nugetExe pack $nuspecFileFull -ForceEnglishOutput -version $rdcPackageVersion -OutputDirectory $PackagesArtifactsDir `
         -Exclude "nuget.exe"
    }    
 }
@@ -444,7 +444,7 @@ task BuildVersion -Description "Retrieves the build version from powershell" {
     Assert ($BuildUrl -ne $null -and $BuildUrl -ne "") "BuildUrl must be provided"
     Write-Host "Importing powershell properties.."
 
-    $majorMinorIncrease = versioning\Get-ReleaseVersion "$Branch" -omitPostFix
+    $majorMinorIncrease = versioning\Get-ReleaseVersionForSDK "$Branch" -omitPostFix
     Write-Output "Build Url: $BuildUrl"
     $maxVersionLength = 50
     $localBuildVersion = $majorMinorIncrease
@@ -696,7 +696,7 @@ task IntegrationTestsForMassImportImprovementsToggle -Depends ReadSqlPassword -D
 
 task PackageVersion -Description "Retrieves the package version from powershell" {
 
-    $localPackageVersion = versioning\Get-ReleaseVersion "$Branch"
+    $localPackageVersion = versioning\Get-ReleaseVersionForSDK "$Branch"
 
     $maxVersionLength = 255
     if ($localPackageVersion.Length -gt $maxVersionLength) {
@@ -750,7 +750,7 @@ task PublishPackages -Description "Publishes packages to the NuGet feed" {
     #       issue until CI scripts have been migrated to access tokens. 
     $startTime = [System.DateTime]::Now
     $metadata = @{
-        PackageVersion = versioning\Get-ReleaseVersion "$Branch"
+        PackageVersion = versioning\Get-ReleaseVersionForSDK "$Branch"
     }     
     
     $uploadedCount = 0
@@ -1026,7 +1026,7 @@ if ($TestParametersFile) {
 }
 
 task PostReleasePageOnEinstein -Description "Post the releae page on Einstein"{
-    $localSdkVersion = versioning\Get-ReleaseVersion "$Branch"
+    $localSdkVersion = versioning\Get-ReleaseVersionForSDK "$Branch"
     $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
 	$localRdcVersion = versioning\Get-RdcVersion -rdcVersionWixFile $rdcVersionWixFile -branch $Branch
 	$localPathToRdcExe = "$InstallersArtifactsDir\Relativity.Desktop.Client.Setup.exe"
@@ -1040,7 +1040,7 @@ task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -De
 }
 
 task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
-    $version = versioning\Get-ReleaseVersion "$Branch" -omitPostFix
+    $version = versioning\Get-ReleaseVersionForSDK "$Branch" -omitPostFix
     Write-Host "UpdateSdkAssemblyInfo - $version"
     versioning\Update-AssemblyInfo "$version.0"
 }
