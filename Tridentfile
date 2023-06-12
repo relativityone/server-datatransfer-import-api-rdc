@@ -26,6 +26,10 @@ def int testResultsPassed = 0
 def int testResultsFailed = 0
 def int testResultsSkipped = 0
 
+String version = "" // This will be our new version no
+String productName = utils.retrieveProductNameFromGitURL(scm.getUserRemoteConfigs()[0].getUrl())
+String projectKey = utils.retrieveProjectKeyFromGitURL(scm.getUserRemoteConfigs()[0].getUrl())
+
 // The following code is needed because we build a pull request according to Jenkins, 'so' the env.Branch does not return a valid branch name, but only 'PR-1234', and we need the branch name for our logic.
 def branchName = env.BRANCH_NAME
 if(branchName.startsWith('PR-'))
@@ -40,6 +44,7 @@ def publishToRelease = (isGoldBuild && isReleaseOrMainBranch)
 def publishRdc =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC ONLY'))
 def publishSdk =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - SDK ONLY'))
 def publishSdkAndRdc = (publishSdk && publishRdc)
+
 build = params.build
 
 // On release branches tests should be executed against newest Relativity version from specified folder in \\bld-pkgs\Packages\Relativity\
@@ -107,13 +112,16 @@ timestamps
                         echo "Is gold build = $isGoldBuild"
                         echo "Publishing to release? $publishToRelease"
                         echo "Retrieving the semantic versions"
-                        echo "Using new build strategy"
-                        def outputString = tools.runCommandWithOutput(".\\build.ps1 BuildVersion -Branch '${branchName}'")
-                        def outputStringParsed = tools.extractValue("buildVersion", outputString)
-                        currentBuild.displayName = "$outputStringParsed"
-                        buildVersion = outputStringParsed
+                        echo "Using version file"
+                        version = readFile("./Version/version.txt").trim()
+                        currentBuild.displayName = "$version"
+                        def buildNumber = utils.getVersion(productName, version)
+                        packageVersion = utils.buildPackageVersion(version, buildNumber, isReleaseBranch ? false : true)   
+                        echo "$packageVersion came from UTILS"                 
+                        buildVersion = version
+                        
                     }
-					
+
 					stage('Tag version in GIT')
                     {
                         echo "Publishing to release? $publishToRelease"
@@ -323,7 +331,7 @@ timestamps
 									{
 										echo "Build number: ${currentBuild.number}"
 										echo "Building all SDK and RDC packages"
-										powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}'"
+										powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}' -PackageVersion '${packageVersion}'"
 									},
 									failFast: true
 								)
