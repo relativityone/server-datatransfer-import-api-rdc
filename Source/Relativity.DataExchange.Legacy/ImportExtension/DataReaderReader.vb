@@ -426,7 +426,8 @@ Namespace kCura.WinEDDS.ImportExtension
 			Else
 				If (_reader.GetName(_fileSettingsTypeColumnNameIndex) = _FileSettings.TypeColumnName) Then
 					oiFileType = _reader.GetValue(_fileSettingsTypeColumnNameIndex).ToString()
-				ElseIf (_reader.GetName(_fileSettingsIDColumnNameIndex) = _FileSettings.IDColumnName) Then
+				End If
+				If (_reader.GetName(_fileSettingsIDColumnNameIndex) = _FileSettings.IDColumnName) Then
 					Dim value As Int32 = -1
 					Dim readerValue As String = _reader.GetValue(_fileSettingsIDColumnNameIndex).ToString()
 					Int32.TryParse(readerValue, value)
