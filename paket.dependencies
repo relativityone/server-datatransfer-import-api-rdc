@@ -72,9 +72,10 @@ nuget relativity.services.interfaces.private = 11.3.11.1
 nuget kcura.relativity.client = 11.2.8.6-DEV
 nuget relativity.logging = 2019.5.1
 nuget Relativity.Audit.Services.SDK
-nuget relativity.productions.services.interfaces = 11.0.7
 nuget relativity.testing.identification = 3.6.0
 nuget ReportUnit = 1.2.1
+nuget Relativity.Productions.SDK = 12.6.3
+nuget Relativity.Shared.SDK = 1.8.0
 
 # A group is used to address dependency conflicts and only required by UI automation tests.
 group ui-automation

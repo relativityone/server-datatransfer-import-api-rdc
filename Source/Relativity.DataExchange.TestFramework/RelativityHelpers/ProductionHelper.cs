@@ -17,9 +17,8 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 	using NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework.RelativityVersions;
-	using Relativity.Productions.Services;
-	using Relativity.Productions.Services.Interfaces.DTOs;
-	using Relativity.Services.Search;
+	using Relativity.Productions.Services.Interfaces.V2.DTOs;
+	using Relativity.Productions.Services.V2;
 
 	/// <summary>
 	/// Defines static helper methods to manage productions.
@@ -56,10 +55,10 @@ namespace Relativity.DataExchange.TestFramework.RelativityHelpers
 			List<Production> productions;
 			using (IProductionManager client = ServiceHelper.GetServiceProxy<IProductionManager>(parameters))
 			{
-				productions = await client.GetAllAsync(parameters.WorkspaceId, DataSourceReadMode.None).ConfigureAwait(false);
+				productions = await client.GetAllAsync(parameters.WorkspaceId, (int)DataSourceReadMode.None).ConfigureAwait(false);
 			}
 
-			foreach (var productionId in productions.Select(x => x.ArtifactID))
+			foreach (var productionId in productions.Select(x => x.ProductionID))
 			{
 				await RdoHelper.DeleteObjectAsync(parameters, productionId).ConfigureAwait(false);
 			}
