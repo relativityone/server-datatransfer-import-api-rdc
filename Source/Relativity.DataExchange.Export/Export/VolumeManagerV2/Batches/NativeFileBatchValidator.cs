@@ -44,7 +44,8 @@
 			 		return;
 			 	}
    
-			 	ValidateNativesForArtifact(artifacts[i]);
+				// Disabling native files validation to improve performance
+			 	// ValidateNativesForArtifact(artifacts[i]);
 			 }
 		}
 

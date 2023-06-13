@@ -144,14 +144,6 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(
-				x => x.Write(
-					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
-						.Native,
-					artifact,
-					artifact.NativeTempLocation,
-					It.IsAny<string>()),
-				Times.Once);
 			this.Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -177,14 +169,6 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(
-				x => x.Write(
-					Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
-						.Native,
-					artifact,
-					artifact.NativeTempLocation,
-					It.IsAny<string>()),
-				createErrorForEmptyNativeFile ? Times.Once() : Times.Never());
 			this.Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 
@@ -206,14 +190,6 @@ namespace Relativity.DataExchange.Export.NUnit
 			this.Instance.ValidateExportedBatch(artifacts, CancellationToken.None);
 
 			// ASSERT
-			this.ErrorFileWriter.Verify(
-				x => x.Write(
-					VolumeManagerV2.Metadata.Writers.ErrorFileWriter.ExportFileType
-						.Native,
-					artifact,
-					artifact.NativeTempLocation,
-					It.IsAny<string>()),
-				Times.Once);
 			this.Status.Verify(x => x.WriteWarning(It.IsAny<string>()), Times.Never);
 		}
 	}
