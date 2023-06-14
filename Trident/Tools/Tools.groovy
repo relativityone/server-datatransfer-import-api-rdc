@@ -61,34 +61,6 @@ def runCommandWithOutput(String command)
     return outputString
 }
 
-def tagGitCommit(String commitHash, String tag, String username, String password) {
-    try {
-        powershell """
-				\$serverHasTag = \$(git tag -l "$tag")
-				if(\$serverHasTag)
-				{
-					\$variableAsJson = ConvertTo-Json -\$serverHasTag
-					Write-Host "$tag already exists. \$variableAsJson"
-				}
-				else
-				{
-					Write-Host "$tag does not exist."
-					\$GitServer = "https://git.kcura.com"
-					\$Headers = @{"Authorization" = "Basic \$([System.Convert]::ToBase64String(([System.Text.Encoding]::UTF8.GetBytes(""$username:$password""))))"}
-					\$URI = "\$GitServer/rest/api/1.0/projects/DTX/repos/import-api-rdc/tags"
-					Invoke-RestMethod -Method POST -URI \$URI -Headers \$Headers -ContentType "application/json" -Body (@{"name" = "$tag"; "startPoint" = "$commitHash"} | ConvertTo-Json)
-					if(!\$?) {throw "An error ocurred while tagging git. Please check the logs."}
-					Write-Host "$tag was added to the remote repository."
-				}
-        """
-    } catch (InterruptedException err) {
-        error (err.toString())
-    } catch (err) {
-        error (err.toString())
-    }
-
-}
-
 def createHopperInstance(String sutTemplate, String relativityBranch)
 {
     def vmInfo = null
