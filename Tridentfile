@@ -129,7 +129,7 @@ timestamps
 						{
 							echo "Tagging git"
 							withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
-								tools.tagGitCommit(commitHash, buildVersion, username, password)
+                                utils.tagGitCommit(projectKey, productName, commitHash, packageVersion)
 							}
 							echo "Tagging git success."
 						}
