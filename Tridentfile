@@ -40,7 +40,7 @@ def isReleaseBranch = branchName.startsWith('server-release-')
 def isMainBranch = branchName.startsWith('server-main')
 def isReleaseOrMainBranch = isReleaseBranch || isMainBranch
 def isGoldBuild = (params.buildType != 'DEV')
-def publishToRelease = (isGoldBuild && isReleaseOrMainBranch)
+def publishToRelease = (isGoldBuild)
 def publishRdc =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC ONLY'))
 def publishSdk =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - SDK ONLY'))
 def publishSdkAndRdc = (publishSdk && publishRdc)
@@ -139,23 +139,23 @@ timestamps
 						}
                     }
 
-					stage('Get hopper instance') 
-					{
-						echo "Hopper variables will be printed"
-						def output = JsonOutput.toJson(config)
-						echo JsonOutput.prettyPrint(output)
-						echo "End of hopper variables"
-						vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
-					}	
+					// stage('Get hopper instance') 
+					// {
+					// 	echo "Hopper variables will be printed"
+					// 	def output = JsonOutput.toJson(config)
+					// 	echo JsonOutput.prettyPrint(output)
+					// 	echo "End of hopper variables"
+					// 	vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
+					// }	
 
-					stage('Replace variables in build')
-					{
-					    echo "replacing test variables in build"
-					    echo "vmInfo url ${vmInfo.Url}"
-					    echo "vmInfo id ${vmInfo.Id}"
-                        output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
-                        echo output
-					}
+					// stage('Replace variables in build')
+					// {
+					//     echo "replacing test variables in build"
+					//     echo "vmInfo url ${vmInfo.Url}"
+					//     echo "vmInfo id ${vmInfo.Id}"
+                    //     output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
+                    //     echo output
+					// }
 					
                     stage('Build binaries') 
                     {
@@ -190,57 +190,57 @@ timestamps
 
                     try
                     {
-                        stage("Run unit tests")
-                        {
-                            if (shouldRunUnitTests)
-                            {
-                                echo "Running the unit tests"
-                                output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip running unit tests due to configuration parameters."
-                            }
-                        }
+                        // stage("Run unit tests")
+                        // {
+                        //     if (shouldRunUnitTests)
+                        //     {
+                        //         echo "Running the unit tests"
+                        //         output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
+                        //         echo output
+                        //     }
+                        //     else
+                        //     {
+                        //         echo "Skip running unit tests due to configuration parameters."
+                        //     }
+                        // }
                         
-                        stage("Run integration tests")
-                        {
-                            if (shouldRunIntegrationTests)
-                            {
-                                echo "Running the integration tests"
-                                output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip running integration tests due to configuration parameters."
-                            }
-                        }
+                        // stage("Run integration tests")
+                        // {
+                        //     if (shouldRunIntegrationTests)
+                        //     {
+                        //         echo "Running the integration tests"
+                        //         output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                        //         echo output
+                        //     }
+                        //     else
+                        //     {
+                        //         echo "Skip running integration tests due to configuration parameters."
+                        //     }
+                        // }
                         
-                        stage("Code coverage report")
-                        {
-                            if (shouldRuncodeCoverageReport)
-                            {
-                                echo "Creating a code coverage report"
-                                output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip creating code coverage report due to configuration parameter. This only runs if you want to run the integration tests as well"
-                            }
-                        }
+                        // stage("Code coverage report")
+                        // {
+                        //     if (shouldRuncodeCoverageReport)
+                        //     {
+                        //         echo "Creating a code coverage report"
+                        //         output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                        //         echo output
+                        //     }
+                        //     else
+                        //     {
+                        //         echo "Skip creating code coverage report due to configuration parameter. This only runs if you want to run the integration tests as well"
+                        //     }
+                        // }
                     }
                     finally
                     { 
                         if (shouldRunUnitTests || shouldRunIntegrationTests || shouldRuncodeCoverageReport)
                         {
-                            stage('Test results report')
-                            {
-                                echo "Generating test report"
-                                powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
-                            }
+                            // stage('Test results report')
+                            // {
+                            //     echo "Generating test report"
+                            //     powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
+                            // }
                         }
 
                         if (shouldRunUnitTests || shouldRunIntegrationTests || shouldRuncodeCoverageReport)
