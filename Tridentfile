@@ -31,8 +31,8 @@ if(branchName.startsWith('PR-'))
     branchName = env.CHANGE_BRANCH
 }
 
-def isPublishedBranch = utils.isPublishedBranch(scmBranchName)
-def isReleaseBranch = utils.isReleaseBranch(scmBranchName)
+def isPublishedBranch = utils.isPublishedBranch(branchName)
+def isReleaseBranch = utils.isReleaseBranch(branchName)
 
 build = params.build
 
