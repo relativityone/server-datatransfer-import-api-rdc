@@ -6,16 +6,10 @@ library 'SlackHelpers@5.2.0-Trident'
 properties([
     buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '30', daysToKeepStr: '7', numToKeepStr: '30')),
     parameters([
-        choice(defaultValue: 'DEV',choices: ["DEV", "GOLD - RDC AND SDK", "GOLD - RDC ONLY", "GOLD - SDK ONLY"], description: "Choose your build type, only gold can produce production packages.", name: 'buildType'),
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
         string(defaultValue: 'release-12.3-sundrop-server', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
-        booleanParam(defaultValue: true, description: "Enable or disable running unit tests", name: 'runUnitTests'),
-        booleanParam(defaultValue: true, description: "Enable or disable running integration tests", name: 'runIntegrationTests'),
-        booleanParam(defaultValue: true, description: "Enable or disable creating a code coverage report", name: 'createCodeCoverageReport'),
-        choice(defaultValue: 'Hopper', choices: ["Hopper"], description: 'The test environment used for integration tests and code coverage', name: 'testEnvironment'),
-        booleanParam(defaultValue: true, description: """Enable or disable publishing NuGet packages, default true, but can be blocked by type of build and branch type.
-        This is only for debug purposes.""", name: 'publishPackages')
+        choice(defaultValue: 'Hopper', choices: ["Hopper"], description: 'The test environment used for integration tests', name: 'testEnvironment')
     ])
 ])
 
@@ -36,45 +30,29 @@ if(branchName.startsWith('PR-'))
 {
     branchName = env.CHANGE_BRANCH
 }
-def isReleaseBranch = branchName.startsWith('server-release-')
-def isMainBranch = branchName.startsWith('server-main')
-def isReleaseOrMainBranch = isReleaseBranch || isMainBranch
-def isGoldBuild = (params.buildType != 'DEV')
-def publishToRelease = (isGoldBuild && isReleaseOrMainBranch)
-def publishRdc =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC ONLY'))
-def publishSdk =(!isReleaseOrMainBranch || (isReleaseOrMainBranch && params.buildType == 'GOLD - RDC AND SDK')|| (isReleaseOrMainBranch && params.buildType == 'GOLD - SDK ONLY'))
-def publishSdkAndRdc = (publishSdk && publishRdc)
+
+def isPublishedBranch = utils.isPublishedBranch(scmBranchName)
+def isReleaseBranch = utils.isReleaseBranch(scmBranchName)
 
 build = params.build
 
 // On release branches tests should be executed against newest Relativity version from specified folder in \\bld-pkgs\Packages\Relativity\
 // Example: relativityBranch = 'release-11.3-mayapple' for branchName = 'release-1.11-mayapple'
-if(isReleaseOrMainBranch && (relativityBranch == null || relativityBranch.isEmpty()))
+if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
 {
-	currentBuild.result = 'FAILED' 
-	throw new Exception("Build failed because relativity installer source folder 'relativityBranch' is not defined in the script")
+    currentBuild.result = 'FAILED'
+    throw new Exception("Build failed because relativity installer source folder 'relativityBranch' is not defined in the script")
 }
 
 def config = [
-	sutTemplate: "aio-sundrop-2",
-	hopperApiUrl: "https://api.hopper.relativity.com/",
-	hopperApiUsername: "homeimprovement@relativity.com"
+    sutTemplate: "aio-sundrop-2",
+    hopperApiUrl: "https://api.hopper.relativity.com/",
+    hopperApiUsername: "homeimprovement@relativity.com"
 ]
 
 def vmInfo = null
-	
-// The code coverage report runs the integration tests + unit tests.
-def shouldRuncodeCoverageReport = params.createCodeCoverageReport && params.runIntegrationTests && params.runUnitTests
+def tools = null
 
-// Disable running unit tests if we already run the code coverage report (that invokes the unit tests as well)
-def shouldRunUnitTests = params.runUnitTests && !shouldRuncodeCoverageReport
-
-// Disable running integration tests if we already run the code coverage report (that invokes the integration tests as well)
-def shouldRunIntegrationTests = params.runIntegrationTests && !shouldRuncodeCoverageReport
-	
-def tools					
-
-	
 timestamps
 {
     timeout(time: 3, unit: 'HOURS')
@@ -83,11 +61,11 @@ timestamps
         {
             try
             {
-				stage ('Clean') 
-				{
-					deleteDir()
-				}
-				
+                stage ('Clean')
+                {
+                    deleteDir()
+                }
+
                 stage('Checkout')
                 {
                     commitHash = checkout([
@@ -97,381 +75,285 @@ timestamps
                         extensions: [[$class: 'CloneOption', noTags: false, shallow: false, reference: '']] + [[$class: 'CleanCheckout']],
                         userRemoteConfigs: scm.userRemoteConfigs,
                      ]).GIT_COMMIT
-					echo "GIT_COMMIT is ${commitHash}"
+                    echo "GIT_COMMIT is ${commitHash}"
                     notifyBitbucket()
-					tools = load 'Trident/Tools/Tools.groovy'
-					Slack = load 'Trident/Tools/Slack.groovy'
+                    tools = load 'Trident/Tools/Tools.groovy'
+                    Slack = load 'Trident/Tools/Slack.groovy'
                 }
-				
+
                 try
-                {					
+                {
                     stage('Retrieve version')
                     {
-                        echo "Is release branch = $isReleaseOrMainBranch"
-                        echo "Run integration tests = ${shouldRunIntegrationTests}"
-                        echo "Is gold build = $isGoldBuild"
-                        echo "Publishing to release? $publishToRelease"
+                        echo "Is release branch = $isReleaseBranch"
                         echo "Retrieving the semantic versions"
                         echo "Using version file"
                         version = readFile("./Version/version.txt").trim()
                         currentBuild.displayName = "$version"
                         def buildNumber = utils.getVersion(productName, version)
-                        packageVersion = utils.buildPackageVersion(version, buildNumber, isReleaseBranch ? false : true)   
-                        echo "$packageVersion came from UTILS"                 
+                        packageVersion = utils.buildPackageVersion(version, buildNumber, isReleaseBranch ? false : true)
+                        echo "$packageVersion came from UTILS"
                         buildVersion = version
-                        
                     }
 
-					stage('Tag version in GIT')
+                    stage('Tag version in GIT')
                     {
-                        echo "Publishing to release? $publishToRelease"
-						if(publishToRelease)
-						{
-							echo "Tagging git"
-							withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
+                        echo "Create GIT tag? $isPublishedBranch"
+                        if(isPublishedBranch)
+                        {
+                            echo "Create GIT tag $packageVersion"
+                            withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
                                 utils.tagGitCommit(projectKey, productName, commitHash, packageVersion)
-							}
-							echo "Tagging git success."
-						}
-						else
-						{
-							echo "Not a gold build that is pushed to release, so no tagging GIT"
-						}
+                            }
+                            echo "Create GIT tag success"
+                        }
+                        else
+                        {
+                            echo "Skip creating a GIT tag because this isn't a published branch"
+                        }
                     }
 
-					stage('Get hopper instance') 
-					{
-						echo "Hopper variables will be printed"
-						def output = JsonOutput.toJson(config)
-						echo JsonOutput.prettyPrint(output)
-						echo "End of hopper variables"
-						vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
-					}	
+                    stage('Get hopper instance')
+                    {
+                        echo "Hopper variables will be printed"
+                        def output = JsonOutput.toJson(config)
+                        echo JsonOutput.prettyPrint(output)
+                        echo "End of hopper variables"
+                        vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
+                    }
 
-					stage('Replace variables in build')
-					{
-					    echo "replacing test variables in build"
-					    echo "vmInfo url ${vmInfo.Url}"
-					    echo "vmInfo id ${vmInfo.Id}"
+                    stage('Replace variables in build')
+                    {
+                        echo "replacing test variables in build"
+                        echo "vmInfo url ${vmInfo.Url}"
+                        echo "vmInfo id ${vmInfo.Id}"
                         output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
                         echo output
-					}
-					
-                    stage('Build binaries') 
+                    }
+
+                    stage('Build binaries')
                     {
                         echo "Building the binaries for version $buildVersion"
                         output = powershell ".\\build.ps1 UpdateAssemblyInfo,Build,BuildUIAutomation -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -ILMerge -Sign -Branch '${branchName}'"
                         echo output
                     }
-                    
-					stage('Build install packages and check sdk dependencies')
-					{
-						parallel(
-							"Check sdk dependencies":
-							{
-								echo "checking dependencies of the .sdk .nuspec file"
-								powershell ".\\build.ps1 CheckSdkDependencies"
-							},
 
-							"Check access to destination path":
-							{
-								powershell ".\\build.ps1 CheckFolderAccess"
-							},
+                    stage('Build install packages and check sdk dependencies')
+                    {
+                        parallel(
+                            "Check sdk dependencies":
+                            {
+                                echo "checking dependencies of the .sdk .nuspec file"
+                                powershell ".\\build.ps1 CheckSdkDependencies"
+                            },
 
-							"Build install packages":
-							{
-								echo "Building the installers for version $buildVersion"
-								output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign -Branch '${branchName}'"
-								echo output
-							},
-							failFast: true
-						)
-					}
+                            "Check access to destination path":
+                            {
+                                powershell ".\\build.ps1 CheckFolderAccess"
+                            },
+
+                            "Build install packages":
+                            {
+                                echo "Building the installers for version $buildVersion"
+                                output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign -Branch '${branchName}'"
+                                echo output
+                            },
+                            failFast: true
+                        )
+                    }
 
                     try
                     {
-                        stage("Run unit tests")
+                        stage("Run unit and integration tests")
                         {
-                            if (shouldRunUnitTests)
-                            {
-                                echo "Running the unit tests"
-                                output = powershell ".\\build.ps1 UnitTests -ILMerge -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip running unit tests due to configuration parameters."
-                            }
-                        }
-                        
-                        stage("Run integration tests")
-                        {
-                            if (shouldRunIntegrationTests)
-                            {
-                                echo "Running the integration tests"
-                                output = powershell ".\\build.ps1 IntegrationTests -ILMerge -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip running integration tests due to configuration parameters."
-                            }
-                        }
-                        
-                        stage("Code coverage report")
-                        {
-                            if (shouldRuncodeCoverageReport)
-                            {
-                                echo "Creating a code coverage report"
-                                output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                                echo output
-                            }
-                            else
-                            {
-                                echo "Skip creating code coverage report due to configuration parameter. This only runs if you want to run the integration tests as well"
-                            }
+                            echo "Creating a code coverage report"
+                            output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                            echo output
                         }
                     }
                     finally
-                    { 
-                        if (shouldRunUnitTests || shouldRunIntegrationTests || shouldRuncodeCoverageReport)
+                    {
+                        stage('Retrieve test results and create NuGet packages')
                         {
-                            stage('Test results report')
-                            {
-                                echo "Generating test report"
-                                powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
-                            }
-                        }
-
-                        if (shouldRunUnitTests || shouldRunIntegrationTests || shouldRuncodeCoverageReport)
-                        {
-						    stage('Retrieve test results and create NuGet packages')
-                            {
-								parallel(
-									"Retrieve test results":
-									{
-                                        try 
-                                        {
-                                            def taskCandidates = []
-                                            if (shouldRunUnitTests)
+                            echo "Generating test report"
+                            powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
+                            parallel(
+                                "Retrieve test results":
+                                {
+                                    try
+                                    {
+                                        def taskCandidates = []
+                                        taskCandidates.add("UnitTestResults")
+                                        taskCandidates.add("IntegrationTestResults")
+                                        taskCandidates.eachWithIndex { task, index ->
+                                            def testDescription = ""
+                                            switch (index)
                                             {
-                                                taskCandidates.add("UnitTestResults")
+                                                case 0:
+                                                    testDescription = "unit"
+                                                    break
+
+                                                case 1:
+                                                    testDescription = "integration"
+                                                    break
+
+                                                default:
+                                                    throw new Exception("The test result type $index is not mapped")
                                             }
 
-                                            if (shouldRunIntegrationTests)
+                                            // Let the build script retrieve the unit test result values.
+                                            echo "Retrieving the $testDescription-test results"
+                                            def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
+                                            echo "Retrieved the $testDescription-test results"
+
+                                            // Search for specific tokens within the response.
+                                            echo "Extracting the $testDescription-test result parameters"
+                                            echo "Output of method runCommandWithOutput- $testResultOutputString"
+                                            def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
+                                            def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
+                                            def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
+                                            echo "Extracted the $testDescription-test result parameters"
+
+                                            // Dump the individual test results
+                                            echo "$testDescription-test passed: $passed"
+                                            echo "$testDescription-test failed: $failed"
+                                            echo "$testDescription-test skipped: $skipped"
+
+                                            // Now add to the final test results
+                                            testResultsPassed += passed
+                                            testResultsFailed += failed
+                                            testResultsSkipped += skipped
+
+                                            if(failed > 0)
                                             {
-                                                taskCandidates.add("IntegrationTestResults")
+                                                echo "$testDescription-test failed is bigger than zero"
+                                                currentBuild.result = 'FAILED' 
+                                                throw new Exception("Tests failed.")
                                             }
-                                            
-                                            if (shouldRuncodeCoverageReport)
-                                            {
-                                                taskCandidates.add("UnitTestResults")
-                                                taskCandidates.add("IntegrationTestResults")
-                                            }
-
-                                            taskCandidates.eachWithIndex { task, index ->
-                                                def testDescription = ""
-                                                switch (index)
-                                                {
-                                                    case 0:
-                                                        testDescription = "unit"
-                                                        break
-
-                                                    case 1:
-                                                        testDescription = "integration"
-                                                        break
-
-                                                    default:
-                                                        throw new Exception("The test result type $index is not mapped.")
-                                                }
-
-                                                // Let the build script retrieve the unit test result values.
-                                                echo "Retrieving the $testDescription-test results"
-                                                def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
-                                                echo "Retrieved the $testDescription-test results"
-
-                                                // Search for specific tokens within the response.
-                                                echo "Extracting the $testDescription-test result parameters"
-                                                echo "Output of method runCommandWithOutput- $testResultOutputString"
-                                                def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
-                                                def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
-                                                def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
-                                                echo "Extracted the $testDescription-test result parameters"
-
-                                                // Dump the individual test results
-                                                echo "$testDescription-test passed: $passed"
-                                                echo "$testDescription-test failed: $failed"
-                                                echo "$testDescription-test skipped: $skipped"
-                                                
-                                                // Now add to the final test results
-                                                testResultsPassed += passed
-                                                testResultsFailed += failed
-                                                testResultsSkipped += skipped
-                                                
-                                                if(failed > 0)
-                                                {
-                                                    echo "$testDescription-test failed is bigger than zero"
-                                                    currentBuild.result = 'FAILED' 
-                                                    throw new Exception("Tests failed.")
-                                                }
-                                            }
-
-                                            // Dump the final test results
-                                            echo "Total passed: $testResultsPassed"
-                                            echo "Total failed: $testResultsFailed"
-                                            echo "Total skipped: $testResultsSkipped"
                                         }
-                                        catch(err) {
-                                            echo "Parsing error"
-                                            echo err.toString()
-                                        }
-									},
-									
-									"Create NuGet packages":
-									{
-										echo "Build number: ${currentBuild.number}"
-										echo "Building all SDK and RDC packages"
-										powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}' -PackageVersion '${packageVersion}'"
-									},
-									failFast: true
-								)
-							}
+
+                                        // Dump the final test results
+                                        echo "Total passed: $testResultsPassed"
+                                        echo "Total failed: $testResultsFailed"
+                                        echo "Total skipped: $testResultsSkipped"
+                                    }
+                                    catch(err) {
+                                        echo "Parsing error"
+                                        echo err.toString()
+                                    }
+                                },
+
+                                "Create NuGet packages":
+                                {
+                                    echo "Build number: ${currentBuild.number}"
+                                    echo "Building all SDK and RDC packages"
+                                    powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}' -PackageVersion '${packageVersion}'"
+                                },
+                                failFast: true
+                            )
                         }
                     }
 
-                    stage ('Publish everything') 
+                    stage ('Publish everything')
                     {
                         parallel(
                             "Publish packages to Artifactory":
                             {
-                                if (params.publishPackages)
+                                if (isPublishedBranch)
                                 {
-								    try
-									{
-										echo "Getting key vault info for Artifactory..."
-										def secrets = [
-											secrets: [
-												[secretType: 'Secret', name: 'Relativity-Srv-NuGet-Svc-ApiKey', version: '', envVariable: 'artifactServiceApiKey']
-											],
-											keyvault: "https://artifactory-auth-prod.vault.azure.net"
-										]
-   										withAzureKeyvault(azureKeyVaultSecrets: secrets["secrets"], keyVaultURLOverride: secrets.keyvault)
-										{
-											if (publishSdkAndRdc)  
-											{
-												echo "Publishing the SDK and RDC package(s)"
-												powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'" 
-											}
-											else 
-											{
-												if (publishSdk)
-												{
-													echo "Publishing the SDK only"
-													powershell ".\\build.ps1 PublishPackages -SkipPublishRdcPackage -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'" 
-												}
-												else if (publishRdc)
-												{
-													echo "Publishing RDC only"
-													powershell ".\\build.ps1 PublishPackages -SkipPublishSdkPackage -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'" 
-												}
-												else
-												{
-													echo "publishing packages skipped, as we are on a release branch, and this is not a 'GOLD' build. In order to make this a gold build, kick this off manually"
-												}
-											}
-										}
-									}
-									catch(err)
-									{
-										echo err.toString()
-										currentBuild.result = 'FAILED' 
-										echo "Something went wrong publishing the packages"
-									}
+                                    try
+                                    {
+                                        echo "Getting key vault info for Artifactory..."
+                                        def secrets = [
+                                            secrets: [
+                                                [secretType: 'Secret', name: 'Relativity-Srv-NuGet-Svc-ApiKey', version: '', envVariable: 'artifactServiceApiKey']
+                                            ],
+                                            keyvault: "https://artifactory-auth-prod.vault.azure.net"
+                                        ]
+                                        withAzureKeyvault(azureKeyVaultSecrets: secrets["secrets"], keyVaultURLOverride: secrets.keyvault)
+                                        {
+                                            echo "Publishing the SDK and RDC package(s)"
+                                            powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'"
+                                        }
+                                    }
+                                    catch(err)
+                                    {
+                                        echo err.toString()
+                                        currentBuild.result = 'FAILED'
+                                        echo "Something went wrong publishing the packages"
+                                    }
+                                }
+                                else
+                                {
+                                    echo "Skip publishing packages to Artifactory"
                                 }
                             },
 
                             "Publish artifacts":
                             {
-								try
-								{
-									echo "Publishing build artifacts"
-									output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${branchName}' -PublishToRelease \$${publishToRelease}"
-									echo output
-								}
-								catch(err)
-								{
-									echo err.toString()
-									currentBuild.result = 'FAILED' 
-									echo "Something went wrong publishing the packages"
-								}
+                                try
+                                {
+                                    echo "Publishing build artifacts"
+                                    output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${branchName}' -PublishToRelease \$${isPublishedBranch}"
+                                    echo output
+                                }
+                                catch(err)
+                                {
+                                    echo err.toString()
+                                    currentBuild.result = 'FAILED'
+                                    echo "Something went wrong publishing the packages"
+                                }
                             },
                             failFast: true
                         )
                         currentBuild.result = 'SUCCESS'
                     }
-					stage('Create einstein page')
-					{	
+                    stage('Create einstein page')
+                    {
                         // TODO: Skipped this stage, It will be addressed in another ticket REL-837952
-						// if (publishSdkAndRdc && publishToRelease)
-						// {
-						// 	def secrets = [ 
-						// 	[ secretType: 'Secret', name: 'Einstein-token', envVariable: 'EinsteinToken' ]
-						// 	]
-						// 	withAzureKeyvault(azureKeyVaultSecrets: secrets, keyVaultURLOverride: 'https://KV-DATATRANSFER-GBU.vault.azure.net') { 
-						// 		powershell ".\\build.ps1 PostReleasePageOnEinstein -EinsteinSecret '${EinsteinToken}' -Branch '${branchName}'"
-						// 	}
-						// }
-						// else
-						// {
-						//     echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release or server-main branch."
-						// }
+                        // if (publishSdkAndRdc && isPublishedBranch)
+                        // {
+                        // 	def secrets = [
+                        // 	[ secretType: 'Secret', name: 'Einstein-token', envVariable: 'EinsteinToken' ]
+                        // 	]
+                        // 	withAzureKeyvault(azureKeyVaultSecrets: secrets, keyVaultURLOverride: 'https://KV-DATATRANSFER-GBU.vault.azure.net') { 
+                        // 		powershell ".\\build.ps1 PostReleasePageOnEinstein -EinsteinSecret '${EinsteinToken}' -Branch '${branchName}'"
+                        // 	}
+                        // }
+                        // else
+                        // {
+                        //     echo "We can't create a release page as this needs a gold build of SDK and RDC to be created on release or server-main branch."
+                        // }
                         echo "Skipped this stage, It will be addressed in another ticket[REL-837952]"
-					}
+                    }
                 }
                 finally
                 {
-					echo "Remove redundant test output files that should not be added to Trident logs"
-					powershell ".\\build.ps1 RemoveRedundantTestOutputFiles -Branch '${branchName}'"				
-					
+                    echo "Remove redundant test output files that should not be added to Trident logs"
+                    powershell ".\\build.ps1 RemoveRedundantTestOutputFiles -Branch '${branchName}'"
+
                     echo "Publishing the build logs"
                     archiveArtifacts artifacts: 'Logs/**/*.*'
-                    if (shouldRunUnitTests)
-                    {
-                        echo "Publishing the unit tests report"
-                        archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
-                    }
-                    
-                    if (shouldRunIntegrationTests)
-                    {
-                        echo "Publishing the integration tests report"
-                        archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
-                    }
-
-                    if (shouldRuncodeCoverageReport)
-                    {
-						echo "Publishing the unit tests report"
-                        archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
-						
-						echo "Publishing the integration tests report"
-                        archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
-						
-                        echo "Publishing the code coverage report"
-                        archiveArtifacts artifacts: 'TestReports/code-coverage/**/*.*'
-                    }
-                } 
+                    echo "Publishing the unit tests report"
+                    archiveArtifacts artifacts: 'TestReports/unit-tests/**/*.*'
+                    echo "Publishing the integration tests report"
+                    archiveArtifacts artifacts: 'TestReports/integration-tests/**/*.*'
+                    echo "Publishing the code coverage report"
+                    archiveArtifacts artifacts: 'TestReports/code-coverage/**/*.*'
+                }
             }
             catch(err)
             {
                 echo err.toString()
                 echo "Failed to run the CI pipeline"
-                currentBuild.result = 'FAILED' 
-                if (branchName == 'server-develop' || isReleaseOrMainBranch)
+                currentBuild.result = 'FAILED'
+                if (branchName == 'server-develop' || isReleaseBranch)
                 {
                     tools.sendEmailAboutFailureToTeam(branchName)
                 }
                 else
                 {
-                    tools.sendEmailAboutFailureToAuthor(branchName) 
+                    tools.sendEmailAboutFailureToAuthor(branchName)
                 }
                 tools.transferHopper(vmInfo)
             }
@@ -480,7 +362,7 @@ timestamps
                 stage('Send slack and bitbucket notification')
                 {
                     notifyBitbucket()
-                    Slack.SendSlackNotification("Relativity from image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, params.buildType, "ci-server-delta", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
+                    Slack.SendSlackNotification("Relativity SUT image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, isPublishedBranch, isReleaseBranch, "ci-server-delta", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
                 }
             }
         }

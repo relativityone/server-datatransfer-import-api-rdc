@@ -1,4 +1,4 @@
-def SendSlackNotification(String serverUnderTestName, String version, String branch, String buildType, String slackChannel, int numberOfFailedTests, int numberOfPassedTests, int numberOfSkippedTests, String message)
+def SendSlackNotification(String serverUnderTestName, String version, String branch, String isPublishedBranch, String isReleaseBranch, String slackChannel, int numberOfFailedTests, int numberOfPassedTests, int numberOfSkippedTests, String message)
 {
     echo "Send Slack Notification"
 
@@ -20,7 +20,8 @@ def SendSlackNotification(String serverUnderTestName, String version, String bra
         "\n" + "serverUnderTestName: " + serverUnderTestName +
         "\n" + "version: " + version +
         "\n" + "branch: " + branch +
-        "\n" + "buildType: " + buildType +
+        "\n" + "isPublishedBranch: " + isPublishedBranch +
+        "\n" + "isReleaseBranch: " + isReleaseBranch +
         "\n" + "slackChannel: " + slackChannel +
         "\n" + "email: " + email +
         "\n" + "buildUrl: " + env.BUILD_URL +
@@ -41,7 +42,7 @@ def SendSlackNotification(String serverUnderTestName, String version, String bra
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "*Build result*\nImage: ${serverUnderTestName}\nBranch: ${branch}\nVersion: ${version}\nBuildType: ${buildType}\n Email: ${email}\nMessage: ${message}"
+				"text": "*Build result*\nImage: ${serverUnderTestName}\nBranch: ${branch}\nVersion: ${version}\nIsPublishedBranch: ${isPublishedBranch}\nIsReleaseBranch: ${isReleaseBranch}\n Email: ${email}\nMessage: ${message}"
 			}
 		},
 		{
