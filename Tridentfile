@@ -98,14 +98,14 @@ timestamps
 
                     stage('Tag version in GIT')
                     {
-                        echo "Create GIT tag? $isPublishedBranch"
+                        echo "Create a GIT tag? $isPublishedBranch"
                         if(isPublishedBranch)
                         {
-                            echo "Create GIT tag $packageVersion"
+                            echo "Creating a GIT tag..."
                             withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
                                 utils.tagGitCommit(projectKey, productName, commitHash, packageVersion)
                             }
-                            echo "Create GIT tag success"
+                            echo "Successfully created a GIT tag"
                         }
                         else
                         {
