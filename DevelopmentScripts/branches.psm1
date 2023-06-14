@@ -60,7 +60,7 @@ Function Get-CurrentBranchType{
     }
     else
     {
-        $(Throw New-Object System.ArgumentException "The branch name is not 'develop', or starts with 'release-' or starts with a Jira number (like 'REL-123456'). The branchname supplied is '$currentBranch'", "branch name")
+        return [BranchType]::FeatureBranch
     }
 }
 

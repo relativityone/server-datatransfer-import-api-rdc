@@ -154,6 +154,9 @@ The optional parameter used to execute tests on workspace created from template 
 .PARAMETER ReleasedVersionName
 The optional parameter used in Release branches pipeline to decide which Relativity versions should be tested.
 
+.PARAMETER PackageVersion
+The optional parameter used in pipeline to build Build Sdk Packages.
+
 #>
 
 #Requires -Version 5.0
@@ -219,7 +222,9 @@ param(
 	[Parameter()]
 	[Switch]$TestOnWorkspaceWithNonDefaultCollation,
 	[Parameter()]
-	[String]$ReleasedVersionName
+	[String]$ReleasedVersionName,
+    [Parameter()]
+	[String]$PackageVersion=""
 )
 
 . $profile
@@ -292,6 +297,7 @@ $Params = @{
 		SqlDataComparer = $SqlDataComparer
 		TestOnWorkspaceWithNonDefaultCollation = $TestOnWorkspaceWithNonDefaultCollation
 		ReleasedVersionName = $ReleasedVersionName
+        PackageVersion = $PackageVersion
     }
 
     Verbose = $VerbosePreference
