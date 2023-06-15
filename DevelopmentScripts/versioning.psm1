@@ -22,14 +22,14 @@ Function Get-RdcVersion {
     )
 
 	$majorMinorPatchVersion = Get-RdcWixVersion -rdcVersionWixFile $rdcVersionWixFile
-    $postFix = Get-ReleaseVersion "$branch" -postFixOnly
+    $postFix = Get-ReleaseVersionForRDC "$branch" -postFixOnly
 
     [BranchType]$typeOfBranch = branches\Get-CurrentBranchType "$branch"
     # Means its not a release branch
     if(-Not ($typeOfBranch -eq [BranchType]::HotfixRelease -or $typeOfBranch -eq [BranchType]::Release -or $typeOfBranch -eq [BranchType]::Main))
     {
         Write-Host "PostFix: $postFix"
-        $commitsSince = Get-ReleaseVersion "$branch" -returnCommitsSinceOnly
+        $commitsSince = Get-ReleaseVersionForRDC "$branch" -returnCommitsSinceOnly
         Write-Host "commitsSince: $commitsSince"
         $postFix = ".$commitsSince$postFix"
         Write-Host "PostFix: $postFix"
@@ -42,7 +42,7 @@ Function Get-RdcWixVersion {
     param(
         [string] $rdcVersionWixFile
     )
-    
+
     if (-Not (Test-Path $rdcVersionWixFile -PathType Leaf)) {
         Throw "The RDC version cannot be determined because the WIX RCD version source file '$rdcVersionWixFile' doesn't exist."
     }
@@ -72,14 +72,77 @@ Function Get-RdcWixVersion {
     return $productVersion.Trim()
 }
 
-Function Get-ReleaseVersion {
+Function Get-ReleaseVersionForSDK {
     param(
         [string]$branchNameJenkins,
         [switch]$postFixOnly = $false,
         [switch]$omitPostFix = $false,
         [switch]$returnCommitsSinceOnly = $false
     )
-	Write-Host $branchNameJenkins
+	Write-Host "BranchName Jenkins - $branchNameJenkins"
+    $host.UI.RawUI.WindowTitle = "Getting release version"
+    $version = Get-Content ./Version/version.txt -Raw
+	$version = $version.trim()
+    Write-Host "Version = $version"
+    $major = $version.Split('.')[0] # 1
+    $minor = $version.Split('.')[1] # 9
+
+    $currentBranch = $branchNameJenkins
+    Write-Host "Current branch is $currentBranch"
+
+    [BranchType]$typeOfBranch = branches\Get-CurrentBranchType "$currentBranch"
+
+    Write-Host "Type of branch = $typeOfBranch"
+
+    # Different branches get different postfixes
+    switch ($typeOfBranch) {
+        ([BranchType]::Develop) {$postfix = "-dev"}
+        ([BranchType]::FeatureBranch) {$postfix = "-pre"}
+        ([BranchType]::Release) {$postfix = ""}
+        ([BranchType]::Main) {$postfix = ""}
+        ([BranchType]::HotfixRelease) {
+            $numbersAtTheEnd = $version | Foreach {if ($_ -match '(\d+)$') {$matches[1]}}
+            $postfix = "-Hotfix-$numbersAtTheEnd"
+        }
+        ([BranchType]::Trident) {$postfix = "-testing"}
+        ([BranchType]::PerformancePipeline) {$postfix = "-performance"}
+		([BranchType]::PipelineTest) {$postfix = "-testing"}
+		([BranchType]::ReleaseBranches) {$postfix = "-testing"}
+        default { Throw "Branch type is unknown" }
+    }
+
+    #Escape as version numbers should not contain anything special, like underscores. Dashes are fine tough
+    $pattern = '[^a-zA-Z0-9]'
+    $postfix = $postfix -replace $pattern ,"-"
+
+    If($omitPostFix)
+    {
+        $majorMinorCommits = $version
+        Write-Host "MajorMinorCommitsSince = $majorMinorCommits"
+        Write-Output $majorMinorCommits
+    }
+    elseif($postFixOnly)
+    {
+        $newVersion = "$postfix"
+        Write-Host "Postfix = $newVersion"
+        Write-Output $newVersion
+    }
+    else
+    {
+        $newVersion = "$version$postfix"
+        Write-Host "New complete version should be = $newVersion"
+        Write-Output $newVersion
+    }
+}
+
+Function Get-ReleaseVersionForRDC {
+    param(
+        [string]$branchNameJenkins,
+        [switch]$postFixOnly = $false,
+        [switch]$omitPostFix = $false,
+        [switch]$returnCommitsSinceOnly = $false
+    )
+	Write-Host "BranchName Jenkins - $branchNameJenkins"
     $host.UI.RawUI.WindowTitle = "Getting release version"
 
     function gitBranchName {
@@ -99,37 +162,32 @@ Function Get-ReleaseVersion {
     Write-Host $gitVersion
     $gitVersionSplit = $gitVersion.ToString().Split('-')
     $version = $gitVersionSplit[0] # 1.9.0
-    $commitsSinceLastTag = $gitVersionSplit[1] # 95
+
+    # Note: the commit number is always the second to last index.
+    $commitsSinceLastTag = $gitVersionSplit[-2] # 95
     # git describe does not give the commits since tag if the numer of commits since tag is null.
     if("$commitsSinceLastTag" -eq "")
     {
         $commitsSinceLastTag = "0"
     }
-	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
-	
-    Write-Host "Version = $version"
-    $major = $version.Split('.')[0] # 1
-    $minor = $version.Split('.')[1] # 9
-    
 
+	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
     Write-Host "Commits since version was created = $commitsSince"
     if($returnCommitsSinceOnly)
     {
         return $commitsSince
     }
+
+    Write-Host "Version = $version"
+    $major = $version.Split('.')[0] # 1
+    $minor = $version.Split('.')[1] # 9
     $currentBranch = gitBranchName
     Write-Host "Current branch is $currentBranch"
-    
+
     [BranchType]$typeOfBranch = branches\Get-CurrentBranchType "$currentBranch"
-    if (($typeOfBranch -eq [BranchType]::Release) -or ($typeOfBranch -eq [BranchType]::HotfixRelease)) {
-        if(-Not ($currentBranch.Contains("$major.$minor")))
-        {
-            $(Throw New-Object System.ArgumentException "Current branch should contain the latest tag : currentbranch = $currentBranch, last tag = $version, string to find = $major.$minor", "tag not found")
-        }
-    }
-    
+
     Write-Host "Type of branch = $typeOfBranch"
-    
+
     # Different branches get different postfixes
     switch ($typeOfBranch) {
         ([BranchType]::Develop) {$postfix = "-dev"}
@@ -146,7 +204,7 @@ Function Get-ReleaseVersion {
 		([BranchType]::ReleaseBranches) {$postfix = "-testing"}
         default { Throw "Branch type is unknown" }
     }
-    
+
     #Escape as version numbers should not contain anything special, like underscores. Dashes are fine tough
     $pattern = '[^a-zA-Z0-9]'
     $postfix = $postfix -replace $pattern ,"-"
@@ -155,14 +213,14 @@ Function Get-ReleaseVersion {
     {
         $majorMinorCommits = "$major.$minor.$commitsSince"
         Write-Host "MajorMinorCommitsSince = $majorMinorCommits"
-        Write-Output $majorMinorCommits    
+        Write-Output $majorMinorCommits
     }
     elseif($postFixOnly)
     {
         $newVersion = "$postfix"
         Write-Host "Postfix = $newVersion"
         Write-Output $newVersion
-    }    
+    }
     else
     {
         $newVersion = "$major.$minor.$commitsSince$postfix"
