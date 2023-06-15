@@ -98,8 +98,8 @@ timestamps
 
                     stage('Tag version in GIT')
                     {
-                        echo "Create a GIT tag? $isPublishedBranch"
-                        if(isPublishedBranch)
+                        echo "Create a GIT tag? $isReleaseBranch"
+                        if(isReleaseBranch)
                         {
                             echo "Creating a GIT tag..."
                             withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
@@ -359,11 +359,12 @@ timestamps
             }
             finally
             {
-                stage('Send slack and bitbucket notification')
-                {
-                    notifyBitbucket()
-                    Slack.SendSlackNotification("Relativity SUT image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, isPublishedBranch, isReleaseBranch, "ci-server-delta", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
-                }
+                // This stage will be taken care as prt of [REL-841948]
+                // stage('Send slack and bitbucket notification')
+                // {
+                //     notifyBitbucket()
+                //     Slack.SendSlackNotification("Relativity SUT image '${config.sutTemplate}'", buildVersion, env.BRANCH_NAME, isPublishedBranch, isReleaseBranch, "ci-server-delta", testResultsFailed, testResultsPassed, testResultsSkipped, env.BUILD_TAG)
+                // }
             }
         }
     }
