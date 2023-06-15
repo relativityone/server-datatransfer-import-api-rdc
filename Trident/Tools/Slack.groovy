@@ -1,4 +1,4 @@
-def SendSlackNotification(String serverUnderTestName, String version, String branch, String isPublishedBranch, String isReleaseBranch, String slackChannel, int numberOfFailedTests, int numberOfPassedTests, int numberOfSkippedTests, String message)
+def SendSlackNotification(String serverUnderTestName, String version, String branch, def isPublishedBranch, def isReleaseBranch, String slackChannel, int numberOfFailedTests, int numberOfPassedTests, int numberOfSkippedTests, String message)
 {
     echo "Send Slack Notification"
 
