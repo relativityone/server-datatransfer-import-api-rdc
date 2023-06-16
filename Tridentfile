@@ -98,8 +98,8 @@ timestamps
 
                     stage('Tag version in GIT')
                     {
-                        echo "Create a GIT tag? $isReleaseBranch"
-                        if(isReleaseBranch)
+                        echo "Create a GIT tag? $isPublishedBranch"
+                        if(isPublishedBranch)
                         {
                             echo "Creating a GIT tag..."
                             withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
