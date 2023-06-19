@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 06-19-2023
+
+### Changed
+
+- [REL-848315](https://jira.kcura.com/browse/REL-848315) - Updated help link to have Server version of RDC - Backported [REL-645382](https://jira.kcura.com/browse/REL-645382) ticket from Server 2022 release
+
 ## [2.0.0] - 06-14-2023
 ### Changed
 
@@ -21,13 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Aligned 'Import-API-RDC' versioning to trident standards [REL-850174] (https://jira.kcura.com/browse/REL-850174)
-
-## [1.0.4] - 06-12-2023
-
-### Changed
-
-- Updated help link to have Server version of RDC
-- Bumped up the RDC version to 12.3.15
 
 ## [1.0.3] - 05-23-2023
 ### Changed
