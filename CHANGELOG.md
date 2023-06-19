@@ -8,24 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 06-19-2023
 ### Changed
 
-- Updated the Relativity.OutsideIn package in nuspec file to version 2023.4.0 [REL-841948] (https://jira.kcura.com/browse/REL-841948)
+- Updated the Relativity.OutsideIn package in nuspec file to version 2023.4.0 [REL-841948](https://jira.kcura.com/browse/REL-841948)
 
 ## [2.0.0] - 06-14-2023
 ### Changed
 
-- Updated the Relativity.OutsideIn package to 2023.4.0 [REL-841948] (https://jira.kcura.com/browse/REL-841948)
+- Updated the Relativity.OutsideIn package to 2023.4.0 [REL-841948](https://jira.kcura.com/browse/REL-841948)
 
 ## [1.9.9] - 06-14-2023
 
 ### Changed
 
-- Updated tagGitCommit logic to get server git tags [REL-850174] (https://jira.kcura.com/browse/REL-850174)
+- Updated tagGitCommit logic to get server git tags [REL-850174](https://jira.kcura.com/browse/REL-850174)
 
 ## [1.17.1] - 06-08-2023
 
 ### Changed
 
-- Aligned 'Import-API-RDC' versioning to trident standards [REL-850174] (https://jira.kcura.com/browse/REL-850174)
+- Aligned 'Import-API-RDC' versioning to trident standards [REL-850174](https://jira.kcura.com/browse/REL-850174)
 
 ## [1.0.3] - 05-23-2023
 ### Changed
