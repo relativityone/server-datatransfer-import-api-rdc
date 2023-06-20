@@ -5,13 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.0] - 06-19-2023
+## [2.2.0] - 06-20-2023
 
 ### Changed
 
 - [REL-848315](https://jira.kcura.com/browse/REL-848315) - Updated help link to have Server version of RDC - Backported [REL-645382](https://jira.kcura.com/browse/REL-645382) ticket from Server 2022 release
 
+## [2.1.0] - 06-19-2023
+
+### Changed
+
+- Updated the Relativity.OutsideIn package in nuspec file to version 2023.4.0 [REL-841948] (https://jira.kcura.com/browse/REL-841948)
+
 ## [2.0.0] - 06-14-2023
+
 ### Changed
 
 - Updated the Relativity.OutsideIn package to 2023.4.0 [REL-841948] (https://jira.kcura.com/browse/REL-841948)
