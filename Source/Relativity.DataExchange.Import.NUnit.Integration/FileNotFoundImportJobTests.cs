@@ -29,7 +29,7 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 		[IdentifiedTestCase("9361b3aa-1333-4606-a05c-9b89ef43a2dd", TapiClient.Direct, false, true)]
 		[IdentifiedTestCase("b4f90f5b-cf18-4d8a-bc42-259906bd27fd", TapiClient.Direct, true, true)]
 		[IdentifiedTestCase("bbee1077-fc95-42aa-a625-2caad809952a", TapiClient.Web, false, true)]
-		[IdentifiedTestCase("d1873516-42ad-476f-820d-b790ee3d6c3d", TapiClient.Web, true, true)]
+		[IdentifiedTestCase("d1873516-42ad-476f-820d-b790ee3d6c3d", TapiClient.Web, true, true, Ignore = "Native file existence is validated in RIP")]
 		[IdentifiedTestCase("2d61508b-2622-4b9b-a824-61387796b09b", TapiClient.Aspera, false, true)]
 		[IdentifiedTestCase("6d2220f5-4b59-4989-8a21-cca0559894d3", TapiClient.Aspera, true, true)]
 		public void ShouldFailWhenTheFileIsNotFound(
