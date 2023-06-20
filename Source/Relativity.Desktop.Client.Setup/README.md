@@ -3,6 +3,7 @@
 ## Overview
  
 The installer for the Relativity Desktop Client. WinEDDS is the legacy name of the RDC.
+Follow server domain [SOP](https://einstein.kcura.com/pages/viewpage.action?pageId=518325428)
  
 ## How to Build
 
