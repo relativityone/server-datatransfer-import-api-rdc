@@ -89,11 +89,11 @@ timestamps
                         echo "Retrieving the semantic versions"
                         echo "Using version file"
                         version = readFile("./Version/version.txt").trim()
-                        currentBuild.displayName = "$version"
                         def buildNumber = utils.getVersion(productName, version)
                         packageVersion = utils.buildPackageVersion(version, buildNumber, isReleaseBranch ? false : true)
                         echo "$packageVersion came from UTILS"
                         buildVersion = version
+                        currentBuild.displayName = "$packageVersion"
                     }
 
                     stage('Tag version in GIT')
