@@ -1190,6 +1190,18 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether file size detection should be performed.
+		/// </summary>
+		/// <value>
+		/// Text File Size enabled.
+		/// </value>
+		bool EnableTextFileSizeCheck
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Performs a deep copy of this instance.
 		/// </summary>
 		/// <returns>

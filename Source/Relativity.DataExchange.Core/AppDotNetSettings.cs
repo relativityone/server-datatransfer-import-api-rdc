@@ -1428,6 +1428,17 @@ namespace Relativity.DataExchange
 			set;
 		}
 
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.EnableTextFileSizeCheckKey,
+			AppSettingsConstants.EnableTextFileSizeCheckValue)]
+		bool IAppSettings.EnableTextFileSizeCheck
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Validates that the URI is valid and returns a properly formatted URI string.
 		/// </summary>

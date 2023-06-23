@@ -222,6 +222,8 @@ namespace Relativity.DataExchange
 		public const int ReadRelativityVersionErrorWaitTimeInSecondsDefaultValue = 5;
 		public const string RetryInTheOriginalTransferModeKey = "RetryInTheOriginalTransferMode";
 		public const bool RetryInTheOriginalTransferModeValue = true;
+		public const string EnableTextFileSizeCheckKey = "EnableTextFileSizeCheck";
+		public const bool EnableTextFileSizeCheckValue = false;
 #pragma warning restore SA1600
 	}
 }
