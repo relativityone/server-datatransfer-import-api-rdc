@@ -288,22 +288,6 @@ timestamps
                                     echo "Skip publishing packages to Artifactory"
                                 }
                             },
-
-                            "Publish artifacts":
-                            {
-                                try
-                                {
-                                    echo "Publishing build artifacts"
-                                    output = powershell ".\\build.ps1 PublishBuildArtifacts -Version '$buildVersion' -Branch '${branchName}' -PublishToRelease \$${isPublishedBranch}"
-                                    echo output
-                                }
-                                catch(err)
-                                {
-                                    echo err.toString()
-                                    currentBuild.result = 'FAILED'
-                                    echo "Something went wrong publishing the packages"
-                                }
-                            },
                             failFast: true
                         )
                         currentBuild.result = 'SUCCESS'
