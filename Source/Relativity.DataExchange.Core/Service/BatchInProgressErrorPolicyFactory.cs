@@ -77,7 +77,7 @@ namespace Relativity.DataExchange.Service
 			{
 				this.logger.LogWarning(
 					exception,
-					"BatchInProgressErrorPolicyFactory: Call to Kepler service failed due to {ExceptionType}. Currently on attempt {RetryCount} out of {MaxRetries} and waiting {WaitSeconds} seconds before the next retry attempt.",
+					"BatchInProgressErrorPolicyFactory: Call to Kepler service failed due to {ExceptionType}. The server is still processing the request. Currently on attempt {RetryCount} out of {MaxRetries} and waiting {WaitSeconds} seconds before the next attempt to retrieve response.",
 					exception.GetType(),
 					retryCount,
 					this.settings.BatchInProgressNumberOfRetries,
