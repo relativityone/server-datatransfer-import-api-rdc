@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - [REL-854115](https://jira.kcura.com/browse/REL-854115) - IAPI packages publishing to bld-pkgs - Avoided publishing packages to bld-pkgs location
+- Updated README.md file
 
 ## [2.2.0] - 06-20-2023
 
