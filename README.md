@@ -417,5 +417,5 @@ The server-main branch was forked for Relativity Server by the Server Vertical.
 Tag: 1.0.0                                         
 Branch: server-main
 
-## Publish package
-Packages are published to artifactory, We are not publishing to bld-pkgs location. We shouldn't be hitting bld-pkgs any longer. This is a legacy from pre-Artifactory days. In fact, our dependency on these legacy fileshares will prevent teams (including RelOne) from migrating to Github.
+## Publishing Packages
+Packages are strictly published to Artifactory and no longer copied to the \\\\bld-pkgs.kcura.corp\\packages file share.
