@@ -1041,7 +1041,7 @@ task UpdateAssemblyInfo -Depends UpdateSdkAssemblyInfo,UpdateRdcAssemblyInfo -De
 
 task UpdateSdkAssemblyInfo -Description "Update the version contained within the SDK assembly shared info source file" {
     $version = versioning\Get-ReleaseVersionForSDK "$Branch" -omitPostFix
-    Write-Host "UpdateSdkAssemblyInfo - $version"
+    Write-Host "REL-854115 UpdateSdkAssemblyInfo - $version"
     versioning\Update-AssemblyInfo "$version.0"
 }
 
@@ -1050,6 +1050,7 @@ task UpdateRdcAssemblyInfo -Description "Update the version contained within the
         $rdcVersionWixFile = Join-Path (Join-Path $SourceDir "Relativity.Desktop.Client.Setup") "Version.wxi"
         $majorMinorPatchVersion = versioning\Get-RdcWixVersion -rdcVersionWixFile $rdcVersionWixFile
         $postFix = versioning\Get-ReleaseVersionForRDC "$Branch" -postFixOnly
+        Write-Host "REL-854115 UpdateRDC - $postFix"
         $InformationalVersion = "$majorMinorPatchVersion$postFix"
         $VersionPath = Join-Path $Root "Version"
         $ScriptPath = Join-Path $VersionPath "Update-RdcAssemblySharedInfo.ps1"
