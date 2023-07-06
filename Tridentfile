@@ -25,7 +25,7 @@ String productName = utils.retrieveProductNameFromGitURL(scm.getUserRemoteConfig
 String projectKey = utils.retrieveProjectKeyFromGitURL(scm.getUserRemoteConfigs()[0].getUrl())
 
 // The following code is needed because we build a pull request according to Jenkins, 'so' the env.Branch does not return a valid branch name, but only 'PR-1234', and we need the branch name for our logic.
-def branchName = env.BRANCH_NAME
+def branchName = 'server-develop' //env.BRANCH_NAME
 if(branchName.startsWith('PR-'))
 {
     branchName = env.CHANGE_BRANCH
