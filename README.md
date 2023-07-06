@@ -416,3 +416,6 @@ Over the last few years, improper async/await usage caused `ASP.NET` application
 The server-main branch was forked for Relativity Server by the Server Vertical.
 Tag: 1.0.0                                         
 Branch: server-main
+
+## Publishing Packages
+Packages are strictly published to Artifactory and no longer copied to the \\\\bld-pkgs.kcura.corp\\packages file share.
