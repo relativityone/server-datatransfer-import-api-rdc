@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 07-06-2023
+
+### Changed
+
+- Trident build failure fix for server-develop - git hash commit is not returned due to this commitsSinceLastTag was getting some invalid string.
+
 ## [2.3.0] - 07-03-2023
 
 ### Changed

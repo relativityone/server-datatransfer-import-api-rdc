@@ -159,19 +159,21 @@ Function Get-ReleaseVersionForRDC {
     }
 
     $gitVersion = git describe --tags --always
-    Write-Host "REL-854115 gitVersion $gitVersion"
+    Write-Host "Check: gitVersion $gitVersion"
     $gitVersionSplit = $gitVersion.ToString().Split('-')
-    Write-Host "REL-854115 gitVersionSplit $gitVersionSplit"
+    Write-Host "Check:  gitVersionSplit $gitVersionSplit"
     $version = $gitVersionSplit[0] # 1.9.0
     # Note: the commit number is always the second to last index.
     $commitsSinceLastTag = $gitVersionSplit[-2] # 95
+    Write-Host "Check: commitsSinceLastTag +  version.Split('.')[2] = $commitsSinceLastTag || $version"
+    $commitsSinceLastTag = $commitsSinceLastTag.replace("pre.","") # 95
     # git describe does not give the commits since tag if the numer of commits since tag is null.
     if("$commitsSinceLastTag" -eq "")
     {
         $commitsSinceLastTag = "0"
     }
-    Write-Host "REL-854115 Commits since version was created Before = $commitsSince"
-    Write-Host "REL-854115 commitsSinceLastTag +  version.Split('.')[2] = $commitsSinceLastTag || $version"
+    Write-Host "Check: Commits since version was created Before = $commitsSince"
+    Write-Host "Check: 2  commitsSinceLastTag +  version.Split('.')[2] = $commitsSinceLastTag || $version"
 	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
     Write-Host "Commits since version was created = $commitsSince"
     if($returnCommitsSinceOnly)
@@ -213,19 +215,19 @@ Function Get-ReleaseVersionForRDC {
     If($omitPostFix)
     {
         $majorMinorCommits = "$major.$minor.$commitsSince"
-        Write-Host "REL-854115 MajorMinorCommitsSince = $majorMinorCommits"
+        Write-Host "Check: MajorMinorCommitsSince = $majorMinorCommits"
         Write-Output $majorMinorCommits
     }
     elseif($postFixOnly)
     {
         $newVersion = "$postfix"
-        Write-Host "REL-854115 Postfix = $newVersion"
+        Write-Host "Check: Postfix = $newVersion"
         Write-Output $newVersion
     }
     else
     {
         $newVersion = "$major.$minor.$commitsSince$postfix"
-        Write-Host "REL-854115 New complete version should be = $newVersion"
+        Write-Host "Check: New complete version should be = $newVersion"
         Write-Output $newVersion
     }
 }

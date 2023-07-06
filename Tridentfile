@@ -25,7 +25,7 @@ String productName = utils.retrieveProductNameFromGitURL(scm.getUserRemoteConfig
 String projectKey = utils.retrieveProjectKeyFromGitURL(scm.getUserRemoteConfigs()[0].getUrl())
 
 // The following code is needed because we build a pull request according to Jenkins, 'so' the env.Branch does not return a valid branch name, but only 'PR-1234', and we need the branch name for our logic.
-def branchName = 'server-develop' //env.BRANCH_NAME
+def branchName = env.BRANCH_NAME
 if(branchName.startsWith('PR-'))
 {
     branchName = env.CHANGE_BRANCH
@@ -99,36 +99,36 @@ timestamps
                     stage('Tag version in GIT')
                     {
                         echo "Create a GIT tag? $isPublishedBranch"
-                        // if(isPublishedBranch)
-                        // {
-                        //     echo "Creating a GIT tag..."
-                        //     withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
-                        //         utils.tagGitCommit(projectKey, productName, commitHash, packageVersion)
-                        //     }
-                        //     echo "Successfully created a GIT tag"
-                        // }
-                        // else
-                        // {
-                        //     echo "Skip creating a GIT tag because this isn't a published branch"
-                        // }
+                        if(isPublishedBranch)
+                        {
+                            echo "Creating a GIT tag..."
+                            withCredentials([usernamePassword(credentialsId: 'JenkinsKcuraBBSVC', passwordVariable: 'password', usernameVariable: 'username')]) {
+                                utils.tagGitCommit(projectKey, productName, commitHash, packageVersion)
+                            }
+                            echo "Successfully created a GIT tag"
+                        }
+                        else
+                        {
+                            echo "Skip creating a GIT tag because this isn't a published branch"
+                        }
                     }
 
                     stage('Get hopper instance')
                     {
-                        // echo "Hopper variables will be printed"
-                        // def output = JsonOutput.toJson(config)
-                        // echo JsonOutput.prettyPrint(output)
-                        // echo "End of hopper variables"
-                        // vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
+                        echo "Hopper variables will be printed"
+                        def output = JsonOutput.toJson(config)
+                        echo JsonOutput.prettyPrint(output)
+                        echo "End of hopper variables"
+                        vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
                     }
 
                     stage('Replace variables in build')
                     {
-                        // echo "replacing test variables in build"
-                        // echo "vmInfo url ${vmInfo.Url}"
-                        // echo "vmInfo id ${vmInfo.Id}"
-                        // output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
-                        // echo output
+                        echo "replacing test variables in build"
+                        echo "vmInfo url ${vmInfo.Url}"
+                        echo "vmInfo id ${vmInfo.Id}"
+                        output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
+                        echo output
                     }
 
                     stage('Build binaries')
@@ -138,159 +138,159 @@ timestamps
                         echo output
                     }
 
-                    // stage('Build install packages and check sdk dependencies')
-                    // {
-                    //     parallel(
-                    //         "Check sdk dependencies":
-                    //         {
-                    //             echo "checking dependencies of the .sdk .nuspec file"
-                    //             powershell ".\\build.ps1 CheckSdkDependencies"
-                    //         },
+                    stage('Build install packages and check sdk dependencies')
+                    {
+                        parallel(
+                            "Check sdk dependencies":
+                            {
+                                echo "checking dependencies of the .sdk .nuspec file"
+                                powershell ".\\build.ps1 CheckSdkDependencies"
+                            },
 
-                    //         "Check access to destination path":
-                    //         {
-                    //             powershell ".\\build.ps1 CheckFolderAccess"
-                    //         },
+                            "Check access to destination path":
+                            {
+                                powershell ".\\build.ps1 CheckFolderAccess"
+                            },
 
-                    //         "Build install packages":
-                    //         {
-                    //             echo "Building the installers for version $buildVersion"
-                    //             output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign -Branch '${branchName}'"
-                    //             echo output
-                    //         },
-                    //         failFast: true
-                    //     )
-                    // }
+                            "Build install packages":
+                            {
+                                echo "Building the installers for version $buildVersion"
+                                output = powershell ".\\build.ps1 BuildInstallPackages -Configuration '${params.buildConfig}' -Verbosity '${params.buildVerbosity}' -Sign -Branch '${branchName}'"
+                                echo output
+                            },
+                            failFast: true
+                        )
+                    }
 
                     try
                     {
-                        // stage("Run unit and integration tests")
-                        // {
-                        //     echo "Creating a code coverage report"
-                        //     output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                        //     echo output
-                        // }
+                        stage("Run unit and integration tests")
+                        {
+                            echo "Creating a code coverage report"
+                            output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                            echo output
+                        }
                     }
                     finally
                     {
-                        // stage('Retrieve test results and create NuGet packages')
-                        // {
-                        //     echo "Generating test report"
-                        //     powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
-                        //     parallel(
-                        //         "Retrieve test results":
-                        //         {
-                        //             try
-                        //             {
-                        //                 def taskCandidates = []
-                        //                 taskCandidates.add("UnitTestResults")
-                        //                 taskCandidates.add("IntegrationTestResults")
-                        //                 taskCandidates.eachWithIndex { task, index ->
-                        //                     def testDescription = ""
-                        //                     switch (index)
-                        //                     {
-                        //                         case 0:
-                        //                             testDescription = "unit"
-                        //                             break
+                        stage('Retrieve test results and create NuGet packages')
+                        {
+                            echo "Generating test report"
+                            powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
+                            parallel(
+                                "Retrieve test results":
+                                {
+                                    try
+                                    {
+                                        def taskCandidates = []
+                                        taskCandidates.add("UnitTestResults")
+                                        taskCandidates.add("IntegrationTestResults")
+                                        taskCandidates.eachWithIndex { task, index ->
+                                            def testDescription = ""
+                                            switch (index)
+                                            {
+                                                case 0:
+                                                    testDescription = "unit"
+                                                    break
 
-                        //                         case 1:
-                        //                             testDescription = "integration"
-                        //                             break
+                                                case 1:
+                                                    testDescription = "integration"
+                                                    break
 
-                        //                         default:
-                        //                             throw new Exception("The test result type $index is not mapped")
-                        //                     }
+                                                default:
+                                                    throw new Exception("The test result type $index is not mapped")
+                                            }
 
-                        //                     // Let the build script retrieve the unit test result values.
-                        //                     echo "Retrieving the $testDescription-test results"
-                        //                     def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
-                        //                     echo "Retrieved the $testDescription-test results"
+                                            // Let the build script retrieve the unit test result values.
+                                            echo "Retrieving the $testDescription-test results"
+                                            def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
+                                            echo "Retrieved the $testDescription-test results"
 
-                        //                     // Search for specific tokens within the response.
-                        //                     echo "Extracting the $testDescription-test result parameters"
-                        //                     echo "Output of method runCommandWithOutput- $testResultOutputString"
-                        //                     def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
-                        //                     def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
-                        //                     def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
-                        //                     echo "Extracted the $testDescription-test result parameters"
+                                            // Search for specific tokens within the response.
+                                            echo "Extracting the $testDescription-test result parameters"
+                                            echo "Output of method runCommandWithOutput- $testResultOutputString"
+                                            def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
+                                            def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
+                                            def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
+                                            echo "Extracted the $testDescription-test result parameters"
 
-                        //                     // Dump the individual test results
-                        //                     echo "$testDescription-test passed: $passed"
-                        //                     echo "$testDescription-test failed: $failed"
-                        //                     echo "$testDescription-test skipped: $skipped"
+                                            // Dump the individual test results
+                                            echo "$testDescription-test passed: $passed"
+                                            echo "$testDescription-test failed: $failed"
+                                            echo "$testDescription-test skipped: $skipped"
 
-                        //                     // Now add to the final test results
-                        //                     testResultsPassed += passed
-                        //                     testResultsFailed += failed
-                        //                     testResultsSkipped += skipped
+                                            // Now add to the final test results
+                                            testResultsPassed += passed
+                                            testResultsFailed += failed
+                                            testResultsSkipped += skipped
 
-                        //                     if(failed > 0)
-                        //                     {
-                        //                         echo "$testDescription-test failed is bigger than zero"
-                        //                         currentBuild.result = 'FAILED' 
-                        //                         throw new Exception("Tests failed.")
-                        //                     }
-                        //                 }
+                                            if(failed > 0)
+                                            {
+                                                echo "$testDescription-test failed is bigger than zero"
+                                                currentBuild.result = 'FAILED' 
+                                                throw new Exception("Tests failed.")
+                                            }
+                                        }
 
-                        //                 // Dump the final test results
-                        //                 echo "Total passed: $testResultsPassed"
-                        //                 echo "Total failed: $testResultsFailed"
-                        //                 echo "Total skipped: $testResultsSkipped"
-                        //             }
-                        //             catch(err) {
-                        //                 echo "Parsing error"
-                        //                 echo err.toString()
-                        //             }
-                        //         },
+                                        // Dump the final test results
+                                        echo "Total passed: $testResultsPassed"
+                                        echo "Total failed: $testResultsFailed"
+                                        echo "Total skipped: $testResultsSkipped"
+                                    }
+                                    catch(err) {
+                                        echo "Parsing error"
+                                        echo err.toString()
+                                    }
+                                },
 
-                        //         "Create NuGet packages":
-                        //         {
-                        //             echo "Build number: ${currentBuild.number}"
-                        //             echo "Building all SDK and RDC packages"
-                        //             powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}' -PackageVersion '${packageVersion}'"
-                        //         },
-                        //         failFast: true
-                        //     )
-                        // }
+                                "Create NuGet packages":
+                                {
+                                    echo "Build number: ${currentBuild.number}"
+                                    echo "Building all SDK and RDC packages"
+                                    powershell ".\\build.ps1 BuildPackages -Branch '${branchName}' -BuildNumber '${currentBuild.number}' -PackageVersion '${packageVersion}'"
+                                },
+                                failFast: true
+                            )
+                        }
                     }
 
                     stage ('Publish everything')
                     {
-                        // parallel(
-                        //     "Publish packages to Artifactory":
-                        //     {
-                        //         if (isPublishedBranch)
-                        //         {
-                        //             try
-                        //             {
-                        //                 echo "Getting key vault info for Artifactory..."
-                        //                 def secrets = [
-                        //                     secrets: [
-                        //                         [secretType: 'Secret', name: 'Relativity-Srv-NuGet-Svc-ApiKey', version: '', envVariable: 'artifactServiceApiKey']
-                        //                     ],
-                        //                     keyvault: "https://artifactory-auth-prod.vault.azure.net"
-                        //                 ]
-                        //                 withAzureKeyvault(azureKeyVaultSecrets: secrets["secrets"], keyVaultURLOverride: secrets.keyvault)
-                        //                 {
-                        //                     echo "Publishing the SDK and RDC package(s)"
-                        //                     powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'"
-                        //                 }
-                        //             }
-                        //             catch(err)
-                        //             {
-                        //                 echo err.toString()
-                        //                 currentBuild.result = 'FAILED'
-                        //                 echo "Something went wrong publishing the packages"
-                        //             }
-                        //         }
-                        //         else
-                        //         {
-                        //             echo "Skip publishing packages to Artifactory"
-                        //         }
-                        //     },
-                        //     failFast: true
-                        // )
-                        // currentBuild.result = 'SUCCESS'
+                        parallel(
+                            "Publish packages to Artifactory":
+                            {
+                                if (isPublishedBranch)
+                                {
+                                    try
+                                    {
+                                        echo "Getting key vault info for Artifactory..."
+                                        def secrets = [
+                                            secrets: [
+                                                [secretType: 'Secret', name: 'Relativity-Srv-NuGet-Svc-ApiKey', version: '', envVariable: 'artifactServiceApiKey']
+                                            ],
+                                            keyvault: "https://artifactory-auth-prod.vault.azure.net"
+                                        ]
+                                        withAzureKeyvault(azureKeyVaultSecrets: secrets["secrets"], keyVaultURLOverride: secrets.keyvault)
+                                        {
+                                            echo "Publishing the SDK and RDC package(s)"
+                                            powershell ".\\build.ps1 PublishPackages -Branch '${branchName}' -ArtifactoryApiKey '$artifactServiceApiKey'"
+                                        }
+                                    }
+                                    catch(err)
+                                    {
+                                        echo err.toString()
+                                        currentBuild.result = 'FAILED'
+                                        echo "Something went wrong publishing the packages"
+                                    }
+                                }
+                                else
+                                {
+                                    echo "Skip publishing packages to Artifactory"
+                                }
+                            },
+                            failFast: true
+                        )
+                        currentBuild.result = 'SUCCESS'
                     }
                     stage('Create einstein page')
                     {
