@@ -165,8 +165,7 @@ Function Get-ReleaseVersionForRDC {
     $version = $gitVersionSplit[0] # 1.9.0
     # Note: the commit number is always the second to last index.
     $commitsSinceLastTag = $gitVersionSplit[-2] # 95
-    Write-Host "Check: commitsSinceLastTag +  version.Split('.')[2] = $commitsSinceLastTag || $version"
-    $commitsSinceLastTag = $commitsSinceLastTag.replace("pre.","") # 95
+    Write-Host "Check: 1 commitsSinceLastTag +  version.Split('.')[2] = $commitsSinceLastTag || $version"
     # git describe does not give the commits since tag if the numer of commits since tag is null.
     if("$commitsSinceLastTag" -eq "")
     {
