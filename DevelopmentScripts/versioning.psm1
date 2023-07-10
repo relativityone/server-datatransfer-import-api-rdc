@@ -159,6 +159,9 @@ Function Get-ReleaseVersionForRDC {
     }
 
     $gitVersion = git describe --tags --always
+    $serverTagpattern = '[-pre.\d*-server]'
+    Write-Host "git describe serverTagpattern $gitVersion, $serverTagpattern"
+    $gitVersion = $gitVersion -replace $serverTagpattern ,""
     Write-Host "git describe gitVersion $gitVersion"
     $gitVersionSplit = $gitVersion.ToString().Split('-')
     Write-Host "gitVersionSplit $gitVersionSplit"
