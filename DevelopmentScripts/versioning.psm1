@@ -160,11 +160,9 @@ Function Get-ReleaseVersionForRDC {
 
     $gitVersion = git describe --tags --always
     $serverTagpattern = '-pre\.\d*-server'
-    Write-Host "git describe serverTagpattern $gitVersion, $serverTagpattern"
     $gitVersion = $gitVersion -replace $serverTagpattern ,''
     Write-Host "git describe gitVersion $gitVersion"
     $gitVersionSplit = $gitVersion.ToString().Split('-')
-    Write-Host "gitVersionSplit $gitVersionSplit"
     $version = $gitVersionSplit[0] # 1.9.0
     # Note: the commit number is always the second to last index.
     $commitsSinceLastTag = $gitVersionSplit[-2] # 95
