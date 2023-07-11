@@ -159,10 +159,11 @@ Function Get-ReleaseVersionForRDC {
     }
 
     $gitVersion = git describe --tags --always
-    Write-Host $gitVersion
+    $serverTagpattern = '-pre\.\d*-server'
+    $gitVersion = $gitVersion -replace $serverTagpattern ,''
+    Write-Host "git describe gitVersion $gitVersion"
     $gitVersionSplit = $gitVersion.ToString().Split('-')
     $version = $gitVersionSplit[0] # 1.9.0
-
     # Note: the commit number is always the second to last index.
     $commitsSinceLastTag = $gitVersionSplit[-2] # 95
     # git describe does not give the commits since tag if the numer of commits since tag is null.
@@ -170,7 +171,7 @@ Function Get-ReleaseVersionForRDC {
     {
         $commitsSinceLastTag = "0"
     }
-
+    Write-Host "commitsSinceLastTag = $commitsSinceLastTag"
 	$commitsSince = [int]$commitsSinceLastTag + [int]$version.Split('.')[2]
     Write-Host "Commits since version was created = $commitsSince"
     if($returnCommitsSinceOnly)
