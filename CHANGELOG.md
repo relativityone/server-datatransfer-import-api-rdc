@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 07-12-2023
+
+### Changed
+
+- [REL-857337](https://jira.kcura.com/browse/REL-857337) - Unrecognized Guid format - Backported [REL-576995](https://jira.kcura.com/browse/REL-576995) ticket from Server 2022 release.
+
 ## [2.5.0] - 07-06-2023
 
 ### Fixed
