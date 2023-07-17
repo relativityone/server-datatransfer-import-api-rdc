@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 07-17-2023
+
+### Changed
+
+- [REL-848356](https://jira.kcura.com/browse/REL-848356) - Revved TAPI Gold Package - Backported [REL-712106](https://jira.kcura.com/browse/REL-712106) ticket from Server 2022 release.
+
 ## [2.5.0] - 07-06-2023
 
 ### Fixed
