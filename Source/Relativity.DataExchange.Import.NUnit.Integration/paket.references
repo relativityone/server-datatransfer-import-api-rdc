@@ -6,7 +6,6 @@ newtonsoft.json
 nunit
 relativity.kepler.client
 relativity.logging
-relativity.productions.services.interfaces
 relativity.services.datacontracts
 relativity.services.interfaces
 relativity.services.interfaces.private
@@ -16,3 +15,4 @@ stylecop.analyzers
 ConfigureAwaitChecker.Analyzer
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
+System.ValueTuple

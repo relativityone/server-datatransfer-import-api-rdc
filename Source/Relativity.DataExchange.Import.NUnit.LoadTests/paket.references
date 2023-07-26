@@ -8,7 +8,6 @@ nunit
 relativity.kepler
 relativity.kepler.client
 relativity.logging
-relativity.productions.services.interfaces
 relativity.services.datacontracts
 relativity.services.interfaces
 relativity.services.interfaces.private
