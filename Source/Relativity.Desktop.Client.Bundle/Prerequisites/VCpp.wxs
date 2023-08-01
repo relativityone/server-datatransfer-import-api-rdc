@@ -13,127 +13,67 @@
     <!-- Note: Heat was used to auto-generate the payload parameters                                                      -->
     <!--       e.g. heat.exe payload {filename} -o payload.wxs                                                            -->
     <!--                                                                                                                  -->
-    <!-- Note: VC++ 2017 is backwards compatible with VC++ 2015; therefore, VC++ 2015 is no longer required.              -->
+    <!-- Note: VC++ 2022 is backwards compatible with VC++ 2015, 2017, 2019                                               -->
     <!--                                                                                                                  -->
-    <!-- Note: VC++ download URL's can be found over here:                                                                -->
-    <!-- https://blogs.technet.microsoft.com/jagbal/2017/09/04/where-can-i-download-the-old-visual-c-redistributables/    -->
+    <!-- Note: New TAPI uses VC++ > 2015 that is why VC++ 2010 is not longer required                                     -->
 
-    <!-- The Visual C++ 2010 x86 runtime is required for ALL platforms! -->
-    <util:ProductSearch Id="VCPP2010X86REDIST"
-                        UpgradeCode="1F4F1D2A-D9DA-32CF-9909-48485DA06DD5"
-                        Result="version"
-                        Variable="VCPP2010X86REDIST" />
-    <PackageGroup Id="VCPP2010X86REDISTPKGGRP">
-      <ExePackage Id="VCPP2010X86REDISTPKG"
-                  Cache="yes"
-                  Compressed="no"
-                  PerMachine="yes"
-                  Permanent="yes"
-                  Vital="yes"
-                  DisplayName="Microsoft Visual C++ 2010 x86 Redistributable"
-                  InstallCommand="/q /norestart"
-                  Name="vcredist_x86.exe"
-                  DownloadUrl="https://download.microsoft.com/download/5/B/C/5BC5DBB3-652D-4DCE-B14A-475AB85EEF6E/vcredist_x86.exe"
-                  DetectCondition="(VCPP2010X86REDIST &gt;= v10.0.30319)"
-                  SuppressSignatureVerification="yes">
-        <ExitCode Value="0" Behavior="success" />
-        <ExitCode Value="1641" Behavior="forceReboot"/>
-        <ExitCode Value="3010" Behavior="forceReboot"/>
-        <ExitCode Behavior="error"/>
-        <RemotePayload Description="Microsoft Visual C++ 2010  x86 Redistributable Setup"
-                       Hash="3EC8285AFF7802715623F49E971A1F996B2850A6"
-                       ProductName="Microsoft Visual C++ 2010  x86 Redistributable"
-                       Size="5073240"
-                       Version="10.0.30319.1" />
-      </ExePackage>
-    </PackageGroup>
-    <!-- The Visual C++ 2010 x64 runtime is ONLY required for 64-bit platforms! -->
-    <util:ProductSearch Id="VCPP2010X64REDIST"
-                        UpgradeCode="5B75F761-BAC8-33BC-A381-464DDDD813A3"
-                        Result="version"
-                        Variable="VCPP2010X64REDIST" />
-    <PackageGroup Id="VCPP2010X64REDISTPKGGRP">
-      <ExePackage Id="VCPP2010X64REDISTPKG"
-                  Cache="yes"
-                  Compressed="no"
-                  PerMachine="yes"
-                  Permanent="yes"
-                  Vital="yes"
-                  DisplayName="Microsoft Visual C++ 2010 x64 Redistributable"
-                  InstallCommand="/q /norestart"
-                  Name="vcredist_x64.exe"
-                  DownloadUrl="https://download.microsoft.com/download/3/2/2/3224B87F-CFA0-4E70-BDA3-3DE650EFEBA5/vcredist_x64.exe"
-                  InstallCondition="VersionNT64"
-                  DetectCondition="(VCPP2010X64REDIST &gt;= v10.0.30319)"
-                  SuppressSignatureVerification="yes">
-        <ExitCode Value="0" Behavior="success" />
-        <ExitCode Value="1641" Behavior="forceReboot"/>
-        <ExitCode Value="3010" Behavior="forceReboot"/>
-        <ExitCode Behavior="error"/>
-        <RemotePayload Description="Microsoft Visual C++ 2010  x64 Redistributable Setup"
-                       Hash="46D9EF194C59AC2D514B9621F1F27329BFBB8E1A"
-                       ProductName="Microsoft Visual C++ 2010  x64 Redistributable"
-                       Size="5718872"
-                       Version="10.0.30319.1" />
-      </ExePackage>
-    </PackageGroup>
-    <!-- The Visual C++ 2017 x86 runtime is required for ALL platforms! -->
-    <util:ProductSearch Id="VCPP2017X86REDIST"
+    <!-- The Visual C++ 2015-2022 x86 runtime is required for ALL platforms! -->
+    <util:ProductSearch Id="VCPP2022X86REDIST"
                         UpgradeCode="65E5BD06-6392-3027-8C26-853107D3CF1A"
                         Result="version"
-                        Variable="VCPP2017X86REDIST" />
-    <PackageGroup Id="VCPP2017X86REDISTPKGGRP">
-      <ExePackage Id="VCPP2017X86REDISTPKG"
+                        Variable="VCPP2022X86REDIST" />
+    <PackageGroup Id="VCPP2022X86REDISTPKGGRP">
+      <ExePackage Id="VCPP2022X86REDISTPKG"
                   Cache="yes"
                   Compressed="no"
                   PerMachine="yes"
                   Permanent="yes"
                   Vital="yes"
-                  DisplayName="Microsoft Visual C++ 2017 x86 Redistributable"
+                  DisplayName="Microsoft Visual C++ 2015-2022 x86 Redistributable"
                   InstallCommand="/q /norestart"
-                  Name="vcredist_x86.exe"
-                  DownloadUrl="https://download.visualstudio.microsoft.com/download/pr/e9e1e87c-5bba-49fa-8bad-e00f0527f9bc/8e641901c2257dda7f0d3fd26541e07a/vc_redist.x86.exe"
-                  DetectCondition="(VCPP2017X86REDIST &gt;= v14.15.26706)"
+                  Name="VC_redist.x86.exe"
+                  DownloadUrl="https://download.visualstudio.microsoft.com/download/pr/b2519016-4a13-4120-936c-cae003d567c4/8AE59D82845159DB3A70763F5CB1571E45EBF6A1ADFECC47574BA17B019483A0/VC_redist.x86.exe"
+                  DetectCondition="(VCPP2022X86REDIST &gt;= v14.34.31938)"
                   SuppressSignatureVerification="yes">
         <ExitCode Value="0" Behavior="success" />
         <ExitCode Value="1641" Behavior="forceReboot"/>
         <ExitCode Value="3010" Behavior="forceReboot"/>
         <ExitCode Behavior="error"/>
-        <RemotePayload Description="Microsoft Visual C++ 2017 Redistributable (x86) - 14.16.27027"
-                       Hash="71370C923679EA07E38B4E7BACC52B23E5EF9652"
-                       ProductName="Microsoft Visual C++ 2017 Redistributable (x86) - 14.16.27027"
-                       Size="14656504"
-                       Version="14.16.27027.1" />
+        <RemotePayload Description="Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.34.31938"
+                       Hash="663399541A7D3BB1B5EA0E57A00C024E50D8506C"
+                       ProductName="Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.34.31938"
+                       Size="13838816"
+                       Version="14.34.31938.0" />
       </ExePackage>
     </PackageGroup>
-    <!-- The Visual C++ 2017 x64 runtime is ONLY required for 64-bit platforms! -->
-    <util:ProductSearch Id="VCPP2017X64REDIST"
+    <!-- The Visual C++ 2015-2022 x64 runtime is ONLY required for 64-bit platforms! -->
+    <util:ProductSearch Id="VCPP2022X64REDIST"
                         UpgradeCode="36F68A90-239C-34DF-B58C-64B30153CE35"
                         Result="version"
-                        Variable="VCPP2017X64REDIST" />
-    <PackageGroup Id="VCPP2017X64REDISTPKGGRP">
-      <ExePackage Id="VCPP2017X64REDISTPKG"
+                        Variable="VCPP2022X64REDIST" />
+    <PackageGroup Id="VCPP2022X64REDISTPKGGRP">
+      <ExePackage Id="VCPP2022X64REDISTPKG"
                   Cache="yes"
                   Compressed="no"
                   PerMachine="yes"
                   Permanent="yes"
                   Vital="yes"
-                  DisplayName="Microsoft Visual C++ 2017 x64 Redistributable"
+                  DisplayName="Microsoft Visual C++ 2015-2022 x64 Redistributable"
                   InstallCommand="/q /norestart"
-                  Name="vcredist_x64.exe"
-                  DownloadUrl="https://download.visualstudio.microsoft.com/download/pr/36c5faaf-bd8b-433f-b3d7-2af73bae10a8/212f41f2ccffee6d6dc27f901b7d77a1/vc_redist.x64.exe"
+                  Name="VC_redist.x64.exe"
+                  DownloadUrl="https://download.visualstudio.microsoft.com/download/pr/8b92f460-7e03-4c75-a139-e264a770758d/26C2C72FBA6438F5E29AF8EBC4826A1E424581B3C446F8C735361F1DB7BEFF72/VC_redist.x64.exe"
                   InstallCondition="VersionNT64"
-                  DetectCondition="(VCPP2017X64REDIST &gt;= v14.15.26706)"
+                  DetectCondition="(VCPP2022X64REDIST &gt;= v14.34.31938)"
                   SuppressSignatureVerification="yes">
         <ExitCode Value="0" Behavior="success" />
         <ExitCode Value="1641" Behavior="forceReboot"/>
         <ExitCode Value="3010" Behavior="forceReboot"/>
         <ExitCode Behavior="error"/>
-        <RemotePayload Description="Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027"
-                       Hash="7ECF5797BC24EDED2454AAE6F3CA95C4F6EAB807"
-                       ProductName="Microsoft Visual C++ 2017 Redistributable (x64) - 14.16.27027"
-                       Size="15338176"
-                       Version="14.16.27027.1" />
+        <RemotePayload Description="Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.34.31938"
+                       Hash="4DE9F6681F0F213B132DEF3AF88A3C68483F5F32"
+                       ProductName="Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.34.31938"
+                       Size="25490328"
+                       Version="14.34.31938.0" />
       </ExePackage>
     </PackageGroup>
   </Fragment>

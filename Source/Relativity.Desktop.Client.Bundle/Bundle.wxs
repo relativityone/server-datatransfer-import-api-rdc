@@ -30,10 +30,8 @@
     </BootstrapperApplicationRef>
     <Chain>
       <PackageGroupRef Id="DotNetPrereq" />
-      <PackageGroupRef Id="VCPP2010X86REDISTPKGGRP" />
-      <PackageGroupRef Id="VCPP2010X64REDISTPKGGRP" />
-      <PackageGroupRef Id="VCPP2017X86REDISTPKGGRP" />
-      <PackageGroupRef Id="VCPP2017X64REDISTPKGGRP" />
+      <PackageGroupRef Id="VCPP2022X86REDISTPKGGRP" />
+      <PackageGroupRef Id="VCPP2022X64REDISTPKGGRP" />
       <RollbackBoundary />
       <!-- Combine both MSI's into a single package. -->
       <MsiPackage Id="Relativity.Desktop.Client.x86"
