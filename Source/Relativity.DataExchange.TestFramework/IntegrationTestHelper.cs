@@ -16,11 +16,8 @@ namespace Relativity.DataExchange.TestFramework
 	using System.Net;
 	using System.Reflection;
 	using System.Threading.Tasks;
-
 	using kCura.Relativity.ImportAPI;
-
 	using Newtonsoft.Json;
-
 	using Relativity.DataExchange.TestFramework.RelativityHelpers;
 	using Relativity.Logging;
 
@@ -91,6 +88,9 @@ namespace Relativity.DataExchange.TestFramework
 
 			parameters.FileShareUncPath = workspace.DocumentPath;
 			Logger.LogInformation("Created {workspaceId} test workspace.", parameters.WorkspaceId);
+
+			ApplicationHelper.InstallProduction(parameters);
+
 			return parameters;
 		}
 

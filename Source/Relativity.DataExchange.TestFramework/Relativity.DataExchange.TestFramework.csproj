@@ -121,6 +121,7 @@
     <Compile Include="NUnitExtensions\IgnoreIfRegressionEnvironmentAttribute.cs" />
     <Compile Include="NUnitExtensions\IgnoreIfVersionEqualToAttribute.cs" />
     <Compile Include="RelativityHelpers\AgentHelper.cs" />
+    <Compile Include="RelativityHelpers\ApplicationHelper.cs" />
     <Compile Include="RelativityHelpers\AuditHelper.cs" />
     <Compile Include="RelativityHelpers\BatchSetHelper.cs" />
     <Compile Include="RelativityHelpers\BcpFileHelper.cs" />

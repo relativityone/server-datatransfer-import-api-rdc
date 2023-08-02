@@ -39,7 +39,7 @@ Write-Host "NugetExe: $NugetExe"
 
 try{
 	exec { 
-		& $NugetExe install DataTransfer.Legacy -ExcludeVersion -Version 0.3.37 -OutputDirectory "$PSScriptRoot"
+		& $NugetExe install DataTransfer.Legacy -ExcludeVersion -OutputDirectory "$PSScriptRoot"
 	} -errorMessage "Failed to download latest DataTransfer.Legacy app."
 
 	$rapPath = "$PSScriptRoot\DataTransfer.Legacy\lib\DataTransfer.Legacy.rap"

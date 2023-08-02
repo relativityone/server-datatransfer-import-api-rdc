@@ -66,6 +66,7 @@ nuget relativity.oauth2client.implicit = 1.5.2
 nuget relativity.oauth2client.interfaces = 1.5.2
 nuget relativity.telemetry.services.interface ~> 3003.0.2
 nuget relativity.transfer.client ~> 7.5.1
+nuget relativity.services.interfaces = 13.8.1
 nuget relativity.services.interfaces.private = 11.3.11.1
 
 # The Relativity packages below are required ONLY for test projects!
