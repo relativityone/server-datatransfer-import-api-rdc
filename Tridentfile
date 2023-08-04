@@ -55,7 +55,7 @@ def tools = null
 
 timestamps
 {
-    timeout(time: 3, unit: 'HOURS')
+    timeout(time: 4, unit: 'HOURS')
     {
         node('role-build-agent-server||buildAgentServer')
         {
