@@ -5,11 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.8.0] - 08-10-2023
+## [2.9.1] - 08-14-2023
 
 ### Changed
 
 - [REL-864302](https://jira.kcura.com/browse/REL-864302) - IAPI Backport - Data Transfer - RAPs that use IAPI - Backported [REL-711458](https://jira.kcura.com/browse/REL-711458) ticket from Server 2022 release.
+
+## [2.9.0] - 08-04-2023
+ 
+### Changed
+ 
+- [REL-862766](https://jira.kcura.com/browse/REL-862766) - Updated RDC version to 12.3.18 from 12.3.17
+
+## [2.8.0] - 08-04-2023
+ 
+### Changed
+ 
+- [REL-862766](https://jira.kcura.com/browse/REL-862766) - Create release branch for RDC
+- Official Relativity 2023 12.3 release.
+- The SUT configuration upgrades the previous release image to the latest release image.
 
 ## [2.7.0] - 07-18-2023
 

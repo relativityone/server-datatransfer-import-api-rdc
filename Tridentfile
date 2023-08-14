@@ -8,7 +8,7 @@ properties([
     parameters([
         choice(defaultValue: 'Release', choices: ["Release","Debug"], description: 'Build config', name: 'buildConfig'),
         choice(defaultValue: 'normal', choices: ["quiet", "minimal", "normal", "detailed", "diagnostic"], description: 'Build verbosity', name: 'buildVerbosity'),
-        string(defaultValue: 'release-12.3-sundrop-server', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
+        string(defaultValue: 'release-12.3-2023', description: 'Relativity branch to test against, leave null for latest hopper image', name: 'relativityBranch'),
         choice(defaultValue: 'Hopper', choices: ["Hopper"], description: 'The test environment used for integration tests', name: 'testEnvironment')
     ])
 ])
@@ -45,7 +45,7 @@ if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
 }
 
 def config = [
-    sutTemplate: "aio-sundrop-2",
+    sutTemplate: "server2022-ga-rabbitmq",
     hopperApiUrl: "https://api.hopper.relativity.com/",
     hopperApiUsername: "homeimprovement@relativity.com"
 ]
@@ -55,7 +55,7 @@ def tools = null
 
 timestamps
 {
-    timeout(time: 3, unit: 'HOURS')
+    timeout(time: 4, unit: 'HOURS')
     {
         node('role-build-agent-server||buildAgentServer')
         {
