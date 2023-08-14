@@ -10,6 +10,7 @@ namespace Relativity.DataExchange.Service
 	using System.Threading.Tasks;
 	using Polly;
 	using Relativity.Logging;
+	using Relativity.Services.Exceptions;
 
 	/// <inheritdoc />
 	public class RetryableErrorsRetryPolicyFactory : IKeplerRetryPolicyFactory
@@ -60,7 +61,10 @@ namespace Relativity.DataExchange.Service
 
 		private bool IsRetryableException(Exception exception)
 		{
-			return !ExceptionHelper.IsFatalException(exception) && !ExceptionHelper.IsFatalKeplerException(exception) && !(exception is OperationCanceledException);
+			return !ExceptionHelper.IsFatalException(exception)
+			       && !ExceptionHelper.IsFatalKeplerException(exception)
+			       && !(exception is OperationCanceledException)
+			       && !ExceptionHelper.IsBatchInProgressException(exception);
 		}
 
 		private Task OnRetry<TResult>(DelegateResult<TResult> result, TimeSpan timeSpan, int retryCount, Context context)
@@ -74,7 +78,7 @@ namespace Relativity.DataExchange.Service
 			{
 				this.logger.LogWarning(
 					exception,
-					"Call to Kepler service failed due to {ExceptionType}. Currently on attempt {RetryCount} out of {MaxRetries} and waiting {WaitSeconds} seconds before the next retry attempt.",
+					"RetryableErrorsRetryPolicyFactory: Call to Kepler service failed due to {ExceptionType}. Currently on attempt {RetryCount} out of {MaxRetries} and waiting {WaitSeconds} seconds before the next retry attempt.",
 					exception.GetType(),
 					retryCount,
 					AppSettings.Instance.HttpErrorNumberOfRetries,

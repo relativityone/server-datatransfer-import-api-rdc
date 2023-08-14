@@ -245,6 +245,11 @@ Namespace kCura.WinEDDS
 
 			_doRetryLogic = doRetryLogic
 			InitializeManagers(args)
+
+		    If _bulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
+		        _runId = System.Guid.NewGuid.ToString.Replace("-", "_")
+		    End If
+
 			Dim suffix As String = "\EDDS" & args.CaseInfo.ArtifactID & "\"
 			If args.SelectedCasePath = "" Then
 				_defaultDestinationFolderPath = args.CaseDefaultPath.TrimEnd("\"c) & suffix

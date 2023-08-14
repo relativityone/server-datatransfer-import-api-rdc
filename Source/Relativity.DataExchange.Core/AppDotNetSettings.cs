@@ -24,6 +24,8 @@ namespace Relativity.DataExchange
 	internal sealed class AppDotNetSettings : IAppSettings, IAppSettingsInternal
 	{
 		// All backing fields go here.
+		private int batchInProgressNumberOfRetries;
+		private int batchInProgressWaitTimeInSeconds;
 		private int exportErrorWaitTimeInSeconds;
 		private int exportErrorNumberOfRetries;
 		private int ioErrorNumberOfRetries;
@@ -32,6 +34,7 @@ namespace Relativity.DataExchange
 		private int httpExtractedTextTimeoutSeconds;
 		private int httpErrorNumberOfRetries;
 		private int httpErrorWaitTimeInSeconds;
+		private int internalKeplerTimeoutSeconds;
 		private int maximumReloginTries;
 		private int tapiMinDataRateMbps;
 		private int tapiMaxInactivitySeconds;
@@ -108,6 +111,46 @@ namespace Relativity.DataExchange
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.BatchInProgressNumberOfRetriesKey,
+			AppSettingsConstants.BatchInProgressNumberOfRetriesDefaultValue)]
+		int IAppSettings.BatchInProgressNumberOfRetries
+		{
+			get
+			{
+				if (this.batchInProgressNumberOfRetries < AppSettingsConstants.BatchInProgressNumberOfRetriesMinValue)
+				{
+					this.batchInProgressNumberOfRetries = AppSettingsConstants.BatchInProgressNumberOfRetriesDefaultValue;
+				}
+
+				return this.batchInProgressNumberOfRetries;
+			}
+
+			set => this.batchInProgressNumberOfRetries = value;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.BatchInProgressWaitTimeInSecondsKey,
+			AppSettingsConstants.BatchInProgressWaitTimeInSecondsDefaultValue)]
+		int IAppSettings.BatchInProgressWaitTimeInSeconds
+		{
+			get
+			{
+				if (this.batchInProgressWaitTimeInSeconds < AppSettingsConstants.BatchInProgressWaitTimeInSecondsMinValue)
+				{
+					this.batchInProgressWaitTimeInSeconds = AppSettingsConstants.BatchInProgressWaitTimeInSecondsDefaultValue;
+				}
+
+				return this.batchInProgressWaitTimeInSeconds;
+			}
+
+			set => this.batchInProgressWaitTimeInSeconds = value;
 		}
 
 		/// <inheritdoc />
@@ -564,6 +607,26 @@ namespace Relativity.DataExchange
 		{
 			get;
 			set;
+		}
+
+		/// <inheritdoc />
+		[AppSetting(
+			AppSettingsConstants.SectionDataExchange,
+			AppSettingsConstants.InternalKeplerTimeoutSecondsKey,
+			AppSettingsConstants.InternalKeplerTimeoutSecondsDefaultValue)]
+		int IAppSettings.InternalKeplerTimeoutInSeconds
+		{
+			get
+			{
+				if (this.internalKeplerTimeoutSeconds < AppSettingsConstants.InternalKeplerTimeoutSecondsMinValue)
+				{
+					this.internalKeplerTimeoutSeconds = AppSettingsConstants.InternalKeplerTimeoutSecondsDefaultValue;
+				}
+
+				return this.internalKeplerTimeoutSeconds;
+			}
+
+			set => this.internalKeplerTimeoutSeconds = value;
 		}
 
 		/// <inheritdoc />
