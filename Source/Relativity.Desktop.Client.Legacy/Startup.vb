@@ -1,3 +1,4 @@
+Imports System.Net
 Imports kCura.WinEDDS.Container
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Export.VolumeManagerV2.Container
@@ -58,12 +59,34 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Function UrlIsValid(ByVal url As String) As Boolean
+			Return KeplerUrlIsValid(url) OrElse WebAPIUrlIsValid(url)
+		End Function
+
+		Private Function WebAPIUrlIsValid(ByVal url As String) As Boolean
 			Try
 				url = url.TrimEnd("\"c).TrimEnd("/"c) & "/"
 				Dim req As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(url & "RelativityManager.asmx"), System.Net.HttpWebRequest)
 				req.Credentials = System.Net.CredentialCache.DefaultCredentials
 				Dim resp As System.Net.HttpWebResponse = DirectCast(req.GetResponse(), System.Net.HttpWebResponse)
 				Return True
+			Catch ex As Exception
+				Return False
+			End Try
+		End Function
+
+		Private Function KeplerUrlIsValid(ByVal url As String) As Boolean
+			Try
+				url = new Uri(url).GetLeftPart(UriPartial.Authority) & "/Relativity.Rest/Api"
+				Dim req As System.Net.HttpWebRequest = DirectCast(System.Net.WebRequest.Create(url), System.Net.HttpWebRequest)
+				req.Credentials = System.Net.CredentialCache.DefaultCredentials
+				Dim resp As System.Net.HttpWebResponse = DirectCast(req.GetResponse(), System.Net.HttpWebResponse)
+				Return True
+			Catch ex As WebException
+				Dim resp As System.Net.HttpWebResponse = DirectCast(ex.Response, System.Net.HttpWebResponse)
+				If resp.StatusCode = 401 Then
+					Return True
+				End If
+				Return False
 			Catch ex As Exception
 				Return False
 			End Try
