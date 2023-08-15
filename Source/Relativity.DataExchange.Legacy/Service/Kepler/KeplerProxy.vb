@@ -9,16 +9,16 @@ Imports Relativity.Logging
 Namespace kCura.WinEDDS.Service.Kepler
 	Public Class KeplerProxy
 		Implements IKeplerProxy
-
 		Private ReadOnly _serviceProxyFactory As IServiceProxyFactory
 		Private ReadOnly _retryPolicyFactories As List(Of IKeplerRetryPolicyFactory)
 
 		Public Sub New(serviceProxyFactory As IServiceProxyFactory, logger As ILog)
 			Me._serviceProxyFactory = serviceProxyFactory
-
+			
 			_retryPolicyFactories = New List(Of IKeplerRetryPolicyFactory)()
-			_retryPolicyFactories.Add(new RetryableErrorsRetryPolicyFactory(AppSettings.Instance, logger))
-			_retryPolicyFactories.Add(new ReLoginRetryPolicyFactory(AppSettings.Instance, serviceProxyFactory, logger))
+            _retryPolicyFactories.Add(new BatchInProgressErrorPolicyFactory(AppSettings.Instance, logger))
+            _retryPolicyFactories.Add(new RetryableErrorsRetryPolicyFactory(AppSettings.Instance, logger))
+            _retryPolicyFactories.Add(new ReLoginRetryPolicyFactory(AppSettings.Instance, serviceProxyFactory, logger))
 			_retryPolicyFactories.Add(new HttpErrorRetryPolicyFactory(AppSettings.Instance, logger))
 		End Sub
 
@@ -26,29 +26,40 @@ Namespace kCura.WinEDDS.Service.Kepler
 			Me._serviceProxyFactory = serviceProxyFactory
 
 			_retryPolicyFactories = New List(Of IKeplerRetryPolicyFactory)()
-			_retryPolicyFactories.Add(new RetryableErrorsRetryPolicyFactory(AppSettings.Instance, logger, onRetry))
-			_retryPolicyFactories.Add(new ReLoginRetryPolicyFactory(AppSettings.Instance, serviceProxyFactory, logger, onRetry))
+            _retryPolicyFactories.Add(new BatchInProgressErrorPolicyFactory(AppSettings.Instance, logger))
+            _retryPolicyFactories.Add(new RetryableErrorsRetryPolicyFactory(AppSettings.Instance, logger, onRetry))
+            _retryPolicyFactories.Add(new ReLoginRetryPolicyFactory(AppSettings.Instance, serviceProxyFactory, logger, onRetry))
 			_retryPolicyFactories.Add(new HttpErrorRetryPolicyFactory(AppSettings.Instance, logger, onRetry))
 		End Sub
 
 		Public Function ExecuteAsyncWithoutRetries(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As Task(Of T) Implements IKeplerProxy.ExecuteAsyncWithoutRetries
 			Return func(_serviceProxyFactory)
-		End Function
+        End Function
 
-		Public Function ExecuteAsync(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As Task(Of T) Implements IKeplerProxy.ExecuteAsync
+        Public Function ExecuteAsync(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T))) As Task(Of T) Implements IKeplerProxy.ExecuteAsync
+            Return ExecuteAsync(func, AppSettings.Instance.InternalKeplerTimeoutInSeconds)
+        End Function
+
+		Public Function ExecuteAsync(Of T)(func As Func(Of IServiceProxyFactory, Task(Of T)), ByVal waitTime As Integer) As Task(Of T) Implements IKeplerProxy.ExecuteAsync
 			Return Policy _
 				.WrapAsync(_retryPolicyFactories.Select(Function(retryPolicyFactory) retryPolicyFactory.CreateRetryPolicy(Of T)()).ToArray()) _
-				.ExecuteAsync(Function() func(_serviceProxyFactory))
+				.ExecuteAsync(Async Function()
+                    Try 
+                        Return Await func(_serviceProxyFactory).WithTimeout(TimeSpan.FromSeconds(waitTime), $"ExecuteAsync timed out after {waitTime}").ConfigureAwait(false)
+					Catch timeoutException As TimeoutException
+                        Throw new TaskCanceledException($"ExecuteAsync was canceled due to internal timeout {waitTime}")
+				    End Try
+				End Function)
 		End Function
 
 		Public Function ExecuteAsync (Of T)(context As Context, cancellationToken As CancellationToken, func As Func(Of Context,CancellationToken,IServiceProxyFactory,Task(Of T))) As Task(Of T) Implements IKeplerProxy.ExecuteAsync
-			Return Policy _
+            Return Policy _
 				.WrapAsync(_retryPolicyFactories.Select(Function(retryPolicyFactory) retryPolicyFactory.CreateRetryPolicy(Of T)()).ToArray()) _
 				.ExecuteAsync(Function(ctx As Context, ct As CancellationToken) func(context, cancellationToken, _serviceProxyFactory), context, cancellationToken)
 		End Function
 
         Public Function ExecuteAsync(func As Func(Of IServiceProxyFactory, Task)) As Task Implements IKeplerProxy.ExecuteAsync
-			Return Policy _
+            Return Policy _
 				.WrapAsync(_retryPolicyFactories.Select(Function(retryPolicyFactory) retryPolicyFactory.CreateRetryPolicy()).ToArray()) _
 				.ExecuteAsync(Function() func(_serviceProxyFactory))
 		End Function

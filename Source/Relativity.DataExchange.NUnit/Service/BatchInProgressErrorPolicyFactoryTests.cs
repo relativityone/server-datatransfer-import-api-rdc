@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RetryableErrorsRetryPolicyFactoryTests.cs" company="Relativity ODA LLC">
+// <copyright file="BatchInProgressErrorPolicyFactoryTests.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // <summary>
-//   Represents <see cref="RetryableErrorsRetryPolicyFactory"/> tests.
+//   Represents <see cref="BatchInProgressErrorPolicyFactoryTests"/> tests.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ namespace Relativity.DataExchange.NUnit.Service
 	using System;
 	using System.Collections;
 	using System.Linq;
-	using System.Net;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ namespace Relativity.DataExchange.NUnit.Service
 	using Relativity.Services.Exceptions;
 
 	/// <summary>
-	/// Represents <see cref="RetryableErrorsRetryPolicyFactory"/> tests.
+	/// Represents <see cref="BatchInProgressErrorPolicyFactoryTests"/> tests.
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage(
 		"Microsoft.Design",
@@ -35,7 +34,7 @@ namespace Relativity.DataExchange.NUnit.Service
 		Justification = "The test class handles the disposal.")]
 	[TestFixture(true)]
 	[TestFixture(false)]
-	public class RetryableErrorsRetryPolicyFactoryTests
+	public class BatchInProgressErrorPolicyFactoryTests
 	{
 		private const string RetryCountKey = "TestRetryCount";
 		private const int MaxRetryCount = 3;
@@ -46,7 +45,7 @@ namespace Relativity.DataExchange.NUnit.Service
 		private CancellationTokenSource cancellationTokenSource;
 		private Context context;
 
-		public RetryableErrorsRetryPolicyFactoryTests(bool useCustomOnRetry)
+		public BatchInProgressErrorPolicyFactoryTests(bool useCustomOnRetry)
 		{
 			this.useCustomOnRetry = useCustomOnRetry;
 		}
@@ -58,7 +57,7 @@ namespace Relativity.DataExchange.NUnit.Service
 				return ExceptionHelper.FatalExceptionCandidates.Where(x => x != typeof(ThreadAbortException))
 					.Concat(ExceptionHelper.FatalKeplerExceptionCandidates).Select(Activator.CreateInstance)
                     .Concat(new[] { new ArgumentException("Bearer token should not be null or empty.") })
-					.Concat(new[] { new ConflictException("Batch In Progress Exception") });
+                    .Concat(new[] { new OperationCanceledException("test") });
 			}
 		}
 
@@ -66,9 +65,8 @@ namespace Relativity.DataExchange.NUnit.Service
 		{
 			get
 			{
-				yield return new System.Net.HttpListenerException((int)HttpStatusCode.BadGateway, "Test");
-				yield return new System.Net.HttpListenerException((int)HttpStatusCode.GatewayTimeout, "Test");
-				yield return new WebException("Test", WebExceptionStatus.ConnectFailure);
+				yield return new ConflictException("Batch In Progress Exception");
+				yield return new TaskCanceledException("Test");
 			}
 		}
 
@@ -80,11 +78,11 @@ namespace Relativity.DataExchange.NUnit.Service
 			this.settings = new Mock<IAppSettings>();
 			this.logger = new Mock<ILog>();
 
-			this.settings.SetupGet(x => x.HttpErrorWaitTimeInSeconds).Returns(0);
-			this.settings.SetupGet(x => x.HttpErrorNumberOfRetries).Returns(MaxRetryCount);
+			this.settings.SetupGet(x => x.BatchInProgressWaitTimeInSeconds).Returns(0);
+			this.settings.SetupGet(x => x.BatchInProgressNumberOfRetries).Returns(MaxRetryCount);
 			this.policy = this.useCustomOnRetry ?
-				              new RetryableErrorsRetryPolicyFactory(this.settings.Object, this.logger.Object, (exception, duration, retryCount, ctx) => { ctx[RetryCountKey] = retryCount; }).CreateRetryPolicy() :
-				              new RetryableErrorsRetryPolicyFactory(this.settings.Object, this.logger.Object).CreateRetryPolicy();
+				              new BatchInProgressErrorPolicyFactory(this.settings.Object, this.logger.Object, (exception, duration, retryCount, ctx) => { ctx[RetryCountKey] = retryCount; }).CreateRetryPolicy() :
+				              new BatchInProgressErrorPolicyFactory(this.settings.Object, this.logger.Object).CreateRetryPolicy();
 		}
 
 		[TearDown]

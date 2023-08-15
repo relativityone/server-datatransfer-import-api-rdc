@@ -49,7 +49,8 @@ namespace Relativity.DataExchange.NUnit
 				yield return new TestCaseData(new OverflowException());
 				yield return new TestCaseData(new SecurityException());
 				yield return new TestCaseData(new StackOverflowException());
-			}
+				yield return new TestCaseData(new FileNotFoundException());
+            }
 		}
 
 		public static IEnumerable NotFatalGeneralExceptionTypeTestCases

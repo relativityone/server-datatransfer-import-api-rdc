@@ -87,6 +87,8 @@
     <Compile Include="Data\RestartableFileStream.cs" />
     <Compile Include="Data\StringImporterException.cs" />
     <Compile Include="Data\TrimOption.cs" />
+    <Compile Include="Service\BatchInProgressErrorPolicyFactory.cs" />
+    <Compile Include="TaskExtensions.cs" />
     <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="ExceptionHelper.cs" />
     <Compile Include="Helpers\HashingHelper.cs" />

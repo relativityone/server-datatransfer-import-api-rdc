@@ -70,5 +70,11 @@ Namespace kCura.WinEDDS
 				Return AppSettings.Instance.TapiForceHttpClient
 			End Get
 		End Property
+
+		Public ReadOnly Property WebApiServiceUrl As String Implements IExportConfig.WebApiServiceUrl
+			Get
+				Return AppSettings.Instance.WebApiServiceUrl
+			End Get
+		End Property
 	End Class
 End Namespace

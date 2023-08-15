@@ -9,7 +9,6 @@ namespace Relativity.DataExchange.Service
 	using System;
 	using System.Threading;
 	using System.Threading.Tasks;
-
 	using Polly;
 
 	/// <summary>
@@ -39,6 +38,15 @@ namespace Relativity.DataExchange.Service
 		/// <param name="func">Function calling Kepler service.</param>
 		/// <returns>Task to await.</returns>
 		Task<T> ExecuteAsync<T>(Func<IServiceProxyFactory, Task<T>> func);
+
+		/// <summary>
+		/// Provides <see cref="IServiceProxyFactory"/> and executes call to Kepler service.
+		/// </summary>
+		/// <typeparam name="T">Type of the result.</typeparam>
+		/// <param name="func">Function calling Kepler service.</param>
+		/// <param name="waitTimeSeconds">Time before we assume no response for request. </param>
+		/// <returns>Task to await.</returns>
+		Task<T> ExecuteAsync<T>(Func<IServiceProxyFactory, Task<T>> func, int waitTimeSeconds);
 
 		/// <summary>
 		/// Provides <see cref="IServiceProxyFactory"/> and executes call to Kepler service.

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.1] - 08-14-2023
+
+### Fixed
+
+- [REL-857917](https://jira.kcura.com/browse/REL-857917) - Backported from [REL-669697](https://jira.kcura.com/browse/REL-669697) ticket from Server 2022 release.
+- [REL-864302](https://jira.kcura.com/browse/REL-864302) - IAPI Backport - Data Transfer - RAPs that use IAPI - Backported [REL-711458](https://jira.kcura.com/browse/REL-711458) ticket from Server 2022 release.
+- [REL-864303](https://jira.kcura.com/browse/REL-864303#add-comment) - Backported from [REL-707113](https://jira.kcura.com/browse/REL-707113) ticket from Server 2022 release.
+- [REL-864304](https://jira.kcura.com/browse/REL-864304) - Backported from [REL-732260](https://jira.kcura.com/browse/REL-732260) ticket from Server 2022 release.
+- [REL-864305](https://jira.kcura.com/browse/REL-864305) - Backported from [REL-789615](https://jira.kcura.com/browse/REL-789615) ticket from Server 2022 release.
+
+
 ## [2.9.0] - 08-04-2023
  
 ### Changed

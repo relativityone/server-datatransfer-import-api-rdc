@@ -4,6 +4,7 @@ using kCura.WinEDDS.Service;
 
 namespace kCura.Relativity.ImportAPI {
 	using global::Relativity.DataExchange;
+	using global::Relativity.Logging;
 
 	public class ExtendedImportAPI : ImportAPI, IExtendedImportAPI
 	{
@@ -11,8 +12,18 @@ namespace kCura.Relativity.ImportAPI {
 			: base(userName, password) {
 		}
 
+		public ExtendedImportAPI(string userName, string password, ILog logger)
+			: base(userName, password, logger)
+		{
+		}
+
 		public ExtendedImportAPI(string userName, string password, string webServiceUrl)
 			: base(userName, password, webServiceUrl) {
+		}
+
+		public ExtendedImportAPI(string userName, string password, string webServiceUrl, ILog logger)
+			: base(userName, password, webServiceUrl, logger)
+		{
 		}
 
 		/// <summary>
@@ -20,11 +31,12 @@ namespace kCura.Relativity.ImportAPI {
 		/// </summary>
 		/// <param name="webServiceUrl">RelativityWebApi url</param>
 		/// <param name="relativityTokenProvider">Relativity token provider object</param>
+		/// <param name="logger">Custom logger.</param>
 		/// <returns></returns>
 		public new static ImportAPI CreateByTokenProvider(
-			string webServiceUrl, IRelativityTokenProvider relativityTokenProvider)
+			string webServiceUrl, IRelativityTokenProvider relativityTokenProvider, ILog logger = null)
 		{
-			return ImportAPI.CreateByTokenProvider(webServiceUrl, relativityTokenProvider);
+			return ImportAPI.CreateByTokenProvider(webServiceUrl, relativityTokenProvider, logger);
 		}
 
 		public void CleanUpAfterJobWithSpoofing(string onBehalfOfUserToken) {

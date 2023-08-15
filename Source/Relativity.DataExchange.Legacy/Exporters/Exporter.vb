@@ -11,11 +11,13 @@ Imports kCura.WinEDDS.Exporters.Validator
 Imports kCura.WinEDDS.FileNaming.CustomFileNaming
 Imports kCura.WinEDDS.LoadFileEntry
 Imports kCura.WinEDDS.Service.Export
+Imports kCura.WinEDDS.Service.Kepler
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Logging
 Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
+Imports Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 Imports Relativity.DataExchange.Transfer
 Imports Relativity.Logging
 
@@ -35,6 +37,7 @@ Namespace kCura.WinEDDS
 		Private ReadOnly _productionManager As Service.Export.IProductionManager
 		Private ReadOnly _auditManager As Service.Export.IAuditManager
 		Private ReadOnly _fieldManager As Service.Export.IFieldManager
+		Private ReadOnly _webApiVsKepler As IWebApiVsKepler
 		Public Property ExportManager As Service.Export.IExportManager
 		Private _exportFile As kCura.WinEDDS.ExportFile
 		Private _columns As System.Collections.ArrayList
@@ -57,8 +60,6 @@ Namespace kCura.WinEDDS
 		Private _productionLookup As New System.Collections.Generic.Dictionary(Of Int32, kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo)
 		Private _productionPrecedenceIds As Int32()
 		Private _tryToNameNativesAndTextFilesAfterPrecedenceBegBates As Boolean = False
-		Private _linesToWriteDat As ConcurrentDictionary(Of Int32, ILoadFileEntry)
-		Private _linesToWriteOpt As ConcurrentBag(Of KeyValuePair(Of String, String))
 		Protected FieldLookupService As IFieldLookupService
 		Private _errorFile As IErrorFile
 		Private ReadOnly _cancellationTokenSource As CancellationTokenSource
@@ -195,6 +196,9 @@ Namespace kCura.WinEDDS
 			_fieldManager = serviceFactory.CreateFieldManager(correlationIdFunc)
 			ExportManager = serviceFactory.CreateExportManager(correlationIdFunc)
 
+			Dim webApiVsKeplerFactory As WebApiVsKeplerFactory = New WebApiVsKeplerFactory(logger)
+			_webApiVsKepler = webApiVsKeplerFactory.Create(New Uri(exportConfig.WebApiServiceUrl), exportFile.Credential, correlationIdFunc)
+
 			_fieldProviderCache = New FieldProviderCache(exportFile.Credential, exportFile.CookieContainer, correlationIdFunc)
 			_cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
 			_processContext = context
@@ -252,11 +256,6 @@ Namespace kCura.WinEDDS
 			Me.LogExportSearchResults(result)
 			Return result
 		End Function
-
-		Protected Overridable Function GetHeaderColName(fieldInfo As ViewFieldInfo) As String
-			Return fieldInfo.DisplayName
-		End Function
-
 
 		Private Function IsExtractedTextSelected() As Boolean
 			For Each vfi As ViewFieldInfo In Me.Settings.SelectedViewFields
@@ -366,25 +365,9 @@ Namespace kCura.WinEDDS
 			Dim production As kCura.EDDS.WebAPI.ProductionManagerBase.ProductionInfo = Nothing
 
 			If Me.Settings.TypeOfExport = ExportFile.ExportType.Production Then
-
-				Dim tries As Int32 = 0
-				While tries < maxTries
-					tries += 1
-					Try
-						_logger.LogVerbose("Preparing to retrieve the {ArtifactId} production from the {WorkspaceId} workspace.", Me.Settings.ArtifactID, Me.Settings.CaseArtifactID)
-						production = _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID)
-						_logger.LogVerbose("Successfully retrieved the {ArtifactId} production from the {WorkspaceId} workspace.", Me.Settings.ArtifactID, Me.Settings.CaseArtifactID)
-						Exit While
-					Catch ex As System.Exception
-						Me.LogWebApiServiceException(ex)
-						If tries < maxTries AndAlso Not (TypeOf ex Is System.Web.Services.Protocols.SoapException AndAlso ex.ToString.IndexOf("Need To Re Login") <> -1) Then
-							Me.WriteStatusLine(EventType2.Status, "Error occurred, attempting retry number " & tries & ", in " & WaitTimeBetweenRetryAttempts & " seconds...", True)
-							System.Threading.Thread.CurrentThread.Join(WaitTimeBetweenRetryAttempts * 1000)
-						Else
-							Throw
-						End If
-					End Try
-				End While
+				_logger.LogVerbose("Preparing to retrieve the {ArtifactId} production from the {WorkspaceId} workspace.", Me.Settings.ArtifactID, Me.Settings.CaseArtifactID)
+				production = CallServerWithRetry(Function() _productionManager.Read(Me.Settings.CaseArtifactID, Me.Settings.ArtifactID), maxTries)
+				_logger.LogVerbose("Successfully retrieved the {ArtifactId} production from the {WorkspaceId} workspace.", Me.Settings.ArtifactID, Me.Settings.CaseArtifactID)
 
 				_productionExportProduction = production
 			End If
@@ -547,7 +530,12 @@ Namespace kCura.WinEDDS
 		Private Function CallServerWithRetry(Of T)(f As Func(Of T), ByVal maxTries As Int32) As T
 			Dim tries As Integer
 			Dim records As T
+			' Retires are defined and executed inside Kepler Proxy
+			If _webApiVsKepler.UseKepler() Then
+				Return f()
+			End If
 
+			' Old WebAPI path will use retries
 			tries = 0
 			While tries < maxTries
 				tries += 1
@@ -643,9 +631,6 @@ Namespace kCura.WinEDDS
 			'TODO: come back to this
 			Dim productionPrecedenceArtifactIds As Int32() = Settings.ImagePrecedence.Select(Function(pair) CInt(pair.Value)).ToArray()
 			Dim lookup As New Lazy(Of Dictionary(Of Int32, List(Of BatesEntry)))(Function() GenerateBatesLookup(_productionManager.RetrieveBatesByProductionAndDocument(Me.Settings.CaseArtifactID, productionPrecedenceArtifactIds, documentArtifactIDs)))
-
-			_linesToWriteDat = New ConcurrentDictionary(Of Int32, ILoadFileEntry)
-			_linesToWriteOpt = New ConcurrentBag(Of KeyValuePair(Of String, String))
 
 			Dim artifacts(documentArtifactIDs.Length - 1) As Exporters.ObjectExportInfo
 			Dim volumePredictions(documentArtifactIDs.Length - 1) As VolumePredictions
