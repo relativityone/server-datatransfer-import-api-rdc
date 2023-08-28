@@ -106,7 +106,7 @@ namespace Relativity.DataExchange.NUnit.Service
 
 			// act & assert
 			var error = Assert.Throws<NotFoundException>(() => this.webApiVsKepler.UseKepler());
-			Assert.True(error.Message.Contains("No WebApi nor Kepler service found to perform the request."));
+			Assert.True(error.Message.Contains("No service found to perform the request. Please contact customer support"));
 		}
 
 		[Test]

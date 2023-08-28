@@ -71,7 +71,7 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 		    }
 
 		    // No WebApi nor Kepler available
-		    var errorMessage = "No WebApi nor Kepler service found to perform the request.";
+		    var errorMessage = "No service found to perform the request. Please contact customer support";
 		    this.logger?.LogError(errorMessage);
 		    throw new NotFoundException(errorMessage);
 	    }
