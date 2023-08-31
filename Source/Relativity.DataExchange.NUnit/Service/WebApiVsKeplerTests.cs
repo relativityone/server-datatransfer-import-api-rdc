@@ -106,7 +106,11 @@ namespace Relativity.DataExchange.NUnit.Service
 
 			// act & assert
 			var error = Assert.Throws<NotFoundException>(() => this.webApiVsKepler.UseKepler());
-			Assert.True(error.Message.Contains("No service found to perform the request. Please contact customer support"));
+			Assert.True(error.Message.Contains("The request could not be executed because the Import API service endpoint " +
+				"could not be found. A system administrator can attempt to resolve this issue by installing " +
+				"the web certificates to the Trusted Root store within all Relativity servers and verify the " +
+				"WebAPI URL is configured to the Web server. If the problem persists, restart the \"kCura Service Host Manager\" " +
+				"Windows service within the Web server"));
 		}
 
 		[Test]

@@ -71,7 +71,10 @@ namespace Relativity.DataExchange.Service.WebApiVsKeplerSwitch
 		    }
 
 		    // No WebApi nor Kepler available
-		    var errorMessage = "No service found to perform the request. Please contact customer support";
+		    var errorMessage = "The request could not be executed because the Import API service endpoint could not be found. " +
+				"A system administrator can attempt to resolve this issue by installing the web certificates to the Trusted Root" +
+				" store within all Relativity servers and verify the WebAPI URL is configured to the Web server. " +
+				"If the problem persists, restart the \"kCura Service Host Manager\" Windows service within the Web server";
 		    this.logger?.LogError(errorMessage);
 		    throw new NotFoundException(errorMessage);
 	    }
