@@ -28,31 +28,49 @@ Public Module FieldValueHelper
 				
 	End Function
 
+	Private Function IsValidXmlWithObjectElement(ByRef input As String) As Boolean
+		Try
+			Using stringReader as StringReader =  New StringReader(input)
+				Using xmlTextReader as XmlTextReader =  New XmlTextReader(stringReader)
+					While xmlTextReader.Read()
+                        If xmlTextReader.NodeType = XmlNodeType.Element AndAlso xmlTextReader.Name = "object" Then
+							Return True
+                        End If
+                    End While					
+				End Using
+			End Using
+			Return False
+		Catch ex As Exception
+			Return False
+		End Try
+	End Function
+
     Public Function GetMultiValueString(ByVal input As String, ByVal fieldType As FieldType, ByVal fieldFormatString As String, multiRecordDelimiter As Char) As String
         Dim retVal As String = input
-		Dim xml As String = "<objects>" & input & "</objects>"
-		Dim values As New List(Of String)
 
-			Using stringReader as StringReader =  New StringReader(xml)
-			Using xmlTextReader as XmlTextReader =  New XmlTextReader(stringReader)
+			If IsValidXmlWithObjectElement(input) Then
+				Dim xml As String = "<objects>" & input & "</objects>"
+				Dim values As New List(Of String)
 
-				While (xmlTextReader.Read())
-				    If xmlTextReader.IsEmptyElement Or xmlTextReader.NodeType = XmlNodeType.Text
-
-				        Dim value As String = xmlTextReader.Value.Trim
-				        Select Case fieldType
-				            Case FieldType.Code, FieldType.MultiCode
-				                value = GetCodeValueString(value, multiRecordDelimiter)
-				            Case FieldType.Date
-				                value = ToExportableDateString(value, fieldFormatString)
-				        End Select
-						values.Add(value)
-				    End If
-				End While
-			End Using
-			End Using
-
-        retVal = String.Join(multiRecordDelimiter, values)
+				Using stringReader as StringReader =  New StringReader(xml)
+					Using xmlTextReader as XmlTextReader =  New XmlTextReader(stringReader)
+						While (xmlTextReader.Read())
+							If xmlTextReader.IsEmptyElement Or xmlTextReader.NodeType = XmlNodeType.Text
+								Dim value As String = xmlTextReader.Value.Trim
+								Select Case fieldType
+									Case FieldType.Code, FieldType.MultiCode
+										value = GetCodeValueString(value, multiRecordDelimiter)
+									Case FieldType.Date
+										value = ToExportableDateString(value, fieldFormatString)
+								End Select
+								values.Add(value)
+							End If
+						End While
+					End Using
+				End Using
+		        retVal = String.Join(multiRecordDelimiter, values)
+			End If
+			
         Return retVal
 
     End Function

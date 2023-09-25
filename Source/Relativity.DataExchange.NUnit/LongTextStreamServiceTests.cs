@@ -137,8 +137,8 @@ namespace Relativity.DataExchange.NUnit
 
 		[Test]
 		[TestCase("Unicode")]
-		[TestCase("Windows-1252")]
-		[TestCase("")]
+        [TestCase("Windows-1252")]
+        [TestCase("")]
 		public async Task ShouldSaveTheLongTextStreamAsync(string encoding)
 		{
 			// ARRANGE
@@ -476,7 +476,18 @@ namespace Relativity.DataExchange.NUnit
 			Assert.That(result.FileName, Is.EqualTo(System.IO.Path.GetFileName(this.targetExtractedTextFile)));
 			Assert.That(result.File, Does.Exist);
 			Assert.That(result.RetryCount, Is.EqualTo(expectedRetryCount));
-			Assert.That(GetFileEncoding(result.File), Is.EqualTo(request.TargetEncoding));
+
+			// Encoding detection has problems with files that contain characters
+			// that are common in both windows-1250 and windows-1252
+			// detection results will depend on local system settings
+			if (request.TargetEncoding.CodePage == 1252)
+			{
+				Assert.That(GetFileEncoding(result.File).CodePage, Is.EqualTo(1250).Or.EqualTo(1252));
+			}
+			else
+			{
+				Assert.That(GetFileEncoding(result.File), Is.EqualTo(request.TargetEncoding));
+			}
 		}
 
 		private void VerifyTheNonFatalLongTextResult(LongTextStreamRequest request, LongTextStreamResult result, int expectedRetryCount)
