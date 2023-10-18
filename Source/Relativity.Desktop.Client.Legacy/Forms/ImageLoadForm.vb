@@ -1,5 +1,6 @@
 Imports System.Threading.Tasks
 Imports kCura.WinEDDS.Service
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client
@@ -166,7 +167,7 @@ Namespace Relativity.Desktop.Client
 			'
 			'_openFileDialog
 			'
-			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " & _
+			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " &
 				"files (*.*)|*.*"
 			'
 			'_overwriteDropdown
@@ -418,7 +419,7 @@ Namespace Relativity.Desktop.Client
 
 		Private _imageLoadFile As kCura.WinEDDS.ImageLoadFile
 		Private _identifierFieldArtifactID As Int32
-
+		Private _logger As Relativity.Logging.ILog = RelativityLogger.Instance
 		Friend Property ImageLoadFile() As kCura.WinEDDS.ImageLoadFile
 			Get
 				Return _imageLoadFile
@@ -512,54 +513,62 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Async Sub ImageLoad_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			Me.Cursor = Cursors.WaitCursor
-			If Not Await Me.EnsureConnection() Then
-				Me.Cursor = Cursors.Default
-				Exit Sub
-			End If
-			Dim dt As System.Data.DataTable = ManagerFactory.CreateFieldQuery(Await _application.GetCredentialsAsync(), _application.CookieContainer, AddressOf _application.GetCorrelationId).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
-			For Each identifierRow As System.Data.DataRow In dt.Rows
-				If CType(identifierRow("FieldCategoryID"), FieldCategory) = FieldCategory.Identifier Then
-					_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
+			Try
+				Me.Cursor = Cursors.WaitCursor
+				If Not Await Me.EnsureConnection() Then
+					Me.Cursor = Cursors.Default
+					Exit Sub
 				End If
-			Next
-			'Dim row As System.Data.DataRow = dt.NewRow
-			'row("ArtifactID") = -1
-			'row("DisplayName") = "Select..."
-			'dt.Rows.InsertAt(row, 0)
-			_beginBatesDropdown.DataSource = dt
-			_beginBatesDropdown.DisplayMember = "DisplayName"
-			_beginBatesDropdown.ValueMember = "ArtifactID"
-			_beginBatesDropdown.SelectedValue = _identifierFieldArtifactID
+				Dim dt As System.Data.DataTable = ManagerFactory.CreateFieldQuery(Await _application.GetCredentialsAsync(), _application.CookieContainer, AddressOf _application.GetCorrelationId).RetrievePotentialBeginBatesFields(ImageLoadFile.CaseInfo.ArtifactID).Tables(0)
+				For Each identifierRow As System.Data.DataRow In dt.Rows
+					If CType(identifierRow("FieldCategoryID"), FieldCategory) = FieldCategory.Identifier Then
+						_identifierFieldArtifactID = CType(identifierRow("ArtifactID"), Int32)
+					End If
+				Next
+				'Dim row As System.Data.DataRow = dt.NewRow
+				'row("ArtifactID") = -1
+				'row("DisplayName") = "Select..."
+				'dt.Rows.InsertAt(row, 0)
+				_beginBatesDropdown.DataSource = dt
+				_beginBatesDropdown.DisplayMember = "DisplayName"
+				_beginBatesDropdown.ValueMember = "ArtifactID"
+				_beginBatesDropdown.SelectedValue = _identifierFieldArtifactID
 
-			If Not ImageLoadFile.ForProduction Then
-				_productionDropdown.Visible = False
-				_productionLabel.Visible = False
-			Else
-				_replaceFullText.Checked = False
-				_replaceFullText.Enabled = False
-				_productionDropdown.DataSource = ImageLoadFile.ProductionTable
-				_productionDropdown.DisplayMember = "Name"
-				_productionDropdown.ValueMember = "ArtifactID"
-				_overwriteDropdown.SelectedIndex = 1
-				Me.Text = "Relativity Desktop Client | Import Production Load File"
-			End If
-			If Not Await _application.GetSendLoadNotificationEmailEnabledAsync Then
-				_importMenuSendEmailNotificationItem.Visible = False
-				_MenuItem3.Visible = False
-			Else
-				_importMenuSendEmailNotificationItem.Checked = ImageLoadFile.SendEmailOnLoadCompletion
-			End If
-			_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
-			Me.Cursor = Cursors.Default
+				If Not ImageLoadFile.ForProduction Then
+					_productionDropdown.Visible = False
+					_productionLabel.Visible = False
+				Else
+					_replaceFullText.Checked = False
+					_replaceFullText.Enabled = False
+					_productionDropdown.DataSource = ImageLoadFile.ProductionTable
+					_productionDropdown.DisplayMember = "Name"
+					_productionDropdown.ValueMember = "ArtifactID"
+					_overwriteDropdown.SelectedIndex = 1
+					Me.Text = "Relativity Desktop Client | Import Production Load File"
+				End If
+				If Not Await _application.GetSendLoadNotificationEmailEnabledAsync Then
+					_importMenuSendEmailNotificationItem.Visible = False
+					_MenuItem3.Visible = False
+				Else
+					_importMenuSendEmailNotificationItem.Checked = ImageLoadFile.SendEmailOnLoadCompletion
+				End If
+				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite)
+				Me.Cursor = Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
-			Me.Cursor = Cursors.WaitCursor
-			If Await PopulateImageLoadFile(True) Then
-				If Await _application.ReadyToLoad(Me.ImageLoadFile, False) Then Await _application.ImportImageFile(_imageLoadFile)
-			End If
-			Me.Cursor = Cursors.Default
+			Try
+				Me.Cursor = Cursors.WaitCursor
+				If Await PopulateImageLoadFile(True) Then
+					If Await _application.ReadyToLoad(Me.ImageLoadFile, False) Then Await _application.ImportImageFile(_imageLoadFile)
+				End If
+				Me.Cursor = Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Sub _browseButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _browseButton.Click
@@ -569,46 +578,62 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub _openFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _openFileDialog.FileOk
-			Me.Cursor = Cursors.WaitCursor
-			If Not Await Me.EnsureConnection() Then
+			Try
+				Me.Cursor = Cursors.WaitCursor
+				If Not Await Me.EnsureConnection() Then
+					Me.Cursor = Cursors.Default
+					Exit Sub
+				End If
+				_imageLoadFile.FileName = _openFileDialog.FileName
+				_filePath.Text = _openFileDialog.FileName
 				Me.Cursor = Cursors.Default
-				Exit Sub
-			End If
-			_imageLoadFile.FileName = _openFileDialog.FileName
-			_filePath.Text = _openFileDialog.FileName
-			Me.Cursor = Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Sub _overWrite_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
-			_imageLoadFile.Overwrite = Me.GetOverwrite.ToString
-			If _overwriteDropdown.SelectedIndex = 1 Then
-				_beginBatesDropdown.Enabled = True
-			Else
-				_beginBatesDropdown.SelectedValue = _identifierFieldArtifactID
-				_beginBatesDropdown.Enabled = False
-			End If
+			Try
+				_imageLoadFile.Overwrite = Me.GetOverwrite.ToString
+				If _overwriteDropdown.SelectedIndex = 1 Then
+					_beginBatesDropdown.Enabled = True
+				Else
+					_beginBatesDropdown.SelectedValue = _identifierFieldArtifactID
+					_beginBatesDropdown.Enabled = False
+				End If
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub _importMenuSaveSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuSaveSettingsItem.Click
-			If Not Await Me.EnsureConnection() Then
-				Me.Cursor = Cursors.Default
-				Exit Sub
-			End If
-			Await PopulateImageLoadFile(False)
-			_saveImageLoadFileDialog.ShowDialog()
+			Try
+				If Not Await Me.EnsureConnection() Then
+					Me.Cursor = Cursors.Default
+					Exit Sub
+				End If
+				Await PopulateImageLoadFile(False)
+				_saveImageLoadFileDialog.ShowDialog()
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub _saveImageLoadFileDialog_FileOk(ByVal sender As System.Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveImageLoadFileDialog.FileOk
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If Not Await Me.EnsureConnection() Then
-				Me.Cursor = Cursors.Default
-				Exit Sub
-			End If
-			If Not System.IO.File.Exists(_saveImageLoadFileDialog.FileName) Then
-				System.IO.File.Create(_saveImageLoadFileDialog.FileName).Close()
-			End If
-			_application.SaveImageLoadFile(Me.ImageLoadFile, _saveImageLoadFileDialog.FileName)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				If Not Await Me.EnsureConnection() Then
+					Me.Cursor = Cursors.Default
+					Exit Sub
+				End If
+				If Not System.IO.File.Exists(_saveImageLoadFileDialog.FileName) Then
+					System.IO.File.Create(_saveImageLoadFileDialog.FileName).Close()
+				End If
+				_application.SaveImageLoadFile(Me.ImageLoadFile, _saveImageLoadFileDialog.FileName)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Sub _importMenuLoadSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuLoadSettingsItem.Click
@@ -616,27 +641,31 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub _loadImageLoadFileDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadImageLoadFileDialog.FileOk
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If Not Await Me.EnsureConnection() Then
-				Me.Cursor = Cursors.Default
-				Exit Sub
-			End If
-			If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
-				Dim currentFolder As Int32 = Me.ImageLoadFile.DestinationFolderID
-				Dim copyFilesToRepository As Boolean = Me.ImageLoadFile.CopyFilesToDocumentRepository
-				Me.ImageLoadFile = Await _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
-				Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFilesToRepository
-				_encodingPicker.SelectedEncoding = Me.ImageLoadFile.FullTextEncoding
-				_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite.ToString)
-				_filePath.Text = ImageLoadFile.FileName
-				_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
-				_autoNumberingOn.Checked = ImageLoadFile.AutoNumberImages
-				_autoNumberingOff.Checked = Not _autoNumberingOn.Checked
-				_importMenuSendEmailNotificationItem.Checked = Me.ImageLoadFile.SendEmailOnLoadCompletion
-				Me.ImageLoadFile.DestinationFolderID = currentFolder
-				_startLineNumber.Value = CType(ImageLoadFile.StartLineNumber, Decimal)
-			End If
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				If Not Await Me.EnsureConnection() Then
+					Me.Cursor = Cursors.Default
+					Exit Sub
+				End If
+				If System.IO.File.Exists(_loadImageLoadFileDialog.FileName) Then
+					Dim currentFolder As Int32 = Me.ImageLoadFile.DestinationFolderID
+					Dim copyFilesToRepository As Boolean = Me.ImageLoadFile.CopyFilesToDocumentRepository
+					Me.ImageLoadFile = Await _application.ReadImageLoadFile(_loadImageLoadFileDialog.FileName)
+					Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFilesToRepository
+					_encodingPicker.SelectedEncoding = Me.ImageLoadFile.FullTextEncoding
+					_overwriteDropdown.SelectedItem = Me.GetOverwriteDropdownItem(ImageLoadFile.Overwrite.ToString)
+					_filePath.Text = ImageLoadFile.FileName
+					_replaceFullText.Checked = ImageLoadFile.ReplaceFullText
+					_autoNumberingOn.Checked = ImageLoadFile.AutoNumberImages
+					_autoNumberingOff.Checked = Not _autoNumberingOn.Checked
+					_importMenuSendEmailNotificationItem.Checked = Me.ImageLoadFile.SendEmailOnLoadCompletion
+					Me.ImageLoadFile.DestinationFolderID = currentFolder
+					_startLineNumber.Value = CType(ImageLoadFile.StartLineNumber, Decimal)
+				End If
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Function EnsureConnection() As Task(Of Boolean)
@@ -650,24 +679,36 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Async Sub _importMenuCheckErrorsItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuCheckErrorsItem.Click
-			If Await Me.PopulateImageLoadFile(True) Then If Await _application.ReadyToLoad(Me.ImageLoadFile, True) Then Await _application.PreviewImageFile(Me.ImageLoadFile)
+			Try
+				If Await Me.PopulateImageLoadFile(True) Then If Await _application.ReadyToLoad(Me.ImageLoadFile, True) Then Await _application.PreviewImageFile(Me.ImageLoadFile)
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub _advancedButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _advancedButton.Click
-			Dim isUsingAsperaConnectionMode As Boolean = Await Task.Run(Async Function() Await Global.Relativity.Desktop.Client.Application.Instance.IsUsingAsperaConnectionMode().ConfigureAwait(False)).ConfigureAwait(True)
-			_advancedFileForm = New AdvancedFileLocation
-			_advancedFileForm.IsUsingAsperaConnectionMode = isUsingAsperaConnectionMode
-			_advancedFileForm._copyNativeFiles.Checked = Me.ImageLoadFile.CopyFilesToDocumentRepository
-			_advancedFileForm._keepNativeFiles.Checked = Not Me.ImageLoadFile.CopyFilesToDocumentRepository
-			If Not Me.ImageLoadFile.SelectedCasePath Is Nothing AndAlso Not Me.ImageLoadFile.SelectedCasePath = "" Then
-				_advancedFileForm.SelectPath(Me.ImageLoadFile.SelectedCasePath)
-				_advancedFileForm.SelectDefaultPath = False
-			End If
-			_advancedFileForm.ShowDialog()
+			Try
+				Dim isUsingAsperaConnectionMode As Boolean = Await Task.Run(Async Function() Await Global.Relativity.Desktop.Client.Application.Instance.IsUsingAsperaConnectionMode().ConfigureAwait(False)).ConfigureAwait(True)
+				_advancedFileForm = New AdvancedFileLocation
+				_advancedFileForm.IsUsingAsperaConnectionMode = isUsingAsperaConnectionMode
+				_advancedFileForm._copyNativeFiles.Checked = Me.ImageLoadFile.CopyFilesToDocumentRepository
+				_advancedFileForm._keepNativeFiles.Checked = Not Me.ImageLoadFile.CopyFilesToDocumentRepository
+				If Not Me.ImageLoadFile.SelectedCasePath Is Nothing AndAlso Not Me.ImageLoadFile.SelectedCasePath = "" Then
+					_advancedFileForm.SelectPath(Me.ImageLoadFile.SelectedCasePath)
+					_advancedFileForm.SelectDefaultPath = False
+				End If
+				_advancedFileForm.ShowDialog()
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 		Private Sub _advancedFileForm_FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String) Handles _advancedFileForm.FileLocationOK
-			Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFiles
-			Me.ImageLoadFile.SelectedCasePath = selectedRepository
+			Try
+				Me.ImageLoadFile.CopyFilesToDocumentRepository = copyFiles
+				Me.ImageLoadFile.SelectedCasePath = selectedRepository
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 		Private Sub _importMenuSendEmailNotificationItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuSendEmailNotificationItem.Click
 			_importMenuSendEmailNotificationItem.Checked = Not _importMenuSendEmailNotificationItem.Checked

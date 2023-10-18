@@ -2,6 +2,7 @@ Imports System.Net
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Service
 Imports Relativity.DataExchange
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Service
 Imports Relativity.OAuth2Client.Exceptions
 Imports Relativity.Services.Exceptions
@@ -361,7 +362,7 @@ Namespace Relativity.Desktop.Client
 		Public Const MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION As Int32 = 25
 
 		Private _isConnecting As Boolean = False
-
+		Private _logger As Relativity.Logging.ILog = RelativityLogger.Instance
 		Private Async Sub OpenRepositoryMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenRepositoryMenu.Click
 			Try
 				If _application.LastCredentialCheckResult = Application.CredentialCheckResult.AccessDisabled Then
@@ -432,10 +433,10 @@ Namespace Relativity.Desktop.Client
 					'' if in doubt what it means please try to input several times invalid web api url from main form settings and check call stack while having breakpoint on the following line
 					'' TODO: this shloud be rewritten to use simple while-like loop
 					Await CheckCertificateAsync()
-			    Case AppEvent.AppEventType.StartOfConnectionModeCheck
-			        Me.UpdateStatus("Connection Mode Check...")
-			    Case AppEvent.AppEventType.EndOfConnectionModeCheck
-			        Me.UpdateStatus("")
+				Case AppEvent.AppEventType.StartOfConnectionModeCheck
+					Me.UpdateStatus("Connection Mode Check...")
+				Case AppEvent.AppEventType.EndOfConnectionModeCheck
+					Me.UpdateStatus("")
 			End Select
 		End Function
 
@@ -516,53 +517,85 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub ToolsImportImageFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportImageFileMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				Await _application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub ToolsImportProductionFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportProductionFileMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.NewProductionFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				Await _application.NewProductionFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub ToolsImportLoadFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsImportLoadFileMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				Await _application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub ToolsExportProductionMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportProductionMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.NewProductionExport(_application.SelectedCaseInfo)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				Await _application.NewProductionExport(_application.SelectedCaseInfo)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub ToolsExportSearchMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolsExportSearchMenu.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub _exportObjectsMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportObjectsMenuItem.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Sub _toolsMenuSettingsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _toolsMenuSettingsItem.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			_application.NewOptions()
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				_application.NewOptions()
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub _fileMenuRefresh_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileMenuRefresh.Click
-			_application.UpdateWebServiceURL(False)
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await _application.RefreshCaseFolders().ConfigureAwait(False)
-			Await _application.RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				_application.UpdateWebServiceURL(False)
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				Await _application.RefreshCaseFolders().ConfigureAwait(False)
+				Await _application.RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Sub _aboutMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _aboutMenuItem.Click
@@ -578,11 +611,19 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub _exportFoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersMenuItem.Click
-			Await _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
+			Try
+				Await _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub _exportFoldersAndSubfoldersMenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _exportFoldersAndSubfoldersMenuItem.Click
-			Await _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
+			Try
+				Await _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Function PopulateObjectTypeDropDown() As Task
@@ -611,35 +652,39 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Sub _objectTypeDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _objectTypeDropDown.SelectedIndexChanged
-			Dim selectedObjectType As kCura.WinEDDS.ObjectTypeListItem = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem)
-			Dim selectedItemValue As Int32 = selectedObjectType.Value
-			ToolsImportLoadFileMenu.Text = TruncateTextWithEllipses(_objectTypeDropDown.Text, MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION) & " &Load File..."
-			ImportMenu.Visible = selectedObjectType.UserCanAdd
-			ToolsImportLoadFileMenu.Visible = selectedObjectType.UserCanAdd
-			ExportMenu.Visible = True
-			If selectedItemValue = ArtifactType.Document Then
-				_caseFolderExplorer.Visible = True
-				ToolsImportImageFileMenu.Visible = selectedObjectType.UserCanAdd
-				ToolsImportProductionFileMenu.Visible = selectedObjectType.UserCanAdd
-				ToolsExportProductionMenu.Visible = True
-				ToolsExportSearchMenu.Visible = True
-				_exportFoldersMenuItem.Visible = True
-				_exportFoldersAndSubfoldersMenuItem.Visible = True
-				_exportObjectsMenuItem.Visible = False
-			Else
-				'setting ExportMenu.Visible to True then False helps to resize the ToolsImportLoadFileMenu according to the length of its text
-				'ExportMenu.Visible = True
-				'ExportMenu.Visible = False
-				ToolsExportProductionMenu.Visible = False
-				ToolsExportSearchMenu.Visible = False
-				_exportFoldersMenuItem.Visible = False
-				_exportFoldersAndSubfoldersMenuItem.Visible = False
-				_exportObjectsMenuItem.Visible = True
-				_caseFolderExplorer.Visible = False
-				ToolsImportImageFileMenu.Visible = False
-				ToolsImportProductionFileMenu.Visible = False
-			End If
-			_application.ArtifactTypeID = selectedItemValue
+			Try
+				Dim selectedObjectType As kCura.WinEDDS.ObjectTypeListItem = DirectCast(_objectTypeDropDown.SelectedItem, kCura.WinEDDS.ObjectTypeListItem)
+				Dim selectedItemValue As Int32 = selectedObjectType.Value
+				ToolsImportLoadFileMenu.Text = TruncateTextWithEllipses(_objectTypeDropDown.Text, MAX_LENGTH_OF_OBJECT_NAME_BEFORE_TRUNCATION) & " &Load File..."
+				ImportMenu.Visible = selectedObjectType.UserCanAdd
+				ToolsImportLoadFileMenu.Visible = selectedObjectType.UserCanAdd
+				ExportMenu.Visible = True
+				If selectedItemValue = ArtifactType.Document Then
+					_caseFolderExplorer.Visible = True
+					ToolsImportImageFileMenu.Visible = selectedObjectType.UserCanAdd
+					ToolsImportProductionFileMenu.Visible = selectedObjectType.UserCanAdd
+					ToolsExportProductionMenu.Visible = True
+					ToolsExportSearchMenu.Visible = True
+					_exportFoldersMenuItem.Visible = True
+					_exportFoldersAndSubfoldersMenuItem.Visible = True
+					_exportObjectsMenuItem.Visible = False
+				Else
+					'setting ExportMenu.Visible to True then False helps to resize the ToolsImportLoadFileMenu according to the length of its text
+					'ExportMenu.Visible = True
+					'ExportMenu.Visible = False
+					ToolsExportProductionMenu.Visible = False
+					ToolsExportSearchMenu.Visible = False
+					_exportFoldersMenuItem.Visible = False
+					_exportFoldersAndSubfoldersMenuItem.Visible = False
+					_exportObjectsMenuItem.Visible = True
+					_caseFolderExplorer.Visible = False
+					ToolsImportImageFileMenu.Visible = False
+					ToolsImportProductionFileMenu.Visible = False
+				End If
+				_application.ArtifactTypeID = selectedItemValue
+			Catch ex As System.Exception
+				_logger.LogError(ex, ex.Message)
+			End Try
 		End Sub
 
 		Private Async Sub _optionsMenuCheckConnectivityItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _optionsMenuCheckConnectivityItem.Click
