@@ -1307,6 +1307,7 @@ End Sub
 	Private _objectTypeName As String = ""
 	Private _isLoadingExport As Boolean = False
 	Private _masterDT As DataTable
+	Private _logger As Relativity.Logging.ILog = Relativity.DataExchange.Logger.RelativityLogger.Instance
 
 
 	Public Property Application() As Application
@@ -1351,8 +1352,8 @@ End Sub
 						_application.SaveExportFile(_exportFile, _saveExportSettingsDialog.FileName)
 				End Select
 			End If
-		Catch
-			Throw
+		Catch ex As System.Exception
+			_logger.LogError(ex, "An exception occurred in the SaveExportSettings event handler : {0}", ex.Message)
 		Finally
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Try
@@ -1573,25 +1574,29 @@ End Sub
 	End Function
 
 	Private Async Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
-		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-			Dim settings As String = FileSystem.Instance.File.ReadAllText(_loadExportSettingsDialog.FileName)
-			Dim newFile As ExtendedExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
-			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
-				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
-			Else
-				Dim exportFilterSelectionForm As New ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
-				exportFilterSelectionForm.ShowDialog()
-				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
-					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
-						_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
+		Try
+			If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+				Dim settings As String = FileSystem.Instance.File.ReadAllText(_loadExportSettingsDialog.FileName)
+				Dim newFile As ExtendedExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
+				If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
+					MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
+				Else
+					Dim exportFilterSelectionForm As New ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+					exportFilterSelectionForm.ShowDialog()
+					If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
+						If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
+							_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
+						End If
+						Await LoadExportFile(newFile)
+						_exportFile = newFile
 					End If
-					Await LoadExportFile(newFile)
-					_exportFile = newFile
-				End If
 
-				_columnSelector.EnsureHorizontalScrollbars()
+					_columnSelector.EnsureHorizontalScrollbars()
+				End If
 			End If
-		End If
+		Catch ex As System.Exception
+			_logger.LogError(ex, "An exception occurred in the LoadExportSettings event handler : {0}", ex.Message)
+		End Try
 	End Sub
 
 	''' <summary>
@@ -1796,8 +1801,8 @@ End Sub
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 		Try
 			If Await Me.PopulateExportFile(Me, True) Then Await _application.StartSearch(Me.ExportFile)
-		Catch
-			Throw
+		Catch ex As System.Exception
+			_logger.LogError(ex, "An exception occurred in the RunMenu event handler : {0}", ex.Message)
 		Finally
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Try
