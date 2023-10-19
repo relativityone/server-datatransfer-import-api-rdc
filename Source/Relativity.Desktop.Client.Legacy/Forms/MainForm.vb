@@ -522,7 +522,7 @@ Namespace Relativity.Desktop.Client
 				Await _application.NewImageFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the ToolsImportImageFileMenu  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -532,7 +532,7 @@ Namespace Relativity.Desktop.Client
 				Await _application.NewProductionFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the ToolsImportProductionFileMenu  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -542,7 +542,7 @@ Namespace Relativity.Desktop.Client
 				Await _application.NewLoadFile(_application.SelectedCaseFolderID, _application.SelectedCaseInfo)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the ToolsImportLoadFileMenu  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -552,7 +552,7 @@ Namespace Relativity.Desktop.Client
 				Await _application.NewProductionExport(_application.SelectedCaseInfo)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the ToolsExportProductionMenu  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -562,7 +562,7 @@ Namespace Relativity.Desktop.Client
 				Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.ArtifactSearch)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the ToolsExportSearchMenu  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -572,7 +572,7 @@ Namespace Relativity.Desktop.Client
 				Await _application.NewSearchExport(_application.SelectedCaseInfo.RootFolderID, _application.SelectedCaseInfo, kCura.WinEDDS.ExportFile.ExportType.AncestorSearch)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the exportObjectsMenuItem  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -582,7 +582,7 @@ Namespace Relativity.Desktop.Client
 				_application.NewOptions()
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the toolsMenuSettingsItem  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -594,7 +594,7 @@ Namespace Relativity.Desktop.Client
 				Await _application.RefreshSelectedCaseInfoAsync().ConfigureAwait(False)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the fileMenuRefresh  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -614,7 +614,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Await _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.ParentSearch)
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the exportFoldersMenuItem  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -622,7 +622,7 @@ Namespace Relativity.Desktop.Client
 			Try
 				Await _application.NewSearchExport(_application.SelectedCaseFolderID, _application.SelectedCaseInfo, ExportFile.ExportType.AncestorSearch)
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the exportFoldersAndSubfoldersMenuItem  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -683,7 +683,7 @@ Namespace Relativity.Desktop.Client
 				End If
 				_application.ArtifactTypeID = selectedItemValue
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the objectTypeDropDown  event handler : {0}", ex.Message)
 			End Try
 		End Sub
 

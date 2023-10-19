@@ -1478,7 +1478,7 @@ Namespace Relativity.Desktop.Client
 				_fieldMap.ForceRefresh()
 				Me._FieldColumns_ItemsShifted()
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the AutoFieldMap event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1597,7 +1597,7 @@ Namespace Relativity.Desktop.Client
 					Await _application.ImportLoadFile(Me.LoadFile)
 				End If
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the ImportFileMenu event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1611,7 +1611,7 @@ Namespace Relativity.Desktop.Client
 					_importMenuForceFolderPreviewItem.Enabled = False
 				End If
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the LoadFileForm Load event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1627,7 +1627,7 @@ Namespace Relativity.Desktop.Client
 				_nativeFilePathField.Text = "Select ..."
 				ActionMenuEnabled = ReadyToRun
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the loadNativeFiles Load event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1701,7 +1701,7 @@ Namespace Relativity.Desktop.Client
 
 				_overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the overwriteDestination event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1711,7 +1711,7 @@ Namespace Relativity.Desktop.Client
 				If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, LoadFilePreviewForm.FormType.LoadFile)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the PreviewMenuFile event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1722,7 +1722,7 @@ Namespace Relativity.Desktop.Client
 				_saveFieldMapDialog.ShowDialog()
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the fileSaveFieldMapMenuItem event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1735,7 +1735,7 @@ Namespace Relativity.Desktop.Client
 				_application.SaveLoadFile(Me.LoadFile, _saveFieldMapDialog.FileName)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the saveFieldMapDialog event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1754,7 +1754,7 @@ Namespace Relativity.Desktop.Client
 					Await Me.LoadFormControls(True)
 				End If
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the loadFieldMapDialog event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1853,7 +1853,7 @@ Namespace Relativity.Desktop.Client
 				If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, True, LoadFilePreviewForm.FormType.LoadFile)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the importMenuPreviewErrorsItem event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1863,7 +1863,7 @@ Namespace Relativity.Desktop.Client
 				If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, LoadFilePreviewForm.FormType.Codes)
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the importMenuPreviewFoldersAndCodesItem event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
@@ -1881,7 +1881,7 @@ Namespace Relativity.Desktop.Client
 					RefreshNativeFilePathFieldAndFileColumnHeaders()
 				End If
 			Catch ex As System.Exception
-				_logger.LogError(ex, ex.Message)
+				_logger.LogError(ex, "An exception occurred in the characterDropdown event handler : {0}", ex.Message)
 			End Try
 		End Sub
 
