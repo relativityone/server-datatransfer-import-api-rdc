@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.2001] - 06-Feb-2024
+ 
+### Changed
+ 
+- [REL-911798(https://jira.kcura.com/browse/REL-911798) - Minor version and compatible changes for IAPI
+
 ## [2.9.1005] - 11-28-2023
  
 ### Changed
