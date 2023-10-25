@@ -45,7 +45,7 @@ if(isReleaseBranch && (relativityBranch == null || relativityBranch.isEmpty()))
 }
 
 def config = [
-    sutTemplate: "aio-server2023-latest",
+    sutTemplate: "server2022-ga-rabbitmq",
     hopperApiUrl: "https://api.hopper.relativity.com/",
     hopperApiUsername: "homeimprovement@relativity.com"
 ]
