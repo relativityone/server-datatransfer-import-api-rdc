@@ -167,7 +167,7 @@ Namespace Relativity.Desktop.Client
 			'
 			'_openFileDialog
 			'
-			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " &
+			Me._openFileDialog.Filter = "Opticon Files (*.opt)|*.opt|Log Files (*.log)|*.log|Text Files (*.txt)|*.txt|All " & _
 				"files (*.*)|*.*"
 			'
 			'_overwriteDropdown
