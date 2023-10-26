@@ -568,6 +568,7 @@ Namespace Relativity.Desktop.Client
 				Me.Cursor = Cursors.Default
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the ImportFileMenu event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 
@@ -589,6 +590,7 @@ Namespace Relativity.Desktop.Client
 				Me.Cursor = Cursors.Default
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the openFileDialog event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 
@@ -603,6 +605,7 @@ Namespace Relativity.Desktop.Client
 				End If
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the overWrite event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 
@@ -616,6 +619,7 @@ Namespace Relativity.Desktop.Client
 				_saveImageLoadFileDialog.ShowDialog()
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the importMenuSaveSettingsItem event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 
@@ -633,6 +637,7 @@ Namespace Relativity.Desktop.Client
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the saveImageLoadFileDialog event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 
@@ -665,6 +670,7 @@ Namespace Relativity.Desktop.Client
 				Me.Cursor = System.Windows.Forms.Cursors.Default
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the loadImageLoadFileDialog event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 
@@ -683,6 +689,7 @@ Namespace Relativity.Desktop.Client
 				If Await Me.PopulateImageLoadFile(True) Then If Await _application.ReadyToLoad(Me.ImageLoadFile, True) Then Await _application.PreviewImageFile(Me.ImageLoadFile)
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the importMenuCheckErrorsItem event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 
@@ -700,6 +707,7 @@ Namespace Relativity.Desktop.Client
 				_advancedFileForm.ShowDialog()
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the advancedButton event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 		Private Sub _advancedFileForm_FileLocationOK(ByVal copyFiles As Boolean, ByVal selectedRepository As String) Handles _advancedFileForm.FileLocationOK
@@ -708,6 +716,7 @@ Namespace Relativity.Desktop.Client
 				Me.ImageLoadFile.SelectedCasePath = selectedRepository
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the advancedFileForm event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 		Private Sub _importMenuSendEmailNotificationItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _importMenuSendEmailNotificationItem.Click

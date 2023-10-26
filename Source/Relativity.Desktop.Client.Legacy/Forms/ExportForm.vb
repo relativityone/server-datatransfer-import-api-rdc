@@ -1354,6 +1354,7 @@ End Sub
 			End If
 		Catch ex As System.Exception
 			_logger.LogError(ex, "An exception occurred in the SaveExportSettings event handler : {0}", ex.Message)
+			Throw
 		Finally
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Try
@@ -1596,6 +1597,7 @@ End Sub
 			End If
 		Catch ex As System.Exception
 			_logger.LogError(ex, "An exception occurred in the LoadExportSettings event handler : {0}", ex.Message)
+			Throw
 		End Try
 	End Sub
 
@@ -1803,6 +1805,7 @@ End Sub
 			If Await Me.PopulateExportFile(Me, True) Then Await _application.StartSearch(Me.ExportFile)
 		Catch ex As System.Exception
 			_logger.LogError(ex, "An exception occurred in the RunMenu event handler : {0}", ex.Message)
+			Throw
 		Finally
 			Me.Cursor = System.Windows.Forms.Cursors.Default
 		End Try
@@ -1909,6 +1912,7 @@ End Sub
 			InitializeLayout()
 		Catch ex As System.Exception
 			_logger.LogError(ex, "An exception occurred in the ExportProduction load event handler : {0}", ex.Message)
+			Throw
 		End Try
 	End Sub
 
@@ -2115,6 +2119,7 @@ End Sub
 			_precedenceForm.ShowDialog()
 		Catch ex As System.Exception
 			_logger.LogError(ex, "An exception occurred in the pickPrecedenceButton event handler : {0}", ex.Message)
+			Throw
 		End Try
 	End Sub
 
