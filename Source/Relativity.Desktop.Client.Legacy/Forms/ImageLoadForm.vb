@@ -556,6 +556,7 @@ Namespace Relativity.Desktop.Client
 				Me.Cursor = Cursors.Default
 			Catch ex As System.Exception
 				_logger.LogError(ex, "An exception occurred in the ImageLoad Load event handler : {0}", ex.Message)
+				Throw
 			End Try
 		End Sub
 
