@@ -1,5 +1,6 @@
 Imports kCura.WinEDDS
 Imports kCura.WinEDDS.Service
+Imports Relativity.DataExchange.Logger
 Imports Relativity.DataExchange.Service
 
 Namespace Relativity.Desktop.Client
@@ -863,7 +864,7 @@ Namespace Relativity.Desktop.Client
 		Friend WithEvents _application As Global.Relativity.Desktop.Client.Application
 		Private WithEvents _advancedFileForm As AdvancedFileLocation
 		Private _loadFile As kCura.WinEDDS.LoadFile
-
+		Private _logger As Relativity.Logging.ILog = RelativityLogger.Instance
 		Friend ReadOnly Property ReadyToRun() As Boolean
 			Get
 				Return True
@@ -1469,13 +1470,17 @@ Namespace Relativity.Desktop.Client
 		End Function
 
 		Private Async Sub AutoFieldMap_Click(sender As Object, e As EventArgs) Handles AutoFieldMapButton.Click
-			ClearFieldMapping()
-			Dim columnHeaders As String() = (_fieldMap.LoadFileColumns.RightSearchableListItems.Cast(Of String).ToArray())
-			System.Array.Sort(columnHeaders)
-			Await MatchAndAddLoadFileColumns(columnHeaders)
-			_fieldMap.ForceRefresh()
-			Me._FieldColumns_ItemsShifted()
-
+			Try
+				ClearFieldMapping()
+				Dim columnHeaders As String() = (_fieldMap.LoadFileColumns.RightSearchableListItems.Cast(Of String).ToArray())
+				System.Array.Sort(columnHeaders)
+				Await MatchAndAddLoadFileColumns(columnHeaders)
+				_fieldMap.ForceRefresh()
+				Me._FieldColumns_ItemsShifted()
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the AutoFieldMap event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Sub ClearFieldMapping()
@@ -1584,23 +1589,33 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub ImportFileMenu_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ImportFileMenu.Click
-			'' This function is invoked when the user clicks import file in the upper menu.
-			'' Since it could be the user has ran an import before, and due to config changes in the workspace on the server, the cached case info might be out of date. That's why you want to refresh it here, so we have a fresh copy.
-			Await RefreshServerDataAsync()
+			Try
+				'' This function is invoked when the user clicks import file in the upper menu.
+				'' Since it could be the user has ran an import before, and due to config changes in the workspace on the server, the cached case info might be out of date. That's why you want to refresh it here, so we have a fresh copy.
+				Await RefreshServerDataAsync()
 
-			If (Await PopulateLoadFileObject(True)) AndAlso (Await _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftSearchableListItems))) AndAlso (Await _application.ReadyToLoad(Me.LoadFile, False)) Then
-				Await _application.ImportLoadFile(Me.LoadFile)
-			End If
+				If (Await PopulateLoadFileObject(True)) AndAlso (Await _application.ReadyToLoad(Utility.ExtractFieldNames(_fieldMap.LoadFileColumns.LeftSearchableListItems))) AndAlso (Await _application.ReadyToLoad(Me.LoadFile, False)) Then
+					Await _application.ImportLoadFile(Me.LoadFile)
+				End If
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the ImportFileMenu event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Sub LoadFileForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-			_loadFileEncodingPicker.InitializeDropdown()
-			_fullTextFileEncodingPicker.InitializeDropdown()
-			_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
-			If LoadFile.ArtifactTypeID <> ArtifactType.Document Then
-				_importMenuForceFolderPreviewItem.Checked = False
-				_importMenuForceFolderPreviewItem.Enabled = False
-			End If
+			Try
+				_loadFileEncodingPicker.InitializeDropdown()
+				_fullTextFileEncodingPicker.InitializeDropdown()
+				_importMenuForceFolderPreviewItem.Checked = _application.TemporaryForceFolderPreview
+				If LoadFile.ArtifactTypeID <> ArtifactType.Document Then
+					_importMenuForceFolderPreviewItem.Checked = False
+					_importMenuForceFolderPreviewItem.Enabled = False
+				End If
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the LoadFileForm Load event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Sub LoadFileForm_Closing(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles MyBase.Closing
@@ -1608,104 +1623,128 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub _loadNativeFiles_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _loadNativeFiles.CheckedChanged
-			_nativeFilePathField.Enabled = _loadNativeFiles.Checked
-			_advancedButton.Enabled = _loadNativeFiles.Checked
-			_nativeFilePathField.SelectedItem = Nothing
-			_nativeFilePathField.Text = "Select ..."
-			ActionMenuEnabled = ReadyToRun
+			Try
+				_nativeFilePathField.Enabled = _loadNativeFiles.Checked
+				_advancedButton.Enabled = _loadNativeFiles.Checked
+				_nativeFilePathField.SelectedItem = Nothing
+				_nativeFilePathField.Text = "Select ..."
+				ActionMenuEnabled = ReadyToRun
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the loadNativeFiles Load event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Async Sub _overwriteDestination_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _overwriteDropdown.SelectedIndexChanged
-			LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
-			If LoadFile.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower Then
-				For Each field As DocumentField In _overlayIdentifier.Items
-					If field.FieldCategory = FieldCategory.Identifier Then
-						_overlayIdentifier.SelectedItem = field
-						Exit For
-					End If
-				Next
-			End If
-			Dim overwriteDestination As ImportOverwriteType = CType([Enum].Parse(GetType(ImportOverwriteType), LoadFile.OverwriteDestination, True), ImportOverwriteType)
-			If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
-				Select Case overwriteDestination
-					Case ImportOverwriteType.Append
-						_buildFolderStructure.Enabled = True
-						_destinationFolderPath.Enabled = _buildFolderStructure.Checked
-						_overlayIdentifier.Enabled = False
-					Case ImportOverwriteType.Overlay
-						_destinationFolderPath.Enabled = False
-						_buildFolderStructure.Checked = False
-						_buildFolderStructure.Enabled = False
-						_destinationFolderPath.SelectedItem = Nothing
-						_destinationFolderPath.Text = "Select ..."
-						_overlayIdentifier.Enabled = True
-					Case Else
-						_destinationFolderPath.Enabled = True
-						_buildFolderStructure.Checked = False
-						_buildFolderStructure.Enabled = True
-						_destinationFolderPath.SelectedItem = Nothing
-						_destinationFolderPath.Text = "Select ..."
-						_overlayIdentifier.Enabled = False
-				End Select
-			ElseIf Me.IsChildObject Then
-				Select Case overwriteDestination
-					Case ImportOverwriteType.Append
-						_destinationFolderPath.Enabled = True
-						_buildFolderStructure.Checked = True
-						_buildFolderStructure.Enabled = False
-						_overlayIdentifier.Enabled = False
-					Case ImportOverwriteType.Overlay
-						_destinationFolderPath.Enabled = False
-						_buildFolderStructure.Checked = False
-						_buildFolderStructure.Enabled = True
-						_overlayIdentifier.Enabled = True
-					Case Else
-						_destinationFolderPath.Enabled = True
-						_buildFolderStructure.Checked = True
-						_buildFolderStructure.Enabled = False
-						_overlayIdentifier.Enabled = True
-				End Select
-			Else
-				_destinationFolderPath.Enabled = False
-				_buildFolderStructure.Enabled = False
-				_buildFolderStructure.Checked = False
-				_destinationFolderPath.SelectedItem = Nothing
-				_destinationFolderPath.Text = "Select ..."
-				Select Case overwriteDestination
-					Case ImportOverwriteType.Overlay
-						_overlayIdentifier.Enabled = True
-					Case ImportOverwriteType.AppendOverlay
-						_overlayIdentifier.Enabled = True
-					Case Else
-						_overlayIdentifier.Enabled = False
-				End Select
-			End If
-			ActionMenuEnabled = ReadyToRun
+			Try
+				LoadFile.OverwriteDestination = Me.GetOverwrite.ToString
+				If LoadFile.OverwriteDestination.ToLower <> ImportOverwriteType.Overlay.ToString.ToLower Then
+					For Each field As DocumentField In _overlayIdentifier.Items
+						If field.FieldCategory = FieldCategory.Identifier Then
+							_overlayIdentifier.SelectedItem = field
+							Exit For
+						End If
+					Next
+				End If
+				Dim overwriteDestination As ImportOverwriteType = CType([Enum].Parse(GetType(ImportOverwriteType), LoadFile.OverwriteDestination, True), ImportOverwriteType)
+				If Me.LoadFile.ArtifactTypeID = ArtifactType.Document Then
+					Select Case overwriteDestination
+						Case ImportOverwriteType.Append
+							_buildFolderStructure.Enabled = True
+							_destinationFolderPath.Enabled = _buildFolderStructure.Checked
+							_overlayIdentifier.Enabled = False
+						Case ImportOverwriteType.Overlay
+							_destinationFolderPath.Enabled = False
+							_buildFolderStructure.Checked = False
+							_buildFolderStructure.Enabled = False
+							_destinationFolderPath.SelectedItem = Nothing
+							_destinationFolderPath.Text = "Select ..."
+							_overlayIdentifier.Enabled = True
+						Case Else
+							_destinationFolderPath.Enabled = True
+							_buildFolderStructure.Checked = False
+							_buildFolderStructure.Enabled = True
+							_destinationFolderPath.SelectedItem = Nothing
+							_destinationFolderPath.Text = "Select ..."
+							_overlayIdentifier.Enabled = False
+					End Select
+				ElseIf Me.IsChildObject Then
+					Select Case overwriteDestination
+						Case ImportOverwriteType.Append
+							_destinationFolderPath.Enabled = True
+							_buildFolderStructure.Checked = True
+							_buildFolderStructure.Enabled = False
+							_overlayIdentifier.Enabled = False
+						Case ImportOverwriteType.Overlay
+							_destinationFolderPath.Enabled = False
+							_buildFolderStructure.Checked = False
+							_buildFolderStructure.Enabled = True
+							_overlayIdentifier.Enabled = True
+						Case Else
+							_destinationFolderPath.Enabled = True
+							_buildFolderStructure.Checked = True
+							_buildFolderStructure.Enabled = False
+							_overlayIdentifier.Enabled = True
+					End Select
+				Else
+					_destinationFolderPath.Enabled = False
+					_buildFolderStructure.Enabled = False
+					_buildFolderStructure.Checked = False
+					_destinationFolderPath.SelectedItem = Nothing
+					_destinationFolderPath.Text = "Select ..."
+					Select Case overwriteDestination
+						Case ImportOverwriteType.Overlay
+							_overlayIdentifier.Enabled = True
+						Case ImportOverwriteType.AppendOverlay
+							_overlayIdentifier.Enabled = True
+						Case Else
+							_overlayIdentifier.Enabled = False
+					End Select
+				End If
+				ActionMenuEnabled = ReadyToRun
 
-			_overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
-
+				_overlayBehavior.Enabled = Await IsOverlayBehaviorEnabled()
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the overwriteDestination event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Async Sub PreviewMenuFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PreviewMenuFile.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, LoadFilePreviewForm.FormType.LoadFile)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, LoadFilePreviewForm.FormType.LoadFile)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the PreviewMenuFile event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Async Sub _fileSaveFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileSaveFieldMapMenuItem.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			Await PopulateLoadFileObject(False)
-			_saveFieldMapDialog.ShowDialog()
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				Await PopulateLoadFileObject(False)
+				_saveFieldMapDialog.ShowDialog()
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the fileSaveFieldMapMenuItem event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Sub _saveFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _saveFieldMapDialog.FileOk
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If Not System.IO.File.Exists(_saveFieldMapDialog.FileName) Then
-				System.IO.File.Create(_saveFieldMapDialog.FileName).Close()
-			End If
-			_application.SaveLoadFile(Me.LoadFile, _saveFieldMapDialog.FileName)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				If Not System.IO.File.Exists(_saveFieldMapDialog.FileName) Then
+					System.IO.File.Create(_saveFieldMapDialog.FileName).Close()
+				End If
+				_application.SaveLoadFile(Me.LoadFile, _saveFieldMapDialog.FileName)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the saveFieldMapDialog event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Sub _fileLoadFieldMapMenuItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _fileLoadFieldMapMenuItem.Click
@@ -1713,14 +1752,19 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub _loadFieldMapDialog_FileOk(ByVal sender As Object, ByVal e As System.ComponentModel.CancelEventArgs) Handles _loadFieldMapDialog.FileOk
-			Dim newLoadFile As LoadFile = Await _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
-			If Not newLoadFile Is Nothing Then
-				If newLoadFile.ArtifactTypeID <> ArtifactType.Document Then
-					newLoadFile.ForceFolderPreview = False
+			Try
+				Dim newLoadFile As LoadFile = Await _application.ReadLoadFile(Me.LoadFile, _loadFieldMapDialog.FileName, False)
+				If Not newLoadFile Is Nothing Then
+					If newLoadFile.ArtifactTypeID <> ArtifactType.Document Then
+						newLoadFile.ForceFolderPreview = False
+					End If
+					_loadFile = newLoadFile
+					Await Me.LoadFormControls(True)
 				End If
-				_loadFile = newLoadFile
-				Await Me.LoadFormControls(True)
-			End If
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the loadFieldMapDialog event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Async Sub _FieldColumns_ItemsShifted() Handles _fieldMap.FieldColumnsItemsShifted
@@ -1813,15 +1857,25 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Async Sub _importMenuPreviewErrorsItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewErrorsItem.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, True, LoadFilePreviewForm.FormType.LoadFile)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, True, LoadFilePreviewForm.FormType.LoadFile)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the importMenuPreviewErrorsItem event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Async Sub _importMenuPreviewFoldersAndCodesItem_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles _importMenuPreviewFoldersAndCodesItem.Click
-			Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
-			If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, LoadFilePreviewForm.FormType.Codes)
-			Me.Cursor = System.Windows.Forms.Cursors.Default
+			Try
+				Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
+				If (Await PopulateLoadFileObject(True)) AndAlso Await _application.ReadyToLoad(Me.LoadFile, True) Then Await _application.PreviewLoadFile(_loadFile, False, LoadFilePreviewForm.FormType.Codes)
+				Me.Cursor = System.Windows.Forms.Cursors.Default
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the importMenuPreviewFoldersAndCodesItem event handler : {0}", ex.Message)
+				Throw
+			End Try
 		End Sub
 
 		Private Sub _identifiersDropDown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
@@ -1829,13 +1883,17 @@ Namespace Relativity.Desktop.Client
 		End Sub
 
 		Private Sub _characterDropdown_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _recordDelimiter.SelectedIndexChanged, _quoteDelimiter.SelectedIndexChanged, _newLineDelimiter.SelectedIndexChanged, _multiRecordDelimiter.SelectedIndexChanged, _hierarchicalValueDelimiter.SelectedIndexChanged
-			Dim tag As Object = DirectCast(sender, System.Windows.Forms.ComboBox).Tag
-			If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then
-				'do nothing
-			Else
-				PopulateLoadFileDelimiters()
-				RefreshNativeFilePathFieldAndFileColumnHeaders()
-			End If
+			Try
+				Dim tag As Object = DirectCast(sender, System.Windows.Forms.ComboBox).Tag
+				If TypeOf tag Is Boolean AndAlso CType(tag, Boolean) = False Then
+					'do nothing
+				Else
+					PopulateLoadFileDelimiters()
+					RefreshNativeFilePathFieldAndFileColumnHeaders()
+				End If
+			Catch ex As System.Exception
+				_logger.LogError(ex, "An exception occurred in the characterDropdown event handler : {0}", ex.Message)
+			End Try
 		End Sub
 
 		Private Sub PopulateLoadFileDelimiters()
