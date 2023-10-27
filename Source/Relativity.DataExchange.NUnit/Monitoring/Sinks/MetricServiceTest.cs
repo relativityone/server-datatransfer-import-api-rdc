@@ -7,7 +7,8 @@
 namespace Relativity.DataExchange.NUnit
 {
 	using System;
-	using System.Threading.Tasks;
+    using System.IO;
+    using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 	using global::System.Collections.Generic;
@@ -32,6 +33,7 @@ namespace Relativity.DataExchange.NUnit
 		private IMetricService metricService;
 		private Mock<IServiceProxyFactory> mockServiceFactory;
 		private Mock<IMetricSinkConfig> mockMetricSinkConfig;
+        private Mock<IAPMManager> mockApmManager;
 
 		[SetUp]
 		public void Setup()
@@ -39,8 +41,8 @@ namespace Relativity.DataExchange.NUnit
 			this.loggedApmMetricsCount = 0;
 			this.loggedSumMetricsCount = 0;
 
-			var mockApmManager = new Mock<IAPMManager>();
-			mockApmManager.Setup(foo => foo.LogCountAsync(It.IsAny<APMMetric>(), It.IsAny<long>())).Callback(
+			this.mockApmManager = new Mock<IAPMManager>();
+			this.mockApmManager.Setup(foo => foo.LogCountAsync(It.IsAny<APMMetric>(), It.IsAny<long>())).Callback(
 				(APMMetric metric, long count) => this.loggedApmMetricsCount++).Returns(Task.CompletedTask);
 
 			var mockMetricsManager = new Mock<IMetricsManager>();
@@ -49,7 +51,7 @@ namespace Relativity.DataExchange.NUnit
 					foo => foo.LogMetricsAsync(It.IsAny<List<MetricRef>>())).Callback(() => this.loggedSumMetricsCount++).Returns(Task.CompletedTask);
 
 			this.mockServiceFactory = new Mock<IServiceProxyFactory>();
-			this.mockServiceFactory.Setup(foo => foo.CreateProxyInstance<IAPMManager>()).Returns(mockApmManager.Object);
+			this.mockServiceFactory.Setup(foo => foo.CreateProxyInstance<IAPMManager>()).Returns(this.mockApmManager.Object);
 
 			this.mockServiceFactory.Setup(foo => foo.CreateProxyInstance<IMetricsManager>()).Returns(mockMetricsManager.Object);
 
@@ -129,5 +131,35 @@ namespace Relativity.DataExchange.NUnit
 			Assert.DoesNotThrow(() => this.metricService.Log(new MetricJobStarted()));
 			Assert.DoesNotThrow(() => this.metricService.Log(new MetricJobProgress()));
 		}
+
+        [Test]
+        public void ShouldCatchGeneralExceptionWhenApmFails()
+        {
+            // Arrange
+            this.mockApmManager.Setup(foo => foo.LogCountAsync(It.IsAny<APMMetric>(), It.IsAny<long>()))
+                .Callback((APMMetric metric, long count) => this.loggedApmMetricsCount++)
+                .Throws(new InvalidOperationException("Test Exception"));
+            this.metricService = new MetricService(this.mockMetricSinkConfig.Object, new KeplerProxyMock(this.mockServiceFactory.Object));
+
+            // Act
+            this.metricService.Log(new MetricJobEndReport());
+            this.metricService.Log(new MetricJobStarted());
+
+            // Assert
+            Assert.AreEqual(2, this.loggedApmMetricsCount);
+        }
+
+        [Test]
+        public void ShouldRethrowFileNotFoundExceptionExceptionWhenApmFails()
+        {
+            // Arrange
+            this.mockApmManager.Setup(foo => foo.LogCountAsync(It.IsAny<APMMetric>(), It.IsAny<long>()))
+                .Callback((APMMetric metric, long count) => this.loggedApmMetricsCount++)
+                .Throws(new FileNotFoundException("Could not load file or assembly"));
+            this.metricService = new MetricService(this.mockMetricSinkConfig.Object, new KeplerProxyMock(this.mockServiceFactory.Object));
+
+            // Act
+            Assert.Throws(typeof(FileNotFoundException), () => this.metricService.Log(new MetricJobEndReport()));
+        }
 	}
 }

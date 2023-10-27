@@ -107,6 +107,19 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
+		[TestCase("multi2.tif")]
+		[TestCase("multi3.tif")]
+		[TestCase("multi4.tif")]
+		[Category(TestCategories.Framework)]
+		public void ShouldValidateWhenTheTiffPageCountIsGreaterThanOne(string fileName)
+		{
+			string file = ResourceFileHelper.GetResourceFilePath("MultiTiff", fileName);
+			var result = this.imageValidator.IsImageValid(file, this.tiffValidator, this.fileInspector);
+			Assert.That(result.IsValid, Is.EqualTo(false));
+			Assert.That(result.Message, Is.EqualTo($"The TIFF image file {file} is a Multi Page TIFF and its not supported"));
+		}
+
+		[Test]
 		[TestCase("w3c_home.png")]
 		[TestCase("w3c_home_2.png")]
 		[TestCase("w3c_home_256.png")]

@@ -45,6 +45,30 @@ namespace Relativity.DataExchange
 		}
 
 		/// <summary>
+		/// Gets or sets the number of retry attempts for batch in progress policy.
+		/// </summary>
+		/// <value>
+		/// The total number of retries.
+		/// </value>
+		int BatchInProgressNumberOfRetries
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of seconds to wait between retry attempts for batch in progress policy.
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int BatchInProgressWaitTimeInSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether to create an error when importing or exporting a zero byte file. This is <see langword="false" /> by default.
 		/// </summary>
 		/// <value>
@@ -436,6 +460,18 @@ namespace Relativity.DataExchange
 		/// The total number of records.
 		/// </value>
 		int ImportBatchSize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the number of seconds for internal Kepler timeout when calling ExecuteAsync().
+		/// </summary>
+		/// <value>
+		/// The total number of seconds.
+		/// </value>
+		int InternalKeplerTimeoutInSeconds
 		{
 			get;
 			set;

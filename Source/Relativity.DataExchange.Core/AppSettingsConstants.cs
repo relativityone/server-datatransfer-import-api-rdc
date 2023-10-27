@@ -32,6 +32,12 @@ namespace Relativity.DataExchange
 		public const string ApplicationNameDefaultValue = "";
 		public const string AuditLevelKey = "AuditLevel";
 		public const string AuditLevelDefaultValue = "FullAudit";
+		public const string BatchInProgressNumberOfRetriesKey = "BatchInProgressNumberOfRetries";
+		public const int BatchInProgressNumberOfRetriesDefaultValue = 40;
+		public const int BatchInProgressNumberOfRetriesMinValue = 0;
+		public const string BatchInProgressWaitTimeInSecondsKey = "BatchInProgressWaitTimeInSeconds";
+		public const int BatchInProgressWaitTimeInSecondsDefaultValue = 30;
+		public const int BatchInProgressWaitTimeInSecondsMinValue = 1;
 		public const string CreateErrorForInvalidDateKey = "CreateErrorForInvalidDate";
 		public const bool CreateErrorForInvalidDateDefaultValue = true;
 		public const string CreateErrorForEmptyNativeFileKey = "CreateErrorForEmptyNativeFile";
@@ -98,6 +104,9 @@ namespace Relativity.DataExchange
 		public const int ImportBatchMaxVolumeDefaultValue = 10485760;
 		public const string ImportBatchSizeKey = "ImportBatchSize";
 		public const int ImportBatchSizeDefaultValue = 1000;
+		public const string InternalKeplerTimeoutSecondsKey = "InternalKeplerTimeoutSeconds";
+		public const int InternalKeplerTimeoutSecondsDefaultValue = 5 * 60;
+		public const int InternalKeplerTimeoutSecondsMinValue = 1;
 		public const string IoErrorNumberOfRetriesKey = "IOErrorNumberOfRetries";
 		public const int IoErrorNumberOfRetriesDefaultValue = 20;
 		public const string IoErrorWaitTimeInSecondsKey = "IOErrorWaitTimeInSeconds";

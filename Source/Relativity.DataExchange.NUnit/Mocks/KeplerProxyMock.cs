@@ -32,6 +32,11 @@ namespace Relativity.DataExchange.NUnit.Mocks
 
 		public Task<T> ExecuteAsync<T>(Func<IServiceProxyFactory, Task<T>> func)
 		{
+			return this.ExecuteAsync(func, 360);
+		}
+
+		public Task<T> ExecuteAsync<T>(Func<IServiceProxyFactory, Task<T>> func, int waitTimeSeconds)
+		{
 			if (func == null)
 			{
 				throw new ArgumentNullException(nameof(func));
