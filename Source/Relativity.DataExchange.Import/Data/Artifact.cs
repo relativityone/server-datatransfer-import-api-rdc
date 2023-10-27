@@ -35,6 +35,5 @@ namespace kCura.Relativity.ImportAPI.Data
 		{
 			return Name;
 		}
-
 	}
 }
