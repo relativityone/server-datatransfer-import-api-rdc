@@ -59,7 +59,7 @@ Namespace kCura.WinEDDS
 		Protected _executionSource As ExecutionSource
 		Protected _runningContext As IRunningContext
 
-		Public Property SkipExtractedTextEncodingAndSizeCheck As Boolean
+		Public Property SkipExtractedTextEncodingCheck As Boolean
 		Public Property LoadImportedFullTextFromServer As Boolean
 		Public Property DisableExtractedTextFileLocationValidation As Boolean
 		Public Property OIFileIdMapped As Boolean
@@ -586,7 +586,7 @@ Namespace kCura.WinEDDS
 									' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
 									' across the network for the file, so this override allows that check to be skipped.
 									' -Phil S. 07/27/2012
-									If Not SkipExtractedTextEncodingAndSizeCheck Then
+									If Not SkipExtractedTextEncodingCheck Then
 										determinedEncodingStream = kCura.WinEDDS.Utility.DetectEncoding(value, False, performExtractedTextFileLocationValidation)
 										detectedEncoding = determinedEncodingStream.DeterminedEncoding
 									End If

@@ -23,9 +23,9 @@
         <dependency id="Polly" version="5.7.0" />
         <dependency id="Relativity.Logging" version="2019.5.1" />
         <dependency id="Relativity.ObjectManager" version="12.1.171.20" />
-        <dependency id="Relativity.OutsideIn" version="2022.7.0" />
+        <dependency id="Relativity.OutsideIn" version="2023.10.0" />
         <dependency id="Relativity.Telemetry.Services.Interface" version="3003.0.2" />
-        <dependency id="Relativity.Transfer.Client" version="[8.0.0-pre.70, 8.1.0)" />
+        <dependency id="Relativity.Transfer.Client" version="[8.0.0-pre.84, 8.1.0)" />
       </group>
     </dependencies>
     <frameworkAssemblies>

@@ -75,7 +75,7 @@ namespace Relativity.DataExchange.NUnit.Service
 					});
 
 			// assert
-			Assert.That(ex.Message, Is.EqualTo($"Timeout occurred after {AppSettings.Instance.BatchInProgressNumberOfRetries} retries with {AppSettings.Instance.BatchInProgressWaitTimeInSeconds} seconds timeout."));
+			Assert.That(ex.Message, Is.EqualTo($"Timeout occurred after {AppSettings.Instance.BatchInProgressNumberOfRetries} retries with {AppSettings.Instance.BatchInProgressWaitTimeInSeconds} seconds timeout. The server is still processing the request."));
 		}
 
 		[Test]
@@ -123,7 +123,7 @@ namespace Relativity.DataExchange.NUnit.Service
 					});
 
 			// assert
-			Assert.That(ex.Message, Is.EqualTo($"Timeout occurred after {AppSettings.Instance.BatchInProgressNumberOfRetries} retries with {AppSettings.Instance.BatchInProgressWaitTimeInSeconds} seconds timeout."));
+			Assert.That(ex.Message, Is.EqualTo($"Timeout occurred after {AppSettings.Instance.BatchInProgressNumberOfRetries} retries with {AppSettings.Instance.BatchInProgressWaitTimeInSeconds} seconds timeout. The server is still processing the request."));
 		}
 
 		[Test]

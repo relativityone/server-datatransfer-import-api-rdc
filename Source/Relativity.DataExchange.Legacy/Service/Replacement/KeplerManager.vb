@@ -44,7 +44,7 @@ Namespace kCura.WinEDDS.Service.Replacement
             Try
                 Return Await Me._keplerProxy.ExecuteAsync(func).ConfigureAwait(False)
             Catch ex As ConflictException When ex.Message.Contains(BatchInProgressMessage) 
-                Throw New ImportExportException($"Timeout occurred after {AppSettings.Instance.BatchInProgressNumberOfRetries} retries with {AppSettings.Instance.BatchInProgressWaitTimeInSeconds} seconds timeout.")
+                Throw New ImportExportException($"Timeout occurred after {AppSettings.Instance.BatchInProgressNumberOfRetries} retries with {AppSettings.Instance.BatchInProgressWaitTimeInSeconds} seconds timeout. The server is still processing the request.")
             Catch serviceException As ServiceException
                 Dim soapException As SoapException = _exceptionMapper.Map(serviceException)
                 UnpackSoapException(soapException)

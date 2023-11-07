@@ -191,9 +191,9 @@ def GetTestResults(String sutTemplate)
 
 	// Search for specific tokens within the response.
 	echo "Extracting the $sutTemplate-test result parameters"
-	def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
-	def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
-	def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
+	def int passed = tools.extractValue("testResultsPassed", testResultOutputString).toInteger()
+	def int failed = tools.extractValue("testResultsFailed", testResultOutputString).toInteger()
+	def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString).toInteger()
 	echo "Extracted the $sutTemplate-test result parameters"
 
 	// Dump the individual test results
