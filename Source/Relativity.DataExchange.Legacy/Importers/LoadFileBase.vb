@@ -69,6 +69,7 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
 		Public Property SupportedByViewerColumn As String
+		Public Property MetadataFileIdColumn As String
 		Private Property _artifactIDDataSetCache As Dictionary(Of Tuple(Of Integer, String), DataSet)
 #End Region
 
@@ -183,6 +184,7 @@ Namespace kCura.WinEDDS
 			FileSizeColumn = args.FileSizeColumn
 			FileNameColumn = args.FileNameColumn
 			SupportedByViewerColumn = args.SupportedByViewerColumn
+		    MetadataFileIdColumn = args.MetadataFileIdColumn
 			_timeZoneOffset = timezoneoffset
 			_autoDetect = autoDetect
 			_executionSource = If(runningContext Is Nothing, ExecutionSource.Unknown, runningContext.ExecutionSource)

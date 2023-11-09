@@ -19,5 +19,6 @@ stylecop.analyzers
 ConfigureAwaitChecker.Analyzer
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
+Relativity.DataTransfer.Legacy.SDK
 group integration-tests
 System.ValueTuple

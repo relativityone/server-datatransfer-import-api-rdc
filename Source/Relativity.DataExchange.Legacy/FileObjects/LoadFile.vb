@@ -44,6 +44,7 @@ Namespace kCura.WinEDDS
 		Public MoveDocumentsInAppendOverlayMode As Boolean
 		Public OverlayBehavior As FieldOverlayBehavior?
 		Public SupportedByViewerColumn As String
+		Public MetadataFileIdColumn As String
 		Public Billable As Boolean = True
 
 		<NonSerialized()> Public ObjectFieldIdListContainsArtifactId As IList(Of Int32)

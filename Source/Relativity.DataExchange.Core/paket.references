@@ -8,3 +8,4 @@ relativity.transfer.client
 stylecop.analyzers
 ConfigureAwaitChecker.Analyzer
 Relativity.AutomatedWorkflows.Services.Interfaces
+Relativity.DataTransfer.Legacy.SDK

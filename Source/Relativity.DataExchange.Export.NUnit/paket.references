@@ -12,3 +12,4 @@ relativity.transfer.client
 stylecop.analyzers
 ConfigureAwaitChecker.Analyzer
 System.Reactive
+Relativity.DataTransfer.Legacy.SDK

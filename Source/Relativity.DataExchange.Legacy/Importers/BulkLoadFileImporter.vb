@@ -253,6 +253,12 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
+        Public ReadOnly Property IsMetadataFileIdColumnSet As Boolean
+            Get
+                Return Not String.IsNullOrEmpty(_settings.MetadataFileIdColumn)
+            End Get
+        End Property
+
 		Protected Overridable ReadOnly Property ParentArtifactTypeID As Int32
 			Get
 				If Not _parentArtifactTypeId.HasValue Then
@@ -1034,15 +1040,20 @@ Namespace kCura.WinEDDS
 				dataGridID = dataGridIDField.ValueAsString
 			End If
 
+			Dim metadataFileId As String = Nothing
+			If(Not injectableContainerIsNothing AndAlso injectableContainer.HasMetadataFileId()) Then
+			    metadataFileId = injectableContainer.metadataFileId.GetMetadataFileId()
+            End If
+
 			Dim doc As MetaDocument
 			Dim fileSizeExtractor As Api.IHasFileSize = Nothing
 			If (Not injectableContainerIsNothing) Then
 				fileSizeExtractor = injectableContainer.FileSize
 			End If
 			If fileSizeExtractor Is Nothing Then
-				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, fileTypeInfo, lineStatus, destinationVolume, folderPath, dataGridID)
+				doc = New MetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, fileTypeInfo, lineStatus, destinationVolume, folderPath, dataGridID, metadataFileId)
 			Else
-				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, fileTypeInfo, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath, dataGridID)
+				doc = New SizedMetaDocument(fileGuid, identityValue, fileExists AndAlso uploadFile AndAlso (fileGuid <> String.Empty OrElse Not _copyFileToRepository), filename, fullFilePath, uploadFile, CurrentLineNumber, parentFolderID, record, fileTypeInfo, lineStatus, destinationVolume, fileSizeExtractor.GetFileSize(), folderPath, dataGridID, metadataFileId)
 			End If
 
 			Using Timekeeper.CaptureTime("ManageDocument_ManageDocumentMetadata")
@@ -1400,6 +1411,7 @@ Namespace kCura.WinEDDS
 			settings.ExecutionSource = CType(_executionSource, kCura.EDDS.WebAPI.BulkImportManagerBase.ExecutionSource)
 			settings.Billable = _settings.Billable
 			settings.BulkFileSharePath = _bulkFilesImportPath
+			settings.HasMetadataFileIdColumn = IsMetadataFileIdColumnSet
 
 			If _usePipeliningForNativeAndObjectImports AndAlso Not _task Is Nothing Then
 				WaitOnPushBatchTask()
@@ -1605,9 +1617,9 @@ Namespace kCura.WinEDDS
 			'_fullTextColumnMapsToFileLocation and chosenEncoding indicate that extracted text is being mapped
 			'In that case, we need a field (it can be empty but it needs the field delimiter) for the extracted text encoding
 			If chosenEncoding IsNot Nothing Then
-				OutputFileWriter.OutputNativeFileWriter.Write(chosenEncoding.CodePage.ToString() & BulkLoadFileFieldDelimiter)
+				OutputFileWriter.OutputNativeFileWriter.Write(chosenEncoding.CodePage.ToString() & BulkLoadFileFieldDelimiter) 'ExtractedTextEncodingPageCode
 			ElseIf _fullTextColumnMapsToFileLocation Then
-				OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter)
+				OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter) 'ExtractedTextEncodingPageCode
 			End If
 
 			If _createFoldersInWebApi Then
@@ -1620,11 +1632,14 @@ Namespace kCura.WinEDDS
 				'settings object -- NativeFileInfo.RootFolderID will be 0.
 				If _artifactTypeID = ArtifactType.Document Then
 					'Last column is the folder path (ONLY IF THIS IS A DOCUMENT LOAD... adding this to object imports will break them)
-					OutputFileWriter.OutputNativeFileWriter.Write(mdoc.FolderPath & BulkLoadFileFieldDelimiter)
+					OutputFileWriter.OutputNativeFileWriter.Write(mdoc.FolderPath & BulkLoadFileFieldDelimiter) 'kCura_Import_ParentFolderPath
 				End If
 			End If
 			OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter)   'kCura_DataGrid_Exception
 			OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter)   'kCura_Import_ErrorData
+		    If _artifactTypeID = ArtifactType.Document AndAlso IsMetadataFileIdColumnSet Then
+		        OutputFileWriter.OutputNativeFileWriter.Write(mdoc.MetadataFileId & BulkLoadFileFieldDelimiter)   'kCura_Import_MetadataFileIdColumn
+		    End If
 			OutputFileWriter.OutputNativeFileWriter.Write(vbCrLf)
 			If foundDataGridField Then
 				OutputFileWriter.OutputDataGridFileWriter.Write(vbCrLf)

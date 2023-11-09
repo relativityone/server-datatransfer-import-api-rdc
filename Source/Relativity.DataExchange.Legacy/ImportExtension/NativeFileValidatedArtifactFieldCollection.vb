@@ -28,6 +28,14 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Function
 	End Class
 
+	Public Class MetadataFileIdPopulated
+		Implements IHasMetadataFileId
+		Public Property MetadataFileId() As String
+		Public Function GetMetadataFileId() As String Implements IHasMetadataFileId.GetMetadataFileId
+			Return MetadataFileId
+		End Function
+	End Class
+
 
 	Public Class InjectableArtifactFieldCollection
 		Inherits ArtifactFieldCollection
@@ -36,8 +44,9 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public ReadOnly Property FileName As IHasFileName Implements IInjectableFieldCollection.FileName
 		Public ReadOnly Property FileSize As IHasFileSize Implements IInjectableFieldCollection.FileSize
 		Public ReadOnly Property FileIdData As IHasOixFileType Implements IInjectableFieldCollection.FileIdInfo
+        Public ReadOnly Property MetadataFileId As IHasMetadataFileId Implements IInjectableFieldCollection.MetadataFileId
 
-		Private Sub New(fileName As String, fileTypeInfo As IFileTypeInfo, fileSize As Long?)
+		Private Sub New(fileName As String, fileTypeInfo As IFileTypeInfo, fileSize As Long?, metadataFileId as String)
 			If (Not String.IsNullOrEmpty(fileName)) Then
 				Me.FileName = New FileNamePopulated() With {.FileName = fileName}
 			End If
@@ -47,6 +56,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			If (Not fileSize Is Nothing) Then
 				Me.FileSize = New FileSizePopulated() With {.FileSize = fileSize.GetValueOrDefault(0)}
 			End If
+		    If (Not String.IsNullOrEmpty(metadataFileId)) Then
+		        Me.MetadataFileId = New MetadataFileIdPopulated() With {.MetadataFileId = metadataFileId}
+		    End If
 		End Sub
 
 		Public Function HasFileName() As Boolean Implements IInjectableFieldCollection.HasFileName
@@ -60,10 +72,13 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Function HasFileIdData() As Boolean Implements IInjectableFieldCollection.HasFileIdInfo
 			Return Not FileIdData Is Nothing
 		End Function
+		Public Function HasMetadataFileId() As Boolean Implements IInjectableFieldCollection.HasMetadataFileId
+			Return Not MetadataFileId Is Nothing
+		End Function
 
-		Public Shared Function CreateFieldCollection(fileName As String, fileTypeInfo As IFileTypeInfo, fileSize As Long?) As ArtifactFieldCollection
-			Dim possibleRetVal As InjectableArtifactFieldCollection = New InjectableArtifactFieldCollection(fileName, fileTypeInfo, fileSize)
-			If (possibleRetVal.HasFileName() Or possibleRetVal.HasFileIdData() Or possibleRetVal.HasFileSize()) Then
+		Public Shared Function CreateFieldCollection(fileName As String, fileTypeInfo As IFileTypeInfo, fileSize As Long?, metadataFileId As String) As ArtifactFieldCollection
+			Dim possibleRetVal As InjectableArtifactFieldCollection = New InjectableArtifactFieldCollection(fileName, fileTypeInfo, fileSize, metadataFileId)
+			If (possibleRetVal.HasFileName() OrElse  possibleRetVal.HasFileIdData() OrElse  possibleRetVal.HasFileSize() OrElse possibleRetVal.HasMetadataFileId()) Then
 				Return possibleRetVal
 			End If
 			Return New ArtifactFieldCollection()

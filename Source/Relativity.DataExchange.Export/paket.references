@@ -8,3 +8,4 @@ relativity.services.interfaces
 relativity.transfer.client
 system.reactive
 ConfigureAwaitChecker.Analyzer
+Relativity.DataTransfer.Legacy.SDK

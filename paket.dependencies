@@ -69,6 +69,11 @@ nuget relativity.transfer.client ~> 7.5.1
 nuget relativity.services.interfaces = 13.8.1
 nuget relativity.services.interfaces.private = 11.3.11.1
 
+# This is added to csproj but not added to nuget definition
+# in order to update this in the nuget we need to
+# update this in relativity.transfer.client.
+nuget Relativity.DataTransfer.Legacy.SDK ~> 0.3.62
+
 # The Relativity packages below are required ONLY for test projects!
 nuget kcura.relativity.client = 11.2.8.6-DEV
 nuget relativity.logging = 2019.5.1

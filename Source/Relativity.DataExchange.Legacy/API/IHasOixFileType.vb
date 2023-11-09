@@ -12,14 +12,19 @@ Namespace kCura.WinEDDS.Api
 	Public Interface IHasFileName
 		Function GetFileName() As String
 	End Interface
+	Public Interface IHasMetadataFileId
+		Function GetMetadataFileId() As String
+	End Interface
 
 	Public Interface IInjectableFieldCollection
 		Function HasFileSize() As Boolean
 		Function HasFileName() As Boolean
 		Function HasFileIdInfo() As Boolean
+		Function HasMetadataFileId() As Boolean
 
 		ReadOnly Property FileName As IHasFileName
 		ReadOnly Property FileSize As IHasFileSize
 		ReadOnly Property FileIdInfo As IHasOixFileType
+        ReadOnly Property MetadataFileId As IHasMetadataFileId
 	End Interface
 End Namespace

@@ -1,8 +1,6 @@
-Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
-Imports Relativity.DataExchange.Process
 Imports Relativity.DataExchange.Service
 
 Namespace kCura.WinEDDS.ImportExtension
@@ -29,6 +27,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _fileSettingsTypeColumnNameIndex As Integer
 		Private _fileSettingsIDColumnNameIndex As Integer
 		Private _fileSupportedByViewerColumnNameIndex As Integer
+		Private _metadataFileIdColumnNameIndex As Integer
 
 		Public Sub New(ByVal args As DataReaderReaderInitializationArgs, ByVal fieldMap As kCura.WinEDDS.LoadFile, ByVal reader As System.Data.IDataReader)
 			Me.New(args, fieldMap, reader, New FileSettings() With {.OIFileIdMapped = False, .FileSizeMapped = False, .FileNameColumn = Nothing})
@@ -68,6 +67,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			_fileSettingsTypeColumnNameIndex = -1
 			_fileSettingsIDColumnNameIndex = -1
 			_fileSupportedByViewerColumnNameIndex = -1
+			_metadataFileIdColumnNameIndex = -1
 		End Sub
 
 		Public Property TemporaryLocalDirectory As String
@@ -295,8 +295,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			Dim fileTypeInfo As FileTypeInfo = GetFileTypeIdInfo()
 			Dim fileSizeSet As Long? = GetFileSizeData()
 			Dim fileNameSet As String = GetFileNameData()
+			Dim metadataFileIdSet As String = GetMetadataFileIdData()
 
-			Return InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, fileTypeInfo, fileSizeSet)
+			Return InjectableArtifactFieldCollection.CreateFieldCollection(fileNameSet, fileTypeInfo, fileSizeSet, metadataFileIdSet)
 		End Function
 
 		Private Function GetFileNameData() As String
@@ -330,41 +331,68 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			Return Nothing
 		End Function
+		
+        Private Function GetFileSizeData() As Long?
 
-		Private Function GetFileSizeData() As Long?
+            If Not _FileSettings.FileSizeMapped Then
+                Return Nothing
+            End If
 
-			If Not _FileSettings.FileSizeMapped Then
-				Return Nothing
-			End If
+            Dim fileSize As Nullable(Of Long) = Nothing
 
-			Dim fileSize As Nullable(Of Long) = Nothing
+            If _fileSettingsFileSizeColumnIndex = -1 Then
+                For i As Integer = 0 To _reader.FieldCount - 1
+                    If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
+                        Dim value As Long = -1
+                        Dim readerValue As String = Convert.ToString(_reader.GetValue(i))
+                        Long.TryParse(readerValue, value)
+                        fileSize = value
+                        _fileSettingsFileSizeColumnIndex = i
+                        Exit For
+                    End If
+                Next
+            Else
+                If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
+                    Dim value As Long = -1
+                    Dim readerValue As String = Convert.ToString(_reader.GetValue(_fileSettingsFileSizeColumnIndex))
+                    Long.TryParse(readerValue, value)
+                    fileSize = value
+                End If
+            End If
 
-			If _fileSettingsFileSizeColumnIndex = -1 Then
-				For i As Integer = 0 To _reader.FieldCount - 1
-					If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
-						Dim value As Long = -1
-						Dim readerValue As String = Convert.ToString(_reader.GetValue(i))
-						Long.TryParse(readerValue, value)
-						fileSize = value
-						_fileSettingsFileSizeColumnIndex = i
-						Exit For
-					End If
-				Next
-			Else
-				If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
-					Dim value As Long = -1
-					Dim readerValue As String = Convert.ToString(_reader.GetValue(_fileSettingsFileSizeColumnIndex))
-					Long.TryParse(readerValue, value)
-					fileSize = value
-				End If
-			End If
+            If (fileSize.HasValue) Then
+                Return fileSize
+            End If
 
-			If (fileSize.HasValue) Then
-				Return fileSize
-			End If
+            Return Nothing
+        End Function
 
-			Return Nothing
-		End Function
+        Private Function GetMetadataFileIdData() As String
+            Dim metadataFileId As String = Nothing
+            If (Not String.IsNullOrEmpty(_FileSettings.MetadataFileIdColumn)) Then
+                If _metadataFileIdColumnNameIndex = -1 Then
+                    For i As Integer = 0 To _reader.FieldCount - 1
+                        If (_reader.GetName(i) = _FileSettings.MetadataFileIdColumn) Then
+                            _metadataFileIdColumnNameIndex = i
+                            Exit For
+                        End If
+                    Next
+                End If
+
+                If (_reader.GetName(_metadataFileIdColumnNameIndex) = _FileSettings.MetadataFileIdColumn) Then
+                    Dim metadataFileIdValue As Object = _reader.GetValue(_metadataFileIdColumnNameIndex)
+                    If (metadataFileIdValue IsNot Nothing) Then
+                        metadataFileId = metadataFileIdValue.ToString()
+                    End If
+                End If
+            End If
+			
+            If (Not String.IsNullOrEmpty(metadataFileId)) Then
+                Return metadataFileId
+            End If
+
+            Return Nothing
+        End Function
 
 		Private Function GetSupportedByViewerData() As Boolean?
 
@@ -648,6 +676,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Property FileSizeColumn() As String
 		Public Property FileNameColumn As String
 		Public Property SupportedByViewerColumn As String
+		Public Property MetadataFileIdColumn As String
 	End Class
 End Namespace
 
