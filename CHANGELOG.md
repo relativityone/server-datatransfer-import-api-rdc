@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  
 - Prepared branch for the next official Relativity 2024 release.
 
+## [2.9.1003] - 11-14-2023
+
+### Fixed
+
+- [REL-873329](https://jira.kcura.com/browse/REL-873329) - Ensure Import API and RDC is able to start logging from the time it's start
+- Updated version.txt and version.wxi file
+
 ## [2.9.1002] - 10-18-2023
 
 ### Fixed
