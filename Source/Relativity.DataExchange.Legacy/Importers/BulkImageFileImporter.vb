@@ -330,12 +330,11 @@ Namespace kCura.WinEDDS
 			' Copying the parameters and tweaking just a few BCP specific parameters.
 			Dim bcpParameters As UploadTapiBridgeParameters2 = nativeParameters.ShallowCopy()
 			bcpParameters.AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder
-			
+			bcpParameters.BcpFileTransfer = True
+
 			If _bulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
-				bcpParameters.BcpFileTransfer = False
 			    bcpParameters.TargetPath = _bulkFilesImportPath
 			Else
-				bcpParameters.BcpFileTransfer = True
 			    
 			    Dim bcpSharePath As String = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
 			    bcpParameters.FileShare = bcpSharePath
