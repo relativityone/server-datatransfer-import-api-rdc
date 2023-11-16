@@ -1307,6 +1307,7 @@ End Sub
 	Private _objectTypeName As String = ""
 	Private _isLoadingExport As Boolean = False
 	Private _masterDT As DataTable
+	Private _logger As Relativity.Logging.ILog = Relativity.DataExchange.Logger.RelativityLogger.Instance
 
 
 	Public Property Application() As Application
@@ -1351,7 +1352,8 @@ End Sub
 						_application.SaveExportFile(_exportFile, _saveExportSettingsDialog.FileName)
 				End Select
 			End If
-		Catch
+		Catch ex As System.Exception
+			_logger.LogError(ex, "An exception occurred in the SaveExportSettings event handler : {0}", ex.Message)
 			Throw
 		Finally
 			Me.Cursor = System.Windows.Forms.Cursors.Default
@@ -1573,25 +1575,30 @@ End Sub
 	End Function
 
 	Private Async Sub LoadExportSettings_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles LoadExportSettings.Click
-		If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-			Dim settings As String = FileSystem.Instance.File.ReadAllText(_loadExportSettingsDialog.FileName)
-			Dim newFile As ExtendedExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
-			If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
-				MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
-			Else
-				Dim exportFilterSelectionForm As New ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
-				exportFilterSelectionForm.ShowDialog()
-				If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
-					If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
-						_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
+		Try
+			If _loadExportSettingsDialog.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+				Dim settings As String = FileSystem.Instance.File.ReadAllText(_loadExportSettingsDialog.FileName)
+				Dim newFile As ExtendedExportFile = New kCura.WinEDDS.ExportFileSerializer().DeserializeExportFile(_exportFile, settings)
+				If TypeOf newFile Is kCura.WinEDDS.ErrorExportFile Then
+					MsgBox(DirectCast(newFile, kCura.WinEDDS.ErrorExportFile).ErrorMessage, MsgBoxStyle.Exclamation)
+				Else
+					Dim exportFilterSelectionForm As New ExportFilterSelectForm(newFile.ViewID, ExportTypeStringName, DirectCast(_filters.DataSource, DataTable))
+					exportFilterSelectionForm.ShowDialog()
+					If exportFilterSelectionForm.DialogResult = DialogResult.OK Then
+						If exportFilterSelectionForm.SelectedItemArtifactIDs IsNot Nothing Then
+							_filters.SelectedValue = exportFilterSelectionForm.SelectedItemArtifactIDs(0)
+						End If
+						Await LoadExportFile(newFile)
+						_exportFile = newFile
 					End If
-					Await LoadExportFile(newFile)
-					_exportFile = newFile
-				End If
 
-				_columnSelector.EnsureHorizontalScrollbars()
+					_columnSelector.EnsureHorizontalScrollbars()
+				End If
 			End If
-		End If
+		Catch ex As System.Exception
+			_logger.LogError(ex, "An exception occurred in the LoadExportSettings event handler : {0}", ex.Message)
+			Throw
+		End Try
 	End Sub
 
 	''' <summary>
@@ -1796,7 +1803,8 @@ End Sub
 		Me.Cursor = System.Windows.Forms.Cursors.WaitCursor
 		Try
 			If Await Me.PopulateExportFile(Me, True) Then Await _application.StartSearch(Me.ExportFile)
-		Catch
+		Catch ex As System.Exception
+			_logger.LogError(ex, "An exception occurred in the RunMenu event handler : {0}", ex.Message)
 			Throw
 		Finally
 			Me.Cursor = System.Windows.Forms.Cursors.Default
@@ -1896,11 +1904,16 @@ End Sub
 	End Function
 
 	Private Sub ExportProduction_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles MyBase.Load
-		HandleLoad(sender, e, Relativity.Desktop.Client.Config.ExportVolumeDigitPadding, Relativity.Desktop.Client.Config.ExportSubdirectoryDigitPadding)
-		_columnSelector.EnsureHorizontalScrollbars()
-		_columnSelector.LeftOrderControlsVisible = False
-		_columnSelector.RightOrderControlVisible = True
-		InitializeLayout()
+		Try
+			HandleLoad(sender, e, Relativity.Desktop.Client.Config.ExportVolumeDigitPadding, Relativity.Desktop.Client.Config.ExportSubdirectoryDigitPadding)
+			_columnSelector.EnsureHorizontalScrollbars()
+			_columnSelector.LeftOrderControlsVisible = False
+			_columnSelector.RightOrderControlVisible = True
+			InitializeLayout()
+		Catch ex As System.Exception
+			_logger.LogError(ex, "An exception occurred in the ExportProduction load event handler : {0}", ex.Message)
+			Throw
+		End Try
 	End Sub
 
 	Public Async Sub HandleLoad(ByVal sender As Object, ByVal e As System.EventArgs, ByVal volumeDigitPadding As Int32, ByVal exportSubdirectoryDigitPadding As Int32)
@@ -2085,24 +2098,29 @@ End Sub
 	End Sub
 
 	Private Async Sub _pickPrecedenceButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles _pickPrecedenceButton.Click
-		Dim dt As System.Data.DataTable = Await _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
-		If dt Is Nothing Then Exit Sub
-		_precedenceForm = New ProductionPrecedenceForm
-		_precedenceForm.ExportFile = Me.ExportFile
-		_precedenceForm.PrecedenceTable = dt
-		If _productionPrecedenceList.Items.Count > 0 Then
-			Dim precedenceList(_productionPrecedenceList.Items.Count - 1) As Pair
-			Dim i As Int32 = 0
-			For i = 0 To _productionPrecedenceList.Items.Count - 1
-				precedenceList(i) = DirectCast(_productionPrecedenceList.Items(i), Pair)
-			Next
-			_precedenceForm.PrecedenceList = precedenceList
-		Else
-			Dim precedenceList(0) As Pair
-			precedenceList(0) = New Pair("-1", "Original")
-			_precedenceForm.PrecedenceList = Nothing
-		End If
-		_precedenceForm.ShowDialog()
+		Try
+			Dim dt As System.Data.DataTable = Await _application.GetProductionPrecendenceList(ExportFile.CaseInfo)
+			If dt Is Nothing Then Exit Sub
+			_precedenceForm = New ProductionPrecedenceForm
+			_precedenceForm.ExportFile = Me.ExportFile
+			_precedenceForm.PrecedenceTable = dt
+			If _productionPrecedenceList.Items.Count > 0 Then
+				Dim precedenceList(_productionPrecedenceList.Items.Count - 1) As Pair
+				Dim i As Int32 = 0
+				For i = 0 To _productionPrecedenceList.Items.Count - 1
+					precedenceList(i) = DirectCast(_productionPrecedenceList.Items(i), Pair)
+				Next
+				_precedenceForm.PrecedenceList = precedenceList
+			Else
+				Dim precedenceList(0) As Pair
+				precedenceList(0) = New Pair("-1", "Original")
+				_precedenceForm.PrecedenceList = Nothing
+			End If
+			_precedenceForm.ShowDialog()
+		Catch ex As System.Exception
+			_logger.LogError(ex, "An exception occurred in the pickPrecedenceButton event handler : {0}", ex.Message)
+			Throw
+		End Try
 	End Sub
 
 	Private Sub _precedenceForm_PrecedenceOK(ByVal precedenceList() As kCura.WinEDDS.Pair) Handles _precedenceForm.PrecedenceOK
