@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.1004] - 11-27-2023
+ 
+### Changed
+ 
+- [REL-866934](https://jira.kcura.com/browse/REL-866934) - RDC Installer Should default to a server configuration
+
 ## [2.9.1003] - 11-14-2023
 
 ### Fixed
