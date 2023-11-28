@@ -898,6 +898,7 @@ Namespace kCura.WinEDDS
 					Return Me.PrepareOriginalImages(imagesView, documentArtifactID, artifact, prediction)
 				Else
 					productionImagesView.RowFilter = String.Format("DocumentArtifactID = {0} AND ProductionArtifactID = {1}", documentArtifactID, item.Value)
+					productionImagesView.Sort = "DocumentArtifactID ASC, order ASC"
 					Dim firstImageFileName As String = Nothing
 					If productionImagesView.Count > 0 Then
 						Dim drv As System.Data.DataRowView
