@@ -23,7 +23,11 @@
     <Button Name="HelpCancelButton" X="-12" Y="-12" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.HelpCloseButton)</Button>
   </Page>
   <Page Name="Install">
-    <Checkbox Name="RELATIVITYONE_ENV" X="12" Y="124" Width="-12" Height="17" TabStop="yes" FontId="4" HideWhenDisabled="yes">#(loc.RelativityOneEnv)</Checkbox>    
+    <Checkbox Name="RELATIVITYONE_ENV" X="12" Y="124" Width="-12" Height="17" TabStop="yes" FontId="4" HideWhenDisabled="yes" Selected="no">Checked_SELECTED</Checkbox>
+  <Property Id="RELATIVITYONE_ENV6" Value="0" />
+  <Checkbox Name="RELATIVITYONE_ENV6" X="12" Y="124" Width="-12" Height="17" TabStop="yes" FontId="4" HideWhenDisabled="yes" Property="RELATIVITYONE_ENV6">Checked_PROP</Checkbox> 
+  <Checkbox Name="RELATIVITYONE_ENV1" X="12" Y="124" Width="-12" Height="17" TabStop="yes" FontId="4" HideWhenDisabled="yes" Checked="false">Checked_false</Checkbox> 
+  <Checkbox Name="RELATIVITYONE_ENV2" X="12" Y="124" Width="-12" Height="17" TabStop="yes" FontId="4" HideWhenDisabled="yes" Checked="no">Checked_no</Checkbox>
     <Image X="0" Y="-48" Width="485" Height="3" ImageFile="horiz-divider.bmp" Visible="yes"/>
     <Button Name="OptionsButton" X="-171" Y="-12" Width="75" Height="23" TabStop="yes" FontId="0" HideWhenDisabled="yes">#(loc.InstallOptionsButton)</Button>
     <Button Name="InstallButton" X="-91" Y="-12" Width="75" Height="23" TabStop="yes" FontId="0">#(loc.InstallInstallButton)</Button>
