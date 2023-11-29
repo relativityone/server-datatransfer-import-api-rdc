@@ -119,16 +119,16 @@ timestamps
                         def output = JsonOutput.toJson(config)
                         echo JsonOutput.prettyPrint(output)
                         echo "End of hopper variables"
-                        //vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
+                        vmInfo = tools.createHopperInstance(config.sutTemplate, params.relativityBranch)
                     }
 
                     stage('Replace variables in build')
                     {
-                        // echo "replacing test variables in build"
-                        // echo "vmInfo url ${vmInfo.Url}"
-                        // echo "vmInfo id ${vmInfo.Id}"
-                        // output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
-                        // echo output
+                        echo "replacing test variables in build"
+                        echo "vmInfo url ${vmInfo.Url}"
+                        echo "vmInfo id ${vmInfo.Id}"
+                        output = powershell ".\\build.ps1 ReplaceTestVariables -TestTarget '${(new URI(vmInfo.Url)).getHost()}'"
+                        echo output
                     }
 
                     stage('Build binaries')
@@ -164,12 +164,12 @@ timestamps
 
                     try
                     {
-                        // stage("Run unit and integration tests")
-                        // {
-                        //     echo "Creating a code coverage report"
-                        //     output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
-                        //     echo output
-                        // }
+                        stage("Run unit and integration tests")
+                        {
+                            echo "Creating a code coverage report"
+                            output = powershell ".\\build.ps1 CodeCoverageReport -TestEnvironment '${params.testEnvironment}' -Branch '${branchName}'"
+                            echo output
+                        }
                     }
                     finally
                     {
@@ -178,70 +178,70 @@ timestamps
                             echo "Generating test report"
                             powershell ".\\build.ps1 TestReports -Branch '${branchName}'"
                             parallel(
-                                // "Retrieve test results":
-                                // {
-                                //     try
-                                //     {
-                                //         def taskCandidates = []
-                                //         taskCandidates.add("UnitTestResults")
-                                //         taskCandidates.add("IntegrationTestResults")
-                                //         taskCandidates.eachWithIndex { task, index ->
-                                //             def testDescription = ""
-                                //             switch (index)
-                                //             {
-                                //                 case 0:
-                                //                     testDescription = "unit"
-                                //                     break
+                                "Retrieve test results":
+                                {
+                                    try
+                                    {
+                                        def taskCandidates = []
+                                        taskCandidates.add("UnitTestResults")
+                                        taskCandidates.add("IntegrationTestResults")
+                                        taskCandidates.eachWithIndex { task, index ->
+                                            def testDescription = ""
+                                            switch (index)
+                                            {
+                                                case 0:
+                                                    testDescription = "unit"
+                                                    break
 
-                                //                 case 1:
-                                //                     testDescription = "integration"
-                                //                     break
+                                                case 1:
+                                                    testDescription = "integration"
+                                                    break
 
-                                //                 default:
-                                //                     throw new Exception("The test result type $index is not mapped")
-                                //             }
+                                                default:
+                                                    throw new Exception("The test result type $index is not mapped")
+                                            }
 
-                                //             // Let the build script retrieve the unit test result values.
-                                //             echo "Retrieving the $testDescription-test results"
-                                //             def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
-                                //             echo "Retrieved the $testDescription-test results"
+                                            // Let the build script retrieve the unit test result values.
+                                            echo "Retrieving the $testDescription-test results"
+                                            def testResultOutputString = tools.runCommandWithOutput(".\\build.ps1 ${task} -Verbosity '${params.buildVerbosity}' -Branch '${branchName}'")
+                                            echo "Retrieved the $testDescription-test results"
 
-                                //             // Search for specific tokens within the response.
-                                //             echo "Extracting the $testDescription-test result parameters"
-                                //             echo "Output of method runCommandWithOutput- $testResultOutputString"
-                                //             def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
-                                //             def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
-                                //             def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
-                                //             echo "Extracted the $testDescription-test result parameters"
+                                            // Search for specific tokens within the response.
+                                            echo "Extracting the $testDescription-test result parameters"
+                                            echo "Output of method runCommandWithOutput- $testResultOutputString"
+                                            def int passed = tools.extractValue("testResultsPassed", testResultOutputString)
+                                            def int failed = tools.extractValue("testResultsFailed", testResultOutputString)
+                                            def int skipped = tools.extractValue("testResultsSkipped", testResultOutputString)
+                                            echo "Extracted the $testDescription-test result parameters"
 
-                                //             // Dump the individual test results
-                                //             echo "$testDescription-test passed: $passed"
-                                //             echo "$testDescription-test failed: $failed"
-                                //             echo "$testDescription-test skipped: $skipped"
+                                            // Dump the individual test results
+                                            echo "$testDescription-test passed: $passed"
+                                            echo "$testDescription-test failed: $failed"
+                                            echo "$testDescription-test skipped: $skipped"
 
-                                //             // Now add to the final test results
-                                //             testResultsPassed += passed
-                                //             testResultsFailed += failed
-                                //             testResultsSkipped += skipped
+                                            // Now add to the final test results
+                                            testResultsPassed += passed
+                                            testResultsFailed += failed
+                                            testResultsSkipped += skipped
 
-                                //             if(failed > 0)
-                                //             {
-                                //                 echo "$testDescription-test failed is bigger than zero"
-                                //                 currentBuild.result = 'FAILED' 
-                                //                 throw new Exception("Tests failed.")
-                                //             }
-                                //         }
+                                            if(failed > 0)
+                                            {
+                                                echo "$testDescription-test failed is bigger than zero"
+                                                currentBuild.result = 'FAILED' 
+                                                throw new Exception("Tests failed.")
+                                            }
+                                        }
 
-                                //         // Dump the final test results
-                                //         echo "Total passed: $testResultsPassed"
-                                //         echo "Total failed: $testResultsFailed"
-                                //         echo "Total skipped: $testResultsSkipped"
-                                //     }
-                                //     catch(err) {
-                                //         echo "Parsing error"
-                                //         echo err.toString()
-                                //     }
-                                // },
+                                        // Dump the final test results
+                                        echo "Total passed: $testResultsPassed"
+                                        echo "Total failed: $testResultsFailed"
+                                        echo "Total skipped: $testResultsSkipped"
+                                    }
+                                    catch(err) {
+                                        echo "Parsing error"
+                                        echo err.toString()
+                                    }
+                                },
 
                                 "Create NuGet packages":
                                 {
