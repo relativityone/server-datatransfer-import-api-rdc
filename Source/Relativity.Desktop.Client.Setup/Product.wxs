@@ -663,6 +663,26 @@
                        Name="RelativityOneEnv"
                        Value="[RELATIVITYONE_ENV]"
                        KeyPath="no" />
+        <RegistryValue Type="integer"
+                       Name="RelativityOneEnv1"
+                       Value="0"
+                       KeyPath="no" />
+        <RegistryValue Type="integer"
+                       Name="RelativityOneEnv2"
+                       Value="0"
+                       KeyPath="yes" />
+        <RegistryValue Type="integer"
+                       Name="RelativityOneEnv3"
+                       Value="[RELATIVITYONE_ENV]"
+                       KeyPath="no" />
+        <RegistryValue Type="integer"
+                       Name="RelativityOneEnv4"
+                       Value="[RELATIVITYONE_ENV4]"
+                       KeyPath="no" />
+        <RegistryValue Type="integer"
+                       Name="RelativityOneEnv5"
+                       Value="[RELATIVITYONE_ENV5]"
+                       KeyPath="no" />
       </RegistryKey>
     </Component>
     <Component Id="BrowserRegistryEntry"

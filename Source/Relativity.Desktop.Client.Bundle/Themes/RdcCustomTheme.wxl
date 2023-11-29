@@ -22,6 +22,11 @@
   <String Id="HelpCloseButton">&amp;Close</String>
   <String Id="InstallLicenseLinkText">&lt;a href="#"&gt;license terms&lt;/a&gt;.</String>
   <String Id="RelativityOneEnv">This application will be used with RelativityOne.</String>
+  <String Id="RelativityOneEnv1">This application will be used with RelativityOne.</String>
+  <String Id="RelativityOneEnv2">This application will be used with RelativityOne.</String>
+  <String Id="RelativityOneEnv3">This application will be used with RelativityOne.</String>
+  <String Id="RelativityOneEnv4">This application will be used with RelativityOne.</String>
+  <String Id="RelativityOneEnv5">This application will be used with RelativityOne.</String>
   <String Id="InstallAcceptCheckbox">I &amp;agree to the license terms and conditions</String>
   <String Id="InstallOptionsButton">&amp;Options</String>
   <String Id="InstallInstallButton">&amp;Install</String>
