@@ -18,7 +18,7 @@
     <!-- All variables used to capture custom install options go here -->
     <Variable Name="ProductVersion" Value="$(var.ProductVersion)"/>
     <Variable Name="INSTALLFOLDER" bal:Overridable="yes" Value="[InstallFolder]" />
-    <Variable Name="RELATIVITYONE_ENV" bal:Overridable="yes" Value="0" />
+    <Variable Name="RELATIVITYONE_ENV" bal:Overridable="yes" Value="1" />
     <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
       <bal:WixStandardBootstrapperApplication SuppressOptionsUI="no"
                                               LicenseUrl=""
