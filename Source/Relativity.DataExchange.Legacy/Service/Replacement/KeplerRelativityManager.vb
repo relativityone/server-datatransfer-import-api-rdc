@@ -19,6 +19,14 @@ Namespace kCura.WinEDDS.Service.Replacement
                            End Function)
         End Function
 
+        Public Function RetrieveCurrencySymbolV2() As String Implements IRelativityManager.RetrieveCurrencySymbolV2
+            Return Execute(Async Function(s)
+                               Using service As IRelativityService = s.CreateProxyInstance(Of IRelativityService)
+                                   Return Await service.RetrieveCurrencySymbolV2Async(CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
+                               End Using
+                           End Function)
+        End Function
+
         Public Function IsImportEmailNotificationEnabled() As Boolean Implements IRelativityManager.IsImportEmailNotificationEnabled
             Return Execute(Async Function(s)
                                Using service As IRelativityService = s.CreateProxyInstance(Of IRelativityService)
@@ -32,7 +40,7 @@ Namespace kCura.WinEDDS.Service.Replacement
                                Using service As IRelativityService = s.CreateProxyInstance(Of IRelativityService)
                                    Return Await service.RetrieveRdcConfigurationAsync(CorrelationIdFunc?.Invoke()).ConfigureAwait(False)
                                End Using
-            End Function)
+                           End Function)
         End Function
 
         Public Function ValidateSuccessfulLogin() As Boolean Implements IRelativityManager.ValidateSuccessfulLogin
