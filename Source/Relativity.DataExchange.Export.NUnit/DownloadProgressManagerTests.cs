@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
+	using System;
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
@@ -368,6 +369,33 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			// ASSERT
 			Assert.That(actualDocumentExportedCount, Is.EqualTo(4));
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenSelectedImageFileIsNull()
+		{
+			// ARRANGE
+			this._imageRepository = null;
+			// Act and Assert
+			Assert.Throws<ArgumentNullException>(() => ModelFactory.GetImage(this._imageRepository, 1, "sourceLocation", "targetFile"));
+		}
+
+		[Test]
+		public void GetImage_WithValidArguments_ReturnsImageRequest()
+		{
+			// Arrange
+			this._imageRepository = new ImageRepository();
+			var artifactId = 1;
+			var sourceLocation = "validSourceLocation";
+
+			// Act
+			var result = ModelFactory.GetImage(this._imageRepository, artifactId, sourceLocation);
+
+			// Assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(artifactId, result.Artifact.ArtifactID);
+			Assert.AreEqual(sourceLocation, result.Artifact.SourceLocation);
+			
 		}
 	}
 }

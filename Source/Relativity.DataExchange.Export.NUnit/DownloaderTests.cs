@@ -6,6 +6,7 @@
 
 namespace Relativity.DataExchange.Export.NUnit
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -103,5 +104,26 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._errorFileWriter.Verify(x => x.Write(ErrorFileWriter.ExportFileType.Generic, It.IsAny<ObjectExportInfo>(), It.IsAny<string>(), It.IsAny<string>()));
 		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenSelectedNativeFileIsNull()
+		{
+			// ARRANGE
+			this._nativeRepository = null;
+			// Act and Assert
+			Assert.Throws<ArgumentNullException>(
+				() => ModelFactory.GetNative(this._nativeRepository, "sourceLocation", "targetFile",0));
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionWhenSelectedPdfFileIsNull()
+		{
+			// ARRANGE
+			this._pdfRepository = null;
+			// Act and Assert
+			Assert.Throws<ArgumentNullException>(
+				() => ModelFactory.GetPdf(this._pdfRepository, 1, "sourceLocation", "targetFile"));
+		}
+
 	}
 }
