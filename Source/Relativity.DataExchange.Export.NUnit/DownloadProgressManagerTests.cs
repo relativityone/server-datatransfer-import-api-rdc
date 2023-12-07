@@ -375,23 +375,24 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void ItShouldThrowExceptionWhenSelectedImageFileIsNull()
 		{
 			// ARRANGE
-			this._imageRepository = null;
+			this._imageRepository = null; 
+			
 			// Act and Assert
 			Assert.Throws<ArgumentNullException>(() => ModelFactory.GetImage(this._imageRepository, 1, "sourceLocation", "targetFile"));
 		}
 
 		[Test]
-		public void GetImage_WithValidArguments_ReturnsImageRequest()
+		public void ItShouldGetImageWithValidArguments()
 		{
-			// Arrange
+			// ARRANGE
 			this._imageRepository = new ImageRepository();
-			var artifactId = 1;
-			var sourceLocation = "validSourceLocation";
+			int artifactId = 1;
+			string sourceLocation = "validSourceLocation";
 
-			// Act
-			var result = ModelFactory.GetImage(this._imageRepository, artifactId, sourceLocation);
+			// ACT
+			ImageRequest result = ModelFactory.GetImage(this._imageRepository, artifactId, sourceLocation);
 
-			// Assert
+			// ASSERT
 			Assert.IsNotNull(result);
 			Assert.AreEqual(artifactId, result.Artifact.ArtifactID);
 			Assert.AreEqual(sourceLocation, result.Artifact.SourceLocation);
