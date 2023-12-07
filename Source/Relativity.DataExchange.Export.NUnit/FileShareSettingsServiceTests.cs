@@ -9,9 +9,9 @@ namespace Relativity.DataExchange.Export.NUnit
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Net;
-	using System.Threading;
-	using System.Threading.Tasks;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 	using global::NUnit.Framework;
 
@@ -45,7 +45,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			this._exportFile.Credential = new NetworkCredential();
 			var testNullLogger = new TestNullLogger();
 			_logger = testNullLogger.NullLoggerMock;
-			this._status = new Mock<IStatus>();
+           this._status = new Mock<IStatus>();
 			this._tapiObjectService = new Mock<ITapiObjectService>();
 			this._instance = new FileShareSettingsService(
 				this._status.Object,
@@ -54,7 +54,8 @@ namespace Relativity.DataExchange.Export.NUnit
 				this._exportFile);
 		}
 
-		[Test]
+
+        [Test]
 		public void ItShouldThrowWhenFatalExceptionIsThrown()
 		{
 			// ARRANGE
@@ -246,7 +247,41 @@ namespace Relativity.DataExchange.Export.NUnit
 			}
 		}
 
-		private static ITapiFileStorageSearchResults CreateMockTapiFileStorageSearchResults(
+        [Test]
+        public void ItShouldThrowArgumentExceptionWhenCaseInfoIsNull()
+        {
+            // ARRANGE
+            ExportFile exportFile = new ExportFile(12);
+            exportFile.Credential = new NetworkCredential();
+
+            // ASSERTION
+            Assert.Throws<ArgumentException>(() => new FileShareSettingsService(
+                this._status.Object,
+                this._tapiObjectService.Object,
+                _logger.Object,
+                exportFile));
+        }
+
+        [Test]
+        public void ItShouldThrowArgumentExceptionWhenCredentialIsNull()
+        {
+
+            // ARRANGE
+            ExportFile exportFile = new ExportFile(12);
+            exportFile.CaseInfo = new CaseInfo();
+            exportFile.CaseInfo.ArtifactID = RandomHelper.NextInt(1000, 100000);
+
+
+            // ASSERTION
+            Assert.Throws<ArgumentException>(() => new FileShareSettingsService(
+                this._status.Object,
+                this._tapiObjectService.Object,
+                _logger.Object,
+                exportFile));
+
+        }
+
+        private static ITapiFileStorageSearchResults CreateMockTapiFileStorageSearchResults(
 			bool cloudInstance,
 			int totalValid,
 			int totalInvalid)

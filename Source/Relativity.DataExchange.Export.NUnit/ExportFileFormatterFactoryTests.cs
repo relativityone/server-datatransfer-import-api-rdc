@@ -27,7 +27,6 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void Init()
 		{
 			this._fieldNameProviderMock = new Mock<IFieldNameProvider>();
-
 			this._subjectUnderTest = new ExportFileFormatterFactory(this._fieldNameProviderMock.Object);
 		}
 
@@ -47,5 +46,23 @@ namespace Relativity.DataExchange.Export.NUnit
 			// Assert
 			Assert.IsInstanceOf(formatterType, retFormatter);
 		}
-	}
+
+        [Test]
+        public void ConstructorWithoutParametersShouldInitializeFieldNameProvider()
+        {
+            //ARRANGE
+            var factory = new ExportFileFormatterFactory();
+
+            // ACT & Assert
+            var fieldNameProviderField = typeof(ExportFileFormatterFactory)
+                .GetField("_fieldNameProvider", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+            var fieldValue = fieldNameProviderField.GetValue(factory);
+
+            Assert.IsNotNull(fieldValue);
+            Assert.IsInstanceOf<IFieldNameProvider>(fieldValue); 
+            Assert.IsInstanceOf<FieldNameProvider>(fieldValue); 
+        }
+
+    }
 }
