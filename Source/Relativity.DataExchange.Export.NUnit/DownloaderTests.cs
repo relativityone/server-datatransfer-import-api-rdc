@@ -111,7 +111,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ARRANGE
 			this._nativeRepository = null;
 
-			// Act and Assert
+			// ACT and ASSERT
 			Assert.Throws<ArgumentNullException>(
 				() => ModelFactory.GetNative(this._nativeRepository, "sourceLocation", "targetFile",0));
 		}
@@ -122,7 +122,7 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ARRANGE
 			this._pdfRepository = null;
 
-			// Act and Assert
+			// ACT and ASSERT
 			Assert.Throws<ArgumentNullException>(
 				() => ModelFactory.GetPdf(this._pdfRepository, 1, "sourceLocation", "targetFile"));
 		}

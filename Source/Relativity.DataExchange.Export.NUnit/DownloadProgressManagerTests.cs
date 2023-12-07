@@ -377,12 +377,12 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ARRANGE
 			this._imageRepository = null; 
 			
-			// Act and Assert
+			// ACT and ASSERT
 			Assert.Throws<ArgumentNullException>(() => ModelFactory.GetImage(this._imageRepository, 1, "sourceLocation", "targetFile"));
 		}
 
 		[Test]
-		public void ItShouldGetImageWithValidArguments()
+		public void ItShouldGetImageWhenInputArgumentsAreValid()
 		{
 			// ARRANGE
 			this._imageRepository = new ImageRepository();
