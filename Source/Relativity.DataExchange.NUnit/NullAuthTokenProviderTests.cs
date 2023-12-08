@@ -16,13 +16,13 @@ namespace Relativity.DataExchange.NUnit
 		[Test]
 		public void ItShouldGenerateEmptyToken()
 		{
-			// arrange
+			// ARRANGE
 			NullAuthTokenProvider subjectUnderTest = new NullAuthTokenProvider();
 
-			// act
+			// ACT
 			string tokenGenerated = subjectUnderTest.GenerateToken();
 
-			// assert
+			// ASSERT
 			Assert.IsEmpty(tokenGenerated);
 		}
 	}
