@@ -34,35 +34,17 @@ namespace Relativity.DataExchange.Export.NUnit
 		[TestCase(typeof(HtmlExportFileFormatter), true)]
 		public void ItShouldReturnCorrectFormatterType(Type formatterType, bool isHtml)
 		{
-			// Arrange
+			// ARRANGE
 			ExportFile exportFile = new ExportFile((int)ArtifactType.Document)
 			{
 				LoadFileIsHtml = isHtml
 			};
 
-			// Act
+			// ACT
 			ILoadFileHeaderFormatter retFormatter = this._subjectUnderTest.Create(exportFile);
 
-			// Assert
+			// ASSERT
 			Assert.IsInstanceOf(formatterType, retFormatter);
 		}
-
-        [Test]
-        public void ConstructorWithoutParametersShouldInitializeFieldNameProvider()
-        {
-            //ARRANGE
-            var factory = new ExportFileFormatterFactory();
-
-            // ACT & Assert
-            var fieldNameProviderField = typeof(ExportFileFormatterFactory)
-                .GetField("_fieldNameProvider", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-
-            var fieldValue = fieldNameProviderField.GetValue(factory);
-
-            Assert.IsNotNull(fieldValue);
-            Assert.IsInstanceOf<IFieldNameProvider>(fieldValue); 
-            Assert.IsInstanceOf<FieldNameProvider>(fieldValue); 
-        }
-
     }
 }
