@@ -96,6 +96,7 @@
     <Compile Include="ByteSize\ToStringMethod.cs" />
     <Compile Include="ChoiceInfoTests.cs" />
     <Compile Include="IAPICommunicationModeManagerTests.cs" />
+    <Compile Include="NullAuthTokenProviderTests.cs" />
     <Compile Include="Mapping\KeplerTypeMapperTests.cs" />
     <Compile Include="RestartableFileStreamTests.cs" />
     <Compile Include="Service\HttpErrorRetryPolicyFactoryTests.cs" />
