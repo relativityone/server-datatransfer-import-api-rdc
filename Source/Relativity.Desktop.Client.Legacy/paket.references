@@ -10,3 +10,4 @@ relativity.services.interfaces
 relativity.telemetry.datacontracts.shared
 relativity.transfer.client
 microsoft-windowsapicodepack-core
+Relativity.DataTransfer.Legacy.SDK

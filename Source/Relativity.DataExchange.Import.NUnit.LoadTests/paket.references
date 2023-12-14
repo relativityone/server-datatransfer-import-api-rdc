@@ -15,5 +15,6 @@ relativity.testing.identification
 relativity.transfer.client
 stylecop.analyzers
 ConfigureAwaitChecker.Analyzer
+Relativity.DataTransfer.Legacy.SDK
 group integration-tests
 System.ValueTuple

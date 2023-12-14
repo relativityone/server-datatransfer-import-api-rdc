@@ -1122,6 +1122,7 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
 
         ' It was addded by hand to reflect this property addded to the Mass Import SDK
         Private bulkFileSharePathField As String
+        Private hasMetadataFileIdColumnField As Boolean
         
         '''<remarks/>
         Public Property Range() As LoadRange
@@ -1370,6 +1371,16 @@ Namespace kCura.EDDS.WebAPI.BulkImportManagerBase
             End Get
             Set
                 Me.bulkFileSharePathField = value
+            End Set
+        End Property
+
+        '''<remarks/>
+        Public Property HasMetadataFileIdColumn() As Boolean
+            Get
+                Return Me.hasMetadataFileIdColumnField
+            End Get
+            Set
+                Me.hasMetadataFileIdColumnField = value
             End Set
         End Property
 

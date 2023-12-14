@@ -91,6 +91,7 @@
     <Compile Include="ChoicesValidator.cs" />
     <Compile Include="ObjectsValidator.cs" />
     <Compile Include="RelationalFieldsTests.cs" />
+    <Compile Include="RsmfImportTests.cs" />
     <Compile Include="SelfReferencedObjectsTests.cs" />
     <Content Include="oi\unmanaged\libchardet.dll">
       <Paket>True</Paket>
@@ -224,14 +225,18 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-    <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(Configuration)'!='Debug'">
+      <ItemGroup>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+        <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
+          <Paket>True</Paket>
+        </Analyzer>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -309,6 +314,17 @@
         </Reference>
         <Reference Include="Relativity">
           <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -18,3 +18,4 @@ relativity.transfer.client
 System.ValueTuple
 stylecop.analyzers
 ConfigureAwaitChecker.Analyzer
+Relativity.DataTransfer.Legacy.SDK

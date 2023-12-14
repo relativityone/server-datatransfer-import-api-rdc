@@ -44,6 +44,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			LoadFile.FileSizeMapped = FileSizeMapped
 			LoadFile.FileNameColumn = FileNameColumn
 			LoadFile.SupportedByViewerColumn = SupportedByViewerColumn
+			LoadFile.MetadataFileIdColumn = MetadataFileIdColumn
 
 			'Avoid initializing the Artifact Reader in the constructor because it calls back to a virtual method (GetArtifactReader).  
 			Dim importer As DataReaderImporter = New DataReaderImporter(

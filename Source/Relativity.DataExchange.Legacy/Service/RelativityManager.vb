@@ -52,5 +52,9 @@ Namespace kCura.WinEDDS.Service
 		Public Shadows Function GetImportExportWebApiVersion() As String
 			Return RetryOnReLoginException(Function() MyBase.GetImportExportWebApiVersion())
 		End Function
+
+		Public Function RetrieveCurrencySymbolV2() As String Implements IRelativityManager.RetrieveCurrencySymbolV2
+			Throw New NotSupportedException($"The RetrieveCurrencySymbolV2 endpoint is not supported in non Kepler APIs")
+		End Function
 	End Class
 End Namespace

@@ -126,7 +126,7 @@ Namespace kCura.WinEDDS.Api
 
 		Private Shared Sub Initialize(ByVal relativityManager As kCura.WinEDDS.Service.Replacement.IRelativityManager, ByVal webServiceUrl As String, ByVal credentials As Net.NetworkCredential, ByVal cookieContainer As System.Net.CookieContainer, ByVal correlationIdFunc As Func(Of String))
 			Dim locale As New System.Globalization.CultureInfo(System.Globalization.CultureInfo.CurrentCulture.LCID, True)
-			locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbol()
+			locale.NumberFormat.CurrencySymbol = relativityManager.RetrieveCurrencySymbolV2()
 			System.Threading.Thread.CurrentThread.CurrentCulture = locale
 
 			Using userManager As kCura.WinEDDS.Service.Replacement.IUserManager = ManagerFactory.CreateUserManager(credentials, cookieContainer, webServiceUrl, correlationIdFunc)

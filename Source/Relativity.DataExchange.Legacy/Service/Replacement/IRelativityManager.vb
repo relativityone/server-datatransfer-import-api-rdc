@@ -6,5 +6,6 @@ Namespace kCura.WinEDDS.Service.Replacement
         Shadows Function RetrieveRdcConfiguration() As System.Data.DataSet
         Shadows Function ValidateSuccessfulLogin() As Boolean
         Shadows Function ValidateCertificate() As Boolean
+        Shadows Function RetrieveCurrencySymbolV2() As String
     End interface
 End NameSpace

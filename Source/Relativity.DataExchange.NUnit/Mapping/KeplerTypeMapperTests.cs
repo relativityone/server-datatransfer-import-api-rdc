@@ -18,7 +18,6 @@ namespace Relativity.DataExchange.NUnit.Mapping
 
 	using global::NUnit.Framework;
 
-	using kCura.Vendor.Castle.MicroKernel.ModelBuilder.Descriptors;
 	using kCura.WinEDDS.Mapping;
 	using RelativityDataExchange = Relativity.DataExchange.Service;
 	using RelativityDataTransferLegacySDK = Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;

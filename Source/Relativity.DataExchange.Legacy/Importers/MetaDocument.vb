@@ -136,6 +136,11 @@ Namespace kCura.WinEDDS
 		''' </summary>
 		Public Property DataGridID As String
 
+		''' <summary>
+		''' Gets or sets the identifier for the metadata record in metadata service
+		''' </summary>
+		Public Property MetadataFileId As String
+
 		Public Sub New( _
 		 ByVal fileGuid As String, _
 		 ByVal identityValue As String, _
@@ -150,7 +155,8 @@ Namespace kCura.WinEDDS
 		 ByVal lineStatus As Int64, _
 		 ByVal destinationVolume As String,
 		 ByVal folderPath As String,
-		 ByVal dataGridID As String
+		 ByVal dataGridID As String,
+		 ByVal metadataFileId As String
 		 )
 			_fileGuid = fileGuid
 			_identityValue = identityValue
@@ -167,6 +173,7 @@ Namespace kCura.WinEDDS
 			_destinationVolume = destinationVolume
 			Me.FolderPath = folderPath
 			Me.DataGridID = dataGridID
+			Me.MetadataFileId = metadataFileId
 		End Sub
 
 		Public Function GetFileType() As String
@@ -201,9 +208,10 @@ Namespace kCura.WinEDDS
 		 ByVal destinationVolume As String, _
 		 ByVal size As Long,
 		 ByVal folderPath As String,
-		 ByVal dataGridID As String
+		 ByVal dataGridID As String,
+		 ByVal metadataFileId As String
 		 )
-			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, fileTypeInfo, lineStatus, destinationVolume, folderPath, dataGridID)
+			MyBase.New(fileGuid, identityValue, indexFileInDB, filename, fullFilePath, uploadFile, lineNumber, parentFolderID, record, fileTypeInfo, lineStatus, destinationVolume, folderPath, dataGridID, metadataFileId)
 			_size = size
 		End Sub
 

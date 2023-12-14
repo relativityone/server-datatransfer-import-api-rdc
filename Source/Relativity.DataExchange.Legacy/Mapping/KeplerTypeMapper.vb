@@ -212,7 +212,8 @@ Namespace kCura.WinEDDS.Mapping
 				.MoveDocumentsInAppendOverlayMode = source.MoveDocumentsInAppendOverlayMode,
 				.ExecutionSource = CType([Enum].Parse(GetType(RelativityDataTransferLegacySDK.ExecutionSource), source.ExecutionSource.ToString()), RelativityDataTransferLegacySDK.ExecutionSource),
 				.Billable = source.Billable,
-				.BulkFileSharePath = source.BulkFileSharePath
+				.BulkFileSharePath = source.BulkFileSharePath,
+				.HasMetadataFileIdColumn = source.HasMetadataFileIdColumn
 			}
 		End Function
 
@@ -251,7 +252,8 @@ Namespace kCura.WinEDDS.Mapping
 				.MoveDocumentsInAppendOverlayMode = source.MoveDocumentsInAppendOverlayMode,
 				.ExecutionSource = CType([Enum].Parse(GetType(RelativityDataTransferLegacySDK.ExecutionSource), source.ExecutionSource.ToString()), RelativityDataTransferLegacySDK.ExecutionSource),
 				.Billable = source.Billable,
-                .BulkFileSharePath = source.BulkFileSharePath,
+				.BulkFileSharePath = source.BulkFileSharePath,
+				.HasMetadataFileIdColumn = source.HasMetadataFileIdColumn,
 				_
 				.ArtifactTypeID = source.ArtifactTypeID
 			}

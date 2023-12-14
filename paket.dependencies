@@ -65,9 +65,14 @@ nuget relativity.oauth2client = 1.5.2
 nuget relativity.oauth2client.implicit = 1.5.2
 nuget relativity.oauth2client.interfaces = 1.5.2
 nuget relativity.telemetry.services.interface ~> 3003.0.2
-nuget relativity.transfer.client ~> 8.0.0-pre.84
+nuget relativity.transfer.client = 7.7.0
 nuget relativity.services.interfaces = 13.8.1
 nuget relativity.services.interfaces.private = 11.3.11.1
+
+# This is added to csproj but not added to nuget definition
+# in order to update this in the nuget we need to
+# update this in relativity.transfer.client.
+nuget Relativity.DataTransfer.Legacy.SDK ~> 0.3.63
 
 # The Relativity packages below are required ONLY for test projects!
 nuget kcura.relativity.client = 11.2.8.6-DEV

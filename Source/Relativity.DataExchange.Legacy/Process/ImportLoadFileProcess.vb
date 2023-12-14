@@ -85,6 +85,7 @@ Namespace kCura.WinEDDS
 		Public Property FileSizeColumn As String
 		Public Property FileNameColumn As String
 		Public Property SupportedByViewerColumn As String
+		Public Property MetadataFileIdColumn As String
 
 		Public WriteOnly Property DisableUserSecurityCheck As Boolean
 			Set(ByVal value As Boolean)
@@ -209,6 +210,7 @@ Namespace kCura.WinEDDS
 			_loadFileImporter.FileSizeMapped = FileSizeMapped
 			_loadFileImporter.FileNameColumn = FileNameColumn
 			_loadFileImporter.SupportedByViewerColumn = SupportedByViewerColumn
+			_loadFileImporter.MetadataFileIdColumn = MetadataFileIdColumn
 			_loadFileImporter.LoadImportedFullTextFromServer = (Me.LoadImportedFullTextFromServer OrElse Me.AppSettings.LoadImportedFullTextFromServer)
 			Me.Context.InputArgs = LoadFile.FilePath
 		End Sub

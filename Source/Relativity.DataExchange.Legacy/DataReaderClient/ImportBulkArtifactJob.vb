@@ -150,6 +150,7 @@ Namespace kCura.Relativity.DataReaderClient
 						process.OIFileIdMapped = Settings.OIFileIdMapped
 						process.OIFileTypeColumnName = Settings.OIFileTypeColumnName
 						process.SupportedByViewerColumn = Settings.SupportedByViewerColumn
+						process.MetadataFileIdColumn = Settings.MetadataFileIdColumn
 						process.FileSizeMapped = Settings.FileSizeMapped
 						process.FileSizeColumn = Settings.FileSizeColumn
 						process.FileNameColumn = Settings.FileNameColumn

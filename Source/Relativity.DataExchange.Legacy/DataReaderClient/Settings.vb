@@ -163,6 +163,12 @@ Namespace kCura.Relativity.DataReaderClient
 		Public Property SupportedByViewerColumn As String
 
 		''' <summary>
+		''' Indicates the column that contains the FileID for the Document in metadata store.
+		''' </summary>
+		''' <returns></returns>
+		Public Property MetadataFileIdColumn As String
+
+		''' <summary>
 		''' To allow a custom time logging method through out the API
 		''' </summary>
 		''' <returns></returns>

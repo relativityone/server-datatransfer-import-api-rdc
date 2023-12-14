@@ -77,6 +77,11 @@ namespace Relativity.DataExchange.TestFramework
 		public const string OutsideInFileType = "OutsideInFileType";
 
 		/// <summary>
+		/// The Metadata file id field.
+		/// </summary>
+		public const string MetadataFileId = "MetadataFileId";
+
+		/// <summary>
 		/// The relativity image count. System field.
 		/// </summary>
 		public const string RelativityImageCount = "relativity image count";

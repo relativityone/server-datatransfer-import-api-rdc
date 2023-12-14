@@ -27,7 +27,14 @@ namespace Relativity.DataExchange.TestFramework.Import.JobExecutionContext
 			settings.FileSizeMapped = true;
 			settings.FileSizeColumn = WellKnownFields.NativeFileSize;
 			return settings;
-	}
+		}
+
+		public static Settings GetRsmfSettings()
+		{
+			Settings settings = GetDefaultSettings();
+			settings.MetadataFileIdColumn = WellKnownFields.MetadataFileId;
+			return settings;
+		}
 
 		public static Settings GetDefaultSettings()
 		{

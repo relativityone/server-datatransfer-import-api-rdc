@@ -6,3 +6,4 @@ relativity.transfer.client
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
 ConfigureAwaitChecker.Analyzer
+Relativity.DataTransfer.Legacy.SDK

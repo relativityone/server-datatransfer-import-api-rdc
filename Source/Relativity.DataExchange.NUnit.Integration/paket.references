@@ -16,3 +16,4 @@ ConfigureAwaitChecker.Analyzer
 relativity.telemetry.datacontracts.shared
 relativity.telemetry.services.interface
 System.ValueTuple
+Relativity.DataTransfer.Legacy.SDK

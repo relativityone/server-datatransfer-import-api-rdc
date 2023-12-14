@@ -101,6 +101,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			Me.FileSizeColumn = loadFile.FileSizeColumn
 			Me.FileNameColumn = loadFile.FileNameColumn
 			Me.SupportedByViewerColumn = loadFile.SupportedByViewerColumn
+			Me.MetadataFileIdColumn = loadFile.MetadataFileIdColumn
 			If temporaryLocalDirectory IsNot Nothing Then
 				Me.TemporaryLocalDirectory = temporaryLocalDirectory
 			End If
@@ -206,7 +207,8 @@ Namespace kCura.WinEDDS.ImportExtension
 					.FileSizeColumn = FileSizeColumn,
 					.FileSizeMapped = FileSizeMapped,
 					.FileNameColumn = FileNameColumn,
-					.SupportedByViewerColumn = SupportedByViewerColumn
+					.SupportedByViewerColumn = SupportedByViewerColumn,
+					.MetadataFileIdColumn = MetadataFileIdColumn
 					}
 			Dim initalizationArgs As New DataReaderReaderInitializationArgs(collection, _settings.ArtifactTypeID) With {.TemporaryLocalDirectory = TemporaryLocalDirectory}
 			Dim retval As New DataReaderReader(initalizationArgs, _settings, _sourceReader, fileSettings)

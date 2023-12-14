@@ -420,14 +420,14 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
+  <Choose><When Condition="'$(Configuration)'!='Debug'"><ItemGroup>
     <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Analyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
     <Analyzer Include="..\..\packages\ConfigureAwaitChecker.Analyzer\analyzers\dotnet\cs\ConfigureAwaitChecker.Lib.dll">
       <Paket>True</Paket>
     </Analyzer>
-  </ItemGroup>
+  </ItemGroup></When></Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
@@ -455,6 +455,17 @@
       <ItemGroup>
         <Reference Include="Relativity.AutomatedWorkflows.Services.Interfaces">
           <HintPath>..\..\packages\Relativity.AutomatedWorkflows.Services.Interfaces\lib\net462\Relativity.AutomatedWorkflows.Services.Interfaces.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Legacy.SDK">
+          <HintPath>..\..\packages\Relativity.DataTransfer.Legacy.SDK\lib\net462\Relativity.DataTransfer.Legacy.SDK.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
