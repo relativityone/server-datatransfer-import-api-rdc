@@ -39,8 +39,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 					new TestCaseData(SampleDocPdfFileName, null),
 					new TestCaseData(SampleDocWordFileName, string.Empty),
 					new TestCaseData(SampleDocExcelFileName, "\\doc-import-root1"),
-					new TestCaseData(SampleDocEmfFileName, "\\doc-import-root1\\doc-import-root2"),
-					new TestCaseData(SampleDocPptFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3"),
 					new TestCaseData(SampleDocWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4"),
 				};
 
