@@ -693,7 +693,7 @@ Namespace kCura.WinEDDS
 											Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
 										Else
 											WriteError(Me.CurrentLineNumber, ex.Message)
-											Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
+											Me.LogError("A serious code operation error has occurred managing an import document.")
 										End If
 									Catch ex As System.IO.PathTooLongException
 										WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
