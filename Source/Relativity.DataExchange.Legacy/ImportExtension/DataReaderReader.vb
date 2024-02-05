@@ -1,3 +1,4 @@
+Imports System.Collections.Generic
 Imports kCura.WinEDDS.Api
 Imports Relativity.DataExchange
 Imports Relativity.DataExchange.Io
@@ -13,7 +14,8 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _reader As System.Data.IDataReader
 		Private ReadOnly _FileSettings As FileSettings
 		Private _loadFileSettings As kCura.WinEDDS.LoadFile
-		Protected _currentLineNumber As Long = 0
+		Protected _currentLineNumber As Long = 1
+		Protected _nextLineNumber As Long = 1
 		Private _size As Long = -1
 		Private _columnNames As String()
 		Private _allFields As Api.ArtifactFieldCollection
@@ -21,6 +23,7 @@ Namespace kCura.WinEDDS.ImportExtension
 		Private _markerNameIsMapped As Nullable(Of Boolean)
 		Private _identifierFieldIndex As Integer
 		Private _lastSourceIdentifier As String
+		Private _lineNumberToIdentifierMapping As LineToIdentifierMappings = New LineToIdentifierMappings()
 
 		Private _fileSettingsFileNameColumnIndex As Integer
 		Private _fileSettingsFileSizeColumnIndex As Integer
@@ -40,7 +43,7 @@ Namespace kCura.WinEDDS.ImportExtension
 				fileSettings = New FileSettings() With {.FileNameColumn = Nothing, .FileSizeColumn = Nothing, .FileSizeMapped = False, .IDColumnName = Nothing, .OIFileIdMapped = False, .TypeColumnName = Nothing}
 			End If
 			_FileSettings = fileSettings
-			
+
 			_reader.ThrowIfNull(nameof(_reader))
 			If _reader.IsClosed = True OrElse _reader.FieldCount = 0 Then Throw New ArgumentException("The reader is closed or empty")
 			_loadFileSettings = fieldMap
@@ -85,14 +88,23 @@ Namespace kCura.WinEDDS.ImportExtension
 			Return _lastSourceIdentifier
 		End Function
 
+		Public Function SourceIdentifierValue(ByVal lineNumber As Integer) As String Implements IArtifactReader.SourceIdentifierValue
+			Dim identifierForLine As String = _lineNumberToIdentifierMapping.GetIdentifier(lineNumber)
+			If identifierForLine IsNot Nothing Then
+				Return identifierForLine
+			Else
+				Return Me._lastSourceIdentifier
+			End If
+		End Function
+
 		Public Sub AdvanceRecord() Implements kCura.WinEDDS.Api.IArtifactReader.AdvanceRecord
-            Try
-                If Not _reader.Read() Then
-                    _reader.Close()
-                End If
-            Finally
-                _currentLineNumber += 1
-            End Try
+			Try
+				If Not _reader.Read() Then
+					_reader.Close()
+				End If
+			Finally
+				_nextLineNumber += 1
+			End Try
 		End Sub
 
 		Public ReadOnly Property BytesProcessed() As Long Implements kCura.WinEDDS.Api.IArtifactReader.BytesProcessed
@@ -177,9 +189,8 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Function ReadArtifact() As kCura.WinEDDS.Api.ArtifactFieldCollection Implements kCura.WinEDDS.Api.IArtifactReader.ReadArtifact
 			Try
+				Me._currentLineNumber = Me._nextLineNumber
 				Return ReadArtifactData()
-			Catch ex As Exception
-				Throw
 			Finally
 				AdvanceRecord()
 			End Try
@@ -193,6 +204,7 @@ Namespace kCura.WinEDDS.ImportExtension
 			' step 1 - save off the identifier for the current record
 			If _identifierFieldIndex > -1 Then
 				_lastSourceIdentifier = _reader.Item(_identifierFieldIndex).ToString()
+				_lineNumberToIdentifierMapping.AddMapping(_currentLineNumber, _lastSourceIdentifier)
 			End If
 			For i As Integer = 0 To _reader.FieldCount - 1
 				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower())
@@ -324,75 +336,75 @@ Namespace kCura.WinEDDS.ImportExtension
 					End If
 				End If
 			End If
-			
+
 			If (Not String.IsNullOrEmpty(fileName)) Then
 				Return fileName
 			End If
 
 			Return Nothing
 		End Function
-		
-        Private Function GetFileSizeData() As Long?
 
-            If Not _FileSettings.FileSizeMapped Then
-                Return Nothing
-            End If
+		Private Function GetFileSizeData() As Long?
 
-            Dim fileSize As Nullable(Of Long) = Nothing
+			If Not _FileSettings.FileSizeMapped Then
+				Return Nothing
+			End If
 
-            If _fileSettingsFileSizeColumnIndex = -1 Then
-                For i As Integer = 0 To _reader.FieldCount - 1
-                    If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
-                        Dim value As Long = -1
-                        Dim readerValue As String = Convert.ToString(_reader.GetValue(i))
-                        Long.TryParse(readerValue, value)
-                        fileSize = value
-                        _fileSettingsFileSizeColumnIndex = i
-                        Exit For
-                    End If
-                Next
-            Else
-                If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
-                    Dim value As Long = -1
-                    Dim readerValue As String = Convert.ToString(_reader.GetValue(_fileSettingsFileSizeColumnIndex))
-                    Long.TryParse(readerValue, value)
-                    fileSize = value
-                End If
-            End If
+			Dim fileSize As Nullable(Of Long) = Nothing
 
-            If (fileSize.HasValue) Then
-                Return fileSize
-            End If
+			If _fileSettingsFileSizeColumnIndex = -1 Then
+				For i As Integer = 0 To _reader.FieldCount - 1
+					If (_reader.GetName(i) = _FileSettings.FileSizeColumn) Then
+						Dim value As Long = -1
+						Dim readerValue As String = Convert.ToString(_reader.GetValue(i))
+						Long.TryParse(readerValue, value)
+						fileSize = value
+						_fileSettingsFileSizeColumnIndex = i
+						Exit For
+					End If
+				Next
+			Else
+				If (_reader.GetName(_fileSettingsFileSizeColumnIndex) = _FileSettings.FileSizeColumn) Then
+					Dim value As Long = -1
+					Dim readerValue As String = Convert.ToString(_reader.GetValue(_fileSettingsFileSizeColumnIndex))
+					Long.TryParse(readerValue, value)
+					fileSize = value
+				End If
+			End If
 
-            Return Nothing
-        End Function
+			If (fileSize.HasValue) Then
+				Return fileSize
+			End If
 
-        Private Function GetMetadataFileIdData() As String
-            Dim metadataFileId As String = Nothing
-            If (Not String.IsNullOrEmpty(_FileSettings.MetadataFileIdColumn)) Then
-                If _metadataFileIdColumnNameIndex = -1 Then
-                    For i As Integer = 0 To _reader.FieldCount - 1
-                        If (_reader.GetName(i) = _FileSettings.MetadataFileIdColumn) Then
-                            _metadataFileIdColumnNameIndex = i
-                            Exit For
-                        End If
-                    Next
-                End If
+			Return Nothing
+		End Function
 
-                If (_reader.GetName(_metadataFileIdColumnNameIndex) = _FileSettings.MetadataFileIdColumn) Then
-                    Dim metadataFileIdValue As Object = _reader.GetValue(_metadataFileIdColumnNameIndex)
-                    If (metadataFileIdValue IsNot Nothing) Then
-                        metadataFileId = metadataFileIdValue.ToString()
-                    End If
-                End If
-            End If
-			
-            If (Not String.IsNullOrEmpty(metadataFileId)) Then
-                Return metadataFileId
-            End If
+		Private Function GetMetadataFileIdData() As String
+			Dim metadataFileId As String = Nothing
+			If (Not String.IsNullOrEmpty(_FileSettings.MetadataFileIdColumn)) Then
+				If _metadataFileIdColumnNameIndex = -1 Then
+					For i As Integer = 0 To _reader.FieldCount - 1
+						If (_reader.GetName(i) = _FileSettings.MetadataFileIdColumn) Then
+							_metadataFileIdColumnNameIndex = i
+							Exit For
+						End If
+					Next
+				End If
 
-            Return Nothing
-        End Function
+				If (_reader.GetName(_metadataFileIdColumnNameIndex) = _FileSettings.MetadataFileIdColumn) Then
+					Dim metadataFileIdValue As Object = _reader.GetValue(_metadataFileIdColumnNameIndex)
+					If (metadataFileIdValue IsNot Nothing) Then
+						metadataFileId = metadataFileIdValue.ToString()
+					End If
+				End If
+			End If
+
+			If (Not String.IsNullOrEmpty(metadataFileId)) Then
+				Return metadataFileId
+			End If
+
+			Return Nothing
+		End Function
 
 		Private Function GetSupportedByViewerData() As Boolean?
 
@@ -437,7 +449,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			Dim oiFileType As String = ""
 			Dim oiFileId As Int32
-			
+
 			If (_fileSettingsTypeColumnNameIndex = -1 Or _fileSettingsIDColumnNameIndex = -1) Then
 				For i As Integer = 0 To _reader.FieldCount - 1
 					If (_reader.GetName(i) = _FileSettings.TypeColumnName) Then
@@ -475,7 +487,7 @@ Namespace kCura.WinEDDS.ImportExtension
 
 			If isSupportedByViewer Is Nothing
 				Return New FileTypeInfo(oiFileId, oiFileType)
-			Else 
+			Else
 				Return New ExtendedFileTypeInfo(oiFileType, isSupportedByViewer.Value)
 			End If
 		End Function
@@ -491,9 +503,9 @@ Namespace kCura.WinEDDS.ImportExtension
 		End Sub
 
 		Private Sub DisplayFieldMap(ByVal sourceData As System.Data.IDataReader, ByVal destination As kCura.WinEDDS.Api.ArtifactFieldCollection)
-            'Display a list field mappings and unmapped fields
+			'Display a list field mappings and unmapped fields
 
-            Const SPECIALFILENAME As String = "*Filename*"
+			Const SPECIALFILENAME As String = "*Filename*"
 			Const NATIVEFILEPATH As String = "*NativeFilePath*"
 			Const NOTMAPPED As String = "NOT MAPPED (Target field not found)"
 
@@ -645,13 +657,13 @@ Namespace kCura.WinEDDS.ImportExtension
 		Public Sub Halt() Implements kCura.WinEDDS.Api.IArtifactReader.Halt
 		End Sub
 
-        ''' <summary>
-        ''' Reads all remaining rows and then closes <see cref="IDataReader"/>. This is because the only way to get the total number of records is to read all the rows.
-        ''' </summary>
+		''' <summary>
+		''' Reads all remaining rows and then closes <see cref="IDataReader"/>. This is because the only way to get the total number of records is to read all the rows.
+		''' </summary>
 		Public Sub Close() Implements kCura.WinEDDS.Api.IArtifactReader.Close
-            While Not _reader.IsClosed
+			While Not _reader.IsClosed
                 AdvanceRecord
-            End While
+			End While
 		End Sub
 
 		Public Function ManageErrorRecords(ByVal errorMessageFileLocation As String, ByVal prePushErrorLineNumbersFileName As String) As String Implements kCura.WinEDDS.Api.IArtifactReader.ManageErrorRecords

@@ -1,4 +1,18 @@
-﻿# Relativity Data Exchange API and RDC for .NET
+﻿# 🔴❗IAPI AND RDC ARE DEPRECATED❗🔴  
+The master branch has some breaking changes that are not compatible with [the last public version](https://www.nuget.org/packages/Relativity.DataExchange.Client.SDK/1.20.26).
+
+The version from the master branch supports job/environemnt configurations used by the:
+1. RIP (Direct mode, copying files, linking files). RIP uses CAL transfer mode in TAPI.
+2. Processing Publish (Direct mode, linking files)
+
+List of breaking changes:
+1. Item error is reported in the direct mode when DisableNativeLocationValidation is true and some files are missing.
+2. Import fails in the web mode when DisableNativeLocationValidation is true and some files are missing.
+3. No tests were performed in the Aspera mode, because Aspera is deprecated as well.
+
+# 🔴❗IAPI AND RDC ARE DEPRECATED❗🔴
+
+# Relativity Data Exchange API and RDC for .NET
 You can use the data exchange API to build application components that import documents, objects, images, and productions using a flexible number of transfer clients. The Remote Desktop Client (RDC) is a Windows desktop application built on Import API. It should be noted that this repository also includes Export API; however, this is heavily dependent on the RDC and has never been officially supported.
 
 ## System requirements
