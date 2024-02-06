@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  
 ### Changed
  
-- [REL-866934](https://jira.kcura.com/browse/REL-866934) - RDC Installer Should default to a server configuration
+- [REL-911798(https://jira.kcura.com/browse/REL-911798) - Minor version and compatible changes for IAPI
 
 ## [2.9.1005] - 11-28-2023
  
