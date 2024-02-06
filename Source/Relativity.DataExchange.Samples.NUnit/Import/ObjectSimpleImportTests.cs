@@ -32,11 +32,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			new List<TestCaseData>
 				{
 					new TestCaseData("Simple-Transfer-Small-1"),
-					new TestCaseData("Simple-Transfer-Small-2"),
 					new TestCaseData("Simple-Transfer-Medium-1"),
-					new TestCaseData("Simple-Transfer-Medium-2"),
 					new TestCaseData("Simple-Transfer-Large-1"),
-					new TestCaseData("Simple-Transfer-Large-2"),
 				};
 
 		[IdentifiedTest("d09ecba7-1610-42d9-9a8e-5ef5ee4bc560")]

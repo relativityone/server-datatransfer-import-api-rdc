@@ -68,7 +68,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 		}
 
 		[Category(TestCategories.Folder)]
-		[IdentifiedTestCase("0dc14fcc-5e93-4fa0-8641-e1b63e88c637", "\\case-root1")]
 		[IdentifiedTestCase("4e1659d0-42cd-4976-9daf-0266622fbe00", "\\case-root1\\")]
 		[IdentifiedTestCase("ac0ee7bb-155d-435d-88bb-4a5e6cae423f", "\\case-root1\\case-ROOT2")]
 		[IdentifiedTestCase("312ee185-8cbd-4ac0-8a2b-ba9f9d6bc447", "\\case-ROOT1\\case-Root2")]

@@ -580,12 +580,16 @@ Namespace kCura.WinEDDS
 		End Sub
 
 		Private Sub OnTapiWarningMessage(ByVal sender As Object, ByVal e As TapiMessageEventArgs)
-			SyncLock _syncRoot
-				If ShouldImport Then
-					Me.OnWriteStatusMessage(EventType2.Warning, e.Message, e.LineNumber, e.LineNumber)
-					Me.LogWarning(e.Message)
-				End If
-			End SyncLock
+			If e.Message.Contains("Unable to find the file") Then
+				OnTapiErrorMessage(sender, e)
+			Else
+				SyncLock _syncRoot
+					If ShouldImport Then
+						Me.OnWriteStatusMessage(EventType2.Warning, e.Message, e.LineNumber, e.LineNumber)
+						Me.LogWarning(e.Message)
+					End If
+				End SyncLock
+			End If
 		End Sub
 
 		Private Sub OnTapiFatalError(ByVal sender As Object, ByVal e As TapiMessageEventArgs)

@@ -83,7 +83,7 @@ Namespace kCura.WinEDDS
 		Private _parentArtifactTypeId As Int32?
 		Private _unmappedRelationalFields As System.Collections.ArrayList
 		Private _cancelledByUser As Boolean
-        Private _bulkFilesImportPath  As String
+		Private _bulkFilesImportPath As String
 
 		Protected BulkLoadFileFieldDelimiter As String
 
@@ -253,11 +253,11 @@ Namespace kCura.WinEDDS
 			End Get
 		End Property
 
-        Public ReadOnly Property IsMetadataFileIdColumnSet As Boolean
-            Get
-                Return Not String.IsNullOrEmpty(_settings.MetadataFileIdColumn)
-            End Get
-        End Property
+		Public ReadOnly Property IsMetadataFileIdColumnSet As Boolean
+			Get
+				Return Not String.IsNullOrEmpty(_settings.MetadataFileIdColumn)
+			End Get
+		End Property
 
 		Protected Overridable ReadOnly Property ParentArtifactTypeID As Int32
 			Get
@@ -474,7 +474,7 @@ Namespace kCura.WinEDDS
 					Next
 				End If
 			End If
-		    If initializeUploaders Then
+			If initializeUploaders Then
 				CreateUploaders(args)
 			End If
 			_copyFileToRepository = args.CopyFilesToDocumentRepository
@@ -504,9 +504,9 @@ Namespace kCura.WinEDDS
 
 
 		Protected Overridable Sub CreateUploaders(ByVal args As LoadFile)
-		    InitializeBulkFilesImportPath(args)
+			InitializeBulkFilesImportPath(args)
 
-		    Dim gateway As Replacement.IFileIO = ManagerFactory.CreateFileIO(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
+			Dim gateway As Replacement.IFileIO = ManagerFactory.CreateFileIO(args.Credentials, args.CookieContainer, AddressOf GetCorrelationId)
 			Dim nativeParameters As UploadTapiBridgeParameters2 = New UploadTapiBridgeParameters2
 			nativeParameters.Application = AppSettings.Instance.ApplicationName
 			nativeParameters.BcpFileTransfer = False
@@ -549,15 +549,15 @@ Namespace kCura.WinEDDS
 			bcpParameters.AsperaBcpRootFolder = AppSettings.Instance.TapiAsperaBcpRootFolder
 			bcpParameters.BcpFileTransfer = True
 
-		    If BulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
-		        bcpParameters.TargetPath = _bulkFilesImportPath
-		    Else 
+			If BulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
+				bcpParameters.TargetPath = _bulkFilesImportPath
+			Else
 
 				Dim bcpSharePath As String = gateway.GetBcpSharePath(args.CaseInfo.ArtifactID)
-		        bcpParameters.FileShare = bcpSharePath
-		        bcpParameters.TargetPath = bcpSharePath
-		    End If
-			
+				bcpParameters.FileShare = bcpSharePath
+				bcpParameters.TargetPath = bcpSharePath
+			End If
+
 			bcpParameters.SupportCheckPath = bcpParameters.FileShare
 			bcpParameters.SortIntoVolumes = False
 			bcpParameters.ForceHttpClient = bcpParameters.ForceHttpClient Or AppSettings.Instance.TapiForceBcpHttpClient
@@ -567,18 +567,18 @@ Namespace kCura.WinEDDS
 			CreateTapiBridges(nativeParameters, bcpParameters, args.WebApiCredential.TokenProvider, New RelativityManagerServiceFactory)
 		End Sub
 
-        Private Sub InitializeBulkFilesImportPath(args As LoadFile)
-            If BulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
-                Dim suffix AS String = "EDDS" + args.CaseInfo.ArtifactID.ToString() + "\"
-                Dim fileSharePath As String
-                If String.IsNullOrEmpty(args.SelectedCasePath) Then
-                    fileSharePath = System.IO.Path.Combine(args.CaseDefaultPath, suffix)
-                Else 
-                    fileSharePath = System.IO.Path.Combine(args.SelectedCasePath, suffix)
-                End If
-                _bulkFilesImportPath = System.IO.Path.Combine(fileSharePath, BulkFileConstants.ImportApiBulkFilesFolderName)
-            End If
-        End Sub
+		Private Sub InitializeBulkFilesImportPath(args As LoadFile)
+			If BulkImportManager.GetType() Is GetType(KeplerBulkImportManager) Then
+				Dim suffix As String = "EDDS" + args.CaseInfo.ArtifactID.ToString() + "\"
+				Dim fileSharePath As String
+				If String.IsNullOrEmpty(args.SelectedCasePath) Then
+					fileSharePath = System.IO.Path.Combine(args.CaseDefaultPath, suffix)
+				Else
+					fileSharePath = System.IO.Path.Combine(args.SelectedCasePath, suffix)
+				End If
+				_bulkFilesImportPath = System.IO.Path.Combine(fileSharePath, BulkFileConstants.ImportApiBulkFilesFolderName)
+			End If
+		End Sub
 
 #End Region
 
@@ -692,7 +692,7 @@ Namespace kCura.WinEDDS
 											Me.LogFatal(ex, "A fatal code operation error has occurred managing an import document.")
 										Else
 											WriteError(Me.CurrentLineNumber, ex.Message)
-											Me.LogError(ex, "A serious code operation error has occurred managing an import document.")
+											Me.LogError("A serious code operation error has occurred managing an import document.")
 										End If
 									Catch ex As System.IO.PathTooLongException
 										WriteError(Me.CurrentLineNumber, ERROR_MESSAGE_FOLDER_NAME_TOO_LONG)
@@ -949,7 +949,7 @@ Namespace kCura.WinEDDS
 							End If
 
 							If _copyFileToRepository Then
-								If Not String.IsNullOrWhiteSpace(filename) Then
+								If fileExists Then
 									Dim guid As String = System.Guid.NewGuid().ToString()
 									Me.ImportFilesCount += 1
 									_jobCompleteNativeCount += 1
@@ -1040,9 +1040,9 @@ Namespace kCura.WinEDDS
 			End If
 
 			Dim metadataFileId As String = Nothing
-			If(Not injectableContainerIsNothing AndAlso injectableContainer.HasMetadataFileId()) Then
-			    metadataFileId = injectableContainer.metadataFileId.GetMetadataFileId()
-            End If
+			If (Not injectableContainerIsNothing AndAlso injectableContainer.HasMetadataFileId()) Then
+				metadataFileId = injectableContainer.metadataFileId.GetMetadataFileId()
+			End If
 
 			Dim doc As MetaDocument
 			Dim fileSizeExtractor As Api.IHasFileSize = Nothing
@@ -1201,7 +1201,7 @@ Namespace kCura.WinEDDS
 		Private Function GetSettingsObject() As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			Dim retval As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo
 			If _artifactTypeID = ArtifactType.Document Then
-				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactID = OverlayArtifactId}
+				retval = New kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo With {.DisableUserSecurityCheck = Me.DisableUserSecurityCheck, .AuditLevel = Me.AuditLevel, .OverlayArtifactId = OverlayArtifactId}
 				If _createFoldersInWebApi Then
 					'Server side folder creation
 					retval.RootFolderID = _folderID
@@ -1358,10 +1358,10 @@ Namespace kCura.WinEDDS
 			Dim settings As kCura.EDDS.WebAPI.BulkImportManagerBase.NativeLoadInfo = Me.GetSettingsObject
 			settings.UseBulkDataImport = True
 
-            Dim nativeFileUploadKey As String = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
-		    Dim codeFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
-		    Dim objectFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
-		    Dim dataGridFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
+			Dim nativeFileUploadKey As String = BulkLoadTapiBridge.AddPath(outputNativePath, Guid.NewGuid().ToString(), 1)
+			Dim codeFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputCodeFilePath, Guid.NewGuid().ToString(), 2)
+			Dim objectFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputObjectFilePath, Guid.NewGuid().ToString(), 3)
+			Dim dataGridFileUploadKey As String = BulkLoadTapiBridge.AddPath(Me.OutputFileWriter.OutputDataGridFilePath, Guid.NewGuid().ToString(), 4)
 
 			' keep track of the total count of added files
 			MetadataFilesCount += 4
@@ -1636,9 +1636,9 @@ Namespace kCura.WinEDDS
 			End If
 			OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter)   'kCura_DataGrid_Exception
 			OutputFileWriter.OutputNativeFileWriter.Write(BulkLoadFileFieldDelimiter)   'kCura_Import_ErrorData
-		    If _artifactTypeID = ArtifactType.Document AndAlso IsMetadataFileIdColumnSet Then
-		        OutputFileWriter.OutputNativeFileWriter.Write(mdoc.MetadataFileId & BulkLoadFileFieldDelimiter)   'kCura_Import_MetadataFileIdColumn
-		    End If
+			If _artifactTypeID = ArtifactType.Document AndAlso IsMetadataFileIdColumnSet Then
+				OutputFileWriter.OutputNativeFileWriter.Write(mdoc.MetadataFileId & BulkLoadFileFieldDelimiter)   'kCura_Import_MetadataFileIdColumn
+			End If
 			OutputFileWriter.OutputNativeFileWriter.Write(vbCrLf)
 			If foundDataGridField Then
 				OutputFileWriter.OutputDataGridFileWriter.Write(vbCrLf)
@@ -1758,7 +1758,7 @@ Namespace kCura.WinEDDS
 
 										End If
 										outputWriter.Write(field.Value)
-										Else
+									Else
 										'This logic exists as an attempt to improve import speeds.  The DetectEncoding call first checks if the file
 										' exists, followed by a read of the first few bytes. The File.Exists check can be very expensive when going
 										' across the network for the file, so this override allows that check to be skipped.
@@ -1906,52 +1906,52 @@ Namespace kCura.WinEDDS
 
 		Protected Function PrepareFieldCollectionAndExtractIdentityValue(ByVal record As Api.ArtifactFieldCollection, ByVal CurrentLineNumber As Integer) As String
 			SyncLock OutputFileWriter.OutputNativeFileWriter
-			SyncLock OutputFileWriter.OutputCodeFileWriter
-			SyncLock OutputFileWriter.OutputObjectFileWriter
-			SyncLock OutputFileWriter.OutputDataGridFileWriter
-				
-				Dim keyFieldValue As String = String.Empty
-				Dim keyField As Api.ArtifactField
-				If _keyFieldID > 0 Then
-					keyField = record(_keyFieldID)
-				Else
-					keyField = record.IdentifierField
-				End If
-				If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then keyFieldValue = keyField.Value.ToString
-				If keyFieldValue Is Nothing OrElse keyFieldValue = String.Empty Then Throw New IdentityValueNotSetException
-				If _processedKeyFieldValues.ContainsKey(keyFieldValue) Then Throw New IdentifierOverlapException(keyFieldValue, _processedKeyFieldValues(keyFieldValue).ToString())
-				_processedKeyFieldValues.Add(keyFieldValue, CurrentLineNumber)
+				SyncLock OutputFileWriter.OutputCodeFileWriter
+					SyncLock OutputFileWriter.OutputObjectFileWriter
+						SyncLock OutputFileWriter.OutputDataGridFileWriter
 
-				For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
-					If FirstTimeThrough Then
-						If item.DocumentField Is Nothing Then
-							WriteStatusLine(EventType2.Warning, $"File column '{(item.NativeFileColumnIndex + 1)}' will be unmapped", 0)
-						End If
-						If item.NativeFileColumnIndex = -1 Then
-							WriteStatusLine(EventType2.Warning, $"Field '{item.DocumentField.FieldName}' will be unmapped", 0)
-						End If
-					End If
-					If Not item.DocumentField Is Nothing Then
-						If item.DocumentField.FieldTypeID = FieldType.File Then
-							Me.ManageFileField(record(item.DocumentField.FieldID))
-						Else
-							MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, keyFieldValue, 0, item.DocumentField.ImportBehavior)
-						End If
-					End If
-				Next
-				For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
-					If fieldDTO.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
-						Dim field As New Api.ArtifactField(fieldDTO)
-						field.Value = keyFieldValue
-						Me.SetFieldValue(field, -1, False, keyFieldValue, 0, fieldDTO.ImportBehavior)
-					End If
-				Next
-				FirstTimeThrough = False
+							Dim keyFieldValue As String = String.Empty
+							Dim keyField As Api.ArtifactField
+							If _keyFieldID > 0 Then
+								keyField = record(_keyFieldID)
+							Else
+								keyField = record.IdentifierField
+							End If
+							If Not keyField Is Nothing AndAlso Not keyField.Value Is Nothing Then keyFieldValue = keyField.Value.ToString
+							If keyFieldValue Is Nothing OrElse keyFieldValue = String.Empty Then Throw New IdentityValueNotSetException
+							If _processedKeyFieldValues.ContainsKey(keyFieldValue) Then Throw New IdentifierOverlapException(keyFieldValue, _processedKeyFieldValues(keyFieldValue).ToString())
+							_processedKeyFieldValues.Add(keyFieldValue, CurrentLineNumber)
 
-				Return keyFieldValue
-			End SyncLock
-			End SyncLock
-			End SyncLock
+							For Each item As LoadFileFieldMap.LoadFileFieldMapItem In _fieldMap
+								If FirstTimeThrough Then
+									If item.DocumentField Is Nothing Then
+										WriteStatusLine(EventType2.Warning, $"File column '{(item.NativeFileColumnIndex + 1)}' will be unmapped", 0)
+									End If
+									If item.NativeFileColumnIndex = -1 Then
+										WriteStatusLine(EventType2.Warning, $"Field '{item.DocumentField.FieldName}' will be unmapped", 0)
+									End If
+								End If
+								If Not item.DocumentField Is Nothing Then
+									If item.DocumentField.FieldTypeID = FieldType.File Then
+										Me.ManageFileField(record(item.DocumentField.FieldID))
+									Else
+										MyBase.SetFieldValue(record(item.DocumentField.FieldID), item.NativeFileColumnIndex, False, keyFieldValue, 0, item.DocumentField.ImportBehavior)
+									End If
+								End If
+							Next
+							For Each fieldDTO As kCura.EDDS.WebAPI.DocumentManagerBase.Field In Me.UnmappedRelationalFields
+								If fieldDTO.ImportBehavior = EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.ReplaceBlankValuesWithIdentifier Then
+									Dim field As New Api.ArtifactField(fieldDTO)
+									field.Value = keyFieldValue
+									Me.SetFieldValue(field, -1, False, keyFieldValue, 0, fieldDTO.ImportBehavior)
+								End If
+							Next
+							FirstTimeThrough = False
+
+							Return keyFieldValue
+						End SyncLock
+					End SyncLock
+				End SyncLock
 			End SyncLock
 		End Function
 
@@ -2029,23 +2029,24 @@ Namespace kCura.WinEDDS
 			Dim errorRecord As ErrorBeforeMassImportArgs = New ErrorBeforeMassImportArgs(currentLineNumber)
 			prePushErrorWriter.WriteErrorMessage(errorRecord)
 
-		    Dim ht As Hashtable 
-		    If line.Contains("Malware exception") Then
-		        ht = New Hashtable From {
-		            {"Message", "Malware exception"},' use only general message without path
-		            {"Line Number", currentLineNumber},
-		            {"Identifier", _artifactReader.SourceIdentifierValue},
-		            {"Malware", line.Replace("Malware exception ","")} ' pass only the path
-		        }
-		    Else
-		        ht = New Hashtable From {
-		            {"Message", line},
-		            {"Line Number", currentLineNumber},
-		            {"Identifier", _artifactReader.SourceIdentifierValue}
-		        }
-		    End If
+			Dim recordIdentifier As String = _artifactReader.SourceIdentifierValue(currentLineNumber)
+			Dim ht As Hashtable
+			If line.Contains("Malware exception") Then
+				ht = New Hashtable From {
+					{"Message", "Malware exception"},' use only general message without path
+					{"Line Number", currentLineNumber},
+					{"Identifier", recordIdentifier},
+					{"Malware", line.Replace("Malware exception ", "")} ' pass only the path
+				}
+			Else
+				ht = New Hashtable From {
+					{"Message", line},
+					{"Line Number", currentLineNumber},
+					{"Identifier", recordIdentifier}
+				}
+			End If
 
-			RaiseReportError(ht, _artifactReader.SourceIdentifierValue, "client")
+			RaiseReportError(ht, recordIdentifier, "client")
 			WriteStatusLine(EventType2.Error, line)
 		End Sub
 

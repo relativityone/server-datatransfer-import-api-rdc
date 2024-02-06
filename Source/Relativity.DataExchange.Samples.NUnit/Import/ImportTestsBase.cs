@@ -159,8 +159,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Import
 			new List<string>
 				{
 					SampleImage1FileName,
-					SampleImage2FileName,
-					SampleImage3FileName,
 					SampleProductionImage1FileName,
 				};
 

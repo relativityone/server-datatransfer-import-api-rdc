@@ -43,6 +43,7 @@ Namespace kCura.WinEDDS
 		Private _trackErrorsInFieldValues As Boolean
 		Protected _executionSource As ExecutionSource
 		Private _currentIdentifier As String
+		Private ReadOnly _lineNumberToIdentifierMapping As LineToIdentifierMappings = New LineToIdentifierMappings()
 		Private _correlationIdFunc As Func(Of String)
 
 		Protected ReadOnly _settings As kCura.WinEDDS.LoadFile
@@ -240,6 +241,15 @@ Namespace kCura.WinEDDS
 			Return If(_currentIdentifier, String.Empty)
 		End Function
 
+		Public Function SourceIdentifierValue(ByVal lineNumber As Integer) As String Implements IArtifactReader.SourceIdentifierValue
+			Dim identifierForLine As String = _lineNumberToIdentifierMapping.GetIdentifier(lineNumber)
+			If identifierForLine IsNot Nothing Then
+				Return identifierForLine
+			Else
+				Return _currentIdentifier
+			End If
+		End Function
+
 		Public Sub AdvanceRecord() Implements Api.IArtifactReader.AdvanceRecord
 			Me.AdvanceLine()
 		End Sub
@@ -385,6 +395,7 @@ Namespace kCura.WinEDDS
 			If _identifierFieldMapItem IsNot Nothing Then
 				Dim identifierFieldValue As Api.ArtifactField = ParseFieldValueAndAddToCollection(collection, line, _identifierFieldMapItem)
 				_currentIdentifier = identifierFieldValue.ValueAsString
+				_lineNumberToIdentifierMapping.AddMapping(Me.CurrentLineNumber, _currentIdentifier)
 			End If
 
 			For Each mapItem As kCura.WinEDDS.LoadFileFieldMap.LoadFileFieldMapItem In _settings.FieldMap
