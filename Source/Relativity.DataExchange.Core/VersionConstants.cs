@@ -35,14 +35,6 @@ namespace Relativity.DataExchange
 		public static Version MinRelativityVersion { get; } = new Version(12, 3, 857, 3);
 
 		/// <summary>
-		/// Gets the Relativity version from which it supports the new WebAPI version endpoint.
-		/// </summary>
-		/// <value>
-		/// The <see cref="Version"/> instance.
-		/// </value>
-		public static Version WebApiStartFromRelativityVersion { get; } = new Version(10, 3);
-
-		/// <summary>
 		/// Gets WebApi version for feature: https://jira.kcura.com/browse/REL-408645, when we started support of processing on the server side
 		/// the associated documents for objects being imported.
 		/// </summary>
