@@ -30,7 +30,7 @@ namespace Relativity.DataExchange
 		/// The <see cref="Version"/> instance.
 		/// </value>
 		/// <remarks>
-		/// The most recent Bluestem OP hotfix release includes the OAuth2 redirect fix and required to authenticate.
+		/// Please note that a minimum version of Relativity is required to perform Import and Export operations using RDC.
 		/// </remarks>
 		public static Version MinRelativityVersion { get; } = new Version(12, 3, 857, 3);
 
