@@ -52,14 +52,13 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase("10.2.0.0", "1.0", "10.3.0.0", "1.0", "10.3.0.0")]
-		[TestCase("10.3.0.0", "1.0", "10.3.0.0", "2.0", "10.3.0.0")]
+		[TestCase("10.2.0.0", "1.0", "10.3.0.0", "1.0")]
+		[TestCase("10.3.0.0", "1.0", "10.3.0.0", "2.0")]
 		public async Task ShouldNotThrowWhenTheEnforceVersionCompatibilityCheckIsDisabledAsync(
 			string mockRelativityVersion,
 			string mockWebApiVersion,
 			string mockMinRelativityVersion,
-			string mockRequiredWebApiVersion,
-			string webApiStartFromRelativityVersion)
+			string mockRequiredWebApiVersion)
 		{
 			// arrange
 			Version relativityVersion = Version.Parse(mockRelativityVersion);
@@ -75,7 +74,6 @@ namespace Relativity.DataExchange.NUnit
 				this.logMock.Object,
 				Version.Parse(mockMinRelativityVersion),
 				Version.Parse(mockRequiredWebApiVersion),
-				Version.Parse(webApiStartFromRelativityVersion),
 				new RunningContext(),
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
@@ -113,9 +111,8 @@ namespace Relativity.DataExchange.NUnit
 				this.instanceInfo,
 				this.relativityVersionServiceMock.Object,
 				this.logMock.Object,
-				new Version(9, 7, 0, 0),
+				new Version(12, 3, 857, 3),
 				new Version(1, 0),
-				new Version(10, 3),
 				new RunningContext(),
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
@@ -130,17 +127,16 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase("10.0.0.0", "9.7.228.0", "10.0.0.1", false)]
-		[TestCase("10.1.0.0", "10.0.1.0", "10.1.0.1", false)]
-		[TestCase("10.1.0.0", "10.0.0.1", "10.1.0.1", false)]
-		[TestCase("10.0.0.0", "10.0.0.0", "10.0.0.1", true)]
-		[TestCase("10.0.0.0", "10.1.0.0", "10.1.0.1", true)]
-		[TestCase("10.0.0.0", "10.0.1.0", "10.0.1.1", true)]
-		[TestCase("10.0.0.0", "10.0.0.1", "10.0.0.2", true)]
+		[TestCase("10.0.0.0", "9.7.228.0",  false)]
+		[TestCase("10.1.0.0", "10.0.1.0",  false)]
+		[TestCase("10.1.0.0", "10.0.0.1", false)]
+		[TestCase("10.0.0.0", "10.0.0.0",  true)]
+		[TestCase("10.0.0.0", "10.1.0.0", true)]
+		[TestCase("10.0.0.0", "10.0.1.0",  true)]
+		[TestCase("10.0.0.0", "10.0.0.1", true)]
 		public async Task ShouldValidateWhenRelativityDoesNotSupportTheWebApiVersionCheck(
 		    string minRelativityVersion,
 			string mockRelativityVersion,
-			string webApiStartFromRelativityVersion,
 			bool expectedResult)
 		{
 			// arrange
@@ -154,7 +150,6 @@ namespace Relativity.DataExchange.NUnit
 				this.logMock.Object,
 				new Version(minRelativityVersion),
 				DataExchange.VersionConstants.RequiredWebApiVersion,
-				new Version(webApiStartFromRelativityVersion),
 				new RunningContext(),
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
@@ -180,19 +175,18 @@ namespace Relativity.DataExchange.NUnit
 		}
 
 		[Test]
-		[TestCase("9.7.228.0", "10.0.0.0", "10.0.0.0", "1.0", "2.0", false)]
-		[TestCase("9.7.228.0", "10.0.0.0", "10.0.0.0", "1.0", "1.0", true)]
-		[TestCase("9.7.228.0", "10.0.0.0", "10.0.0.0", "1.0", "1.2", true)]
-		[TestCase("9.7.228.0", "10.2.0.0", "10.1.0.0", "1.0", "1.1", true)]
-		[TestCase("9.7.228.0", "10.2.0.0", "10.1.0.0", "1.2", "1.0", true)]
-		[TestCase("10.0.0.0", "10.2.0.0", "10.1.0.0", "1.2", "1.0", true)]
-		[TestCase("10.0.0.0", "10.2.0.0", "10.1.0.0", "1.2", "2.0", false)]
-		[TestCase("10.0.0.0", "10.2.0.0", "10.1.0.0", "2.0", "1.0", false)]
-		[TestCase("10.0.0.0", "10.2.0.0", "10.1.0.0", "2.0", "1.2", false)]
+        [TestCase("9.7.228.0", "10.0.0.0", "1.0", "2.0", false)]
+        [TestCase("9.7.228.0", "10.0.0.0", "1.0", "1.0", true)]
+        [TestCase("9.7.228.0", "10.0.0.0", "1.0", "1.2", true)]
+		[TestCase("9.7.228.0", "10.2.0.0", "1.0", "1.1", true)]
+		[TestCase("9.7.228.0", "10.2.0.0", "1.2", "1.0", true)]
+		[TestCase("10.0.0.0", "10.2.0.0", "1.2", "1.0", true)]
+		[TestCase("10.0.0.0", "10.2.0.0", "1.2", "2.0", false)]
+		[TestCase("10.0.0.0", "10.2.0.0",  "2.0", "1.0", false)]
+		[TestCase("10.0.0.0", "10.2.0.0",  "2.0", "1.2", false)]
 		public async Task ShouldValidateWhenTheRelativityAndWebApiVersionsAreRetrievedAsync(
 			string minRelativityVersion,
 			string relativityVersion,
-			string webApiStartFromRelativityVersion,
 			string webApiVersion,
 			string minWebApiVersion,
 			bool expectedResult)
@@ -209,7 +203,6 @@ namespace Relativity.DataExchange.NUnit
 				this.logMock.Object,
 				new Version(minRelativityVersion),
 				new Version(minWebApiVersion),
-				new Version(webApiStartFromRelativityVersion),
 				new RunningContext(),
 				this.appSettings.Object,
 				this.appSettingsInternal.Object);
