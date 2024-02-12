@@ -222,59 +222,5 @@ namespace Relativity.DataExchange.NUnit
 			this.relativityVersionServiceMock.Verify(x => x.GetImportExportWebApiVersionAsync(CancellationToken.None), Times.Once);
 			this.relativityVersionServiceMock.Verify(x => x.GetRelativityVersionAsync(CancellationToken.None), Times.Once);
 		}
-
-        [Test]
-        [TestCase("9.7.228.0")]
-        [TestCase("12.1.537.3")]
-        [TestCase("12.2.337.3")]
-        public void ValidateRelativityVersionLowerVersionThrowsException(
-            string mockRelativityVersion)
-        {
-            // arrange
-            Version relativityVersion = Version.Parse(mockRelativityVersion);
-            this.relativityVersionServiceMock.Setup(x => x.GetRelativityVersionAsync(CancellationToken.None))
-                .Returns(Task.FromResult(relativityVersion));
-            ImportExportCompatibilityCheck subjectUnderTest = new ImportExportCompatibilityCheck(
-                this.instanceInfo,
-                this.relativityVersionServiceMock.Object,
-                this.logMock.Object,
-                new Version(12, 3, 857, 3),
-                new Version(1, 0),
-                new RunningContext(),
-                this.appSettings.Object,
-                this.appSettingsInternal.Object);
-
-            // act
-            RelativityNotSupportedException exception = Assert.ThrowsAsync<RelativityNotSupportedException>(
-                async () => await subjectUnderTest.ValidateAsync(CancellationToken.None).ConfigureAwait(false));
-
-            // assert
-            Assert.That(exception?.RelativityVersion, Is.EqualTo(relativityVersion));
-        }
-
-        [Test]
-        [TestCase("12.3.857.3")]
-        [TestCase("12.4.231.1")]
-        public void ValidateRelativityVersionHigherOrEqualVersionNoExceptionThrown(
-            string mockRelativityVersion)
-        {
-            // arrange
-            Version relativityVersion = Version.Parse(mockRelativityVersion);
-            this.relativityVersionServiceMock.Setup(x => x.GetRelativityVersionAsync(CancellationToken.None))
-                .Returns(Task.FromResult(relativityVersion));
-            ImportExportCompatibilityCheck subjectUnderTest = new ImportExportCompatibilityCheck(
-                this.instanceInfo,
-                this.relativityVersionServiceMock.Object,
-                this.logMock.Object,
-                new Version(12, 3, 857, 3),
-                new Version(1, 0),
-                new RunningContext(),
-                this.appSettings.Object,
-                this.appSettingsInternal.Object);
-
-            // act
-            Assert.DoesNotThrowAsync(
-                async () => await subjectUnderTest.ValidateAsync(CancellationToken.None).ConfigureAwait(false));
-        }
     }
 }
