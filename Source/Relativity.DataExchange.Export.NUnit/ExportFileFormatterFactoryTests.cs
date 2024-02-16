@@ -27,7 +27,6 @@ namespace Relativity.DataExchange.Export.NUnit
 		public void Init()
 		{
 			this._fieldNameProviderMock = new Mock<IFieldNameProvider>();
-
 			this._subjectUnderTest = new ExportFileFormatterFactory(this._fieldNameProviderMock.Object);
 		}
 
@@ -35,17 +34,17 @@ namespace Relativity.DataExchange.Export.NUnit
 		[TestCase(typeof(HtmlExportFileFormatter), true)]
 		public void ItShouldReturnCorrectFormatterType(Type formatterType, bool isHtml)
 		{
-			// Arrange
+			// ARRANGE
 			ExportFile exportFile = new ExportFile((int)ArtifactType.Document)
 			{
 				LoadFileIsHtml = isHtml
 			};
 
-			// Act
+			// ACT
 			ILoadFileHeaderFormatter retFormatter = this._subjectUnderTest.Create(exportFile);
 
-			// Assert
+			// ASSERT
 			Assert.IsInstanceOf(formatterType, retFormatter);
 		}
-	}
+    }
 }

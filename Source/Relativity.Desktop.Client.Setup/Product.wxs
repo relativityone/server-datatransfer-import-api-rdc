@@ -58,7 +58,7 @@
 
     <!-- This represents whether the RDC is used for RelativityOne environments. -->
     <Property Id="RELATIVITYONE_ENV"
-              Value="1" />
+              Value="0" />
 
     <!-- We always want verbose logging -->
     <Property Id="MsiLogging" Value="v" />

@@ -28,7 +28,6 @@ namespace Relativity.DataExchange
 		private readonly IApplicationVersionService applicationVersionService;
 		private readonly Version minRelativityVersion;
 		private readonly Version requiredWebApiVersion;
-		private readonly Version webApiStartFromRelativityVersion;
 		private readonly IAppSettings appSettings;
 		private readonly IAppSettingsInternal appSettingsInternal;
 		private readonly IRunningContext runningContext;
@@ -59,7 +58,6 @@ namespace Relativity.DataExchange
 				log,
 				VersionConstants.MinRelativityVersion,
 				VersionConstants.RequiredWebApiVersion,
-				VersionConstants.WebApiStartFromRelativityVersion,
 				runningContext,
 				AppSettings.Instance,
 				AppSettings.Instance as IAppSettingsInternal)
@@ -84,9 +82,6 @@ namespace Relativity.DataExchange
 		/// <param name="requiredWebApiVersion">
 		/// The required WebAPI version.
 		/// </param>
-		/// <param name="webApiStartFromRelativityVersion">
-		/// The required Relativity version from which it support WebAPI version.
-		/// </param>
 		/// <param name="runningContext">
 		/// Job's context allowing us to store information about versions.
 		/// </param>
@@ -102,12 +97,10 @@ namespace Relativity.DataExchange
 			ILog log,
 			Version minRelativityVersion,
 			Version requiredWebApiVersion,
-			Version webApiStartFromRelativityVersion,
 			IRunningContext runningContext,
 			IAppSettings appSettings,
 			IAppSettingsInternal appSettingsInternal)
 		{
-			this.webApiStartFromRelativityVersion = webApiStartFromRelativityVersion;
 			this.instanceInfo = instanceInfo.ThrowIfNull(nameof(instanceInfo));
 			this.log = log.ThrowIfNull(nameof(log));
 			this.applicationVersionService = applicationVersionService.ThrowIfNull(nameof(applicationVersionService));
@@ -118,39 +111,25 @@ namespace Relativity.DataExchange
 			this.appSettingsInternal = appSettingsInternal.ThrowIfNull(nameof(appSettingsInternal));
 		}
 
-		/// <inheritdoc />
-		public async Task ValidateAsync(CancellationToken token)
-		{
-			this.log.LogInformation(
-				"Retrieving the Relativity version for Relativity instance {RelativityHost}...",
-				this.instanceInfo.Host.Secure());
-			Version relativityVersion = await this.applicationVersionService
-											.GetRelativityVersionAsync(token).ConfigureAwait(false);
-			this.runningContext.RelativityVersion = relativityVersion;
-			this.log.LogInformation(
-				"Successfully retrieved Relativity version {RelativityVersion} for Relativity instance {RelativityHost}.",
-				relativityVersion,
-				this.instanceInfo.Host.Secure());
-			this.VerifyRelativityVersionFormat(relativityVersion);
-			await this.PerformValidationAsync(token, relativityVersion).ConfigureAwait(false);
-		}
+        /// <inheritdoc />
+        public async Task ValidateAsync(CancellationToken token)
+        {
+            this.log.LogInformation(
+                "Retrieving the Relativity version for Relativity instance {RelativityHost}...",
+                this.instanceInfo.Host.Secure());
+            Version relativityVersion = await this.applicationVersionService
+                                            .GetRelativityVersionAsync(token).ConfigureAwait(false);
+            this.runningContext.RelativityVersion = relativityVersion;
+            this.log.LogInformation(
+                "Successfully retrieved Relativity version {RelativityVersion} for Relativity instance {RelativityHost}.",
+                relativityVersion,
+                this.instanceInfo.Host.Secure());
+            this.VerifyRelativityVersionFormat(relativityVersion);
+            this.ValidateRelativityVersion(relativityVersion);
+            await this.ValidateWebApiVersion(token, relativityVersion).ConfigureAwait(false);
+        }
 
-		private async Task PerformValidationAsync(
-			CancellationToken token,
-			Version relativityVersion)
-		{
-			if (relativityVersion < this.webApiStartFromRelativityVersion)
-			{
-				// Perform validation for older Relativity Version - this code should be removed on compatibility break change
-				this.ValidateRelativityVersion(relativityVersion);
-			}
-			else
-			{
-				await this.ValidateWebApiVersion(token, relativityVersion).ConfigureAwait(false);
-			}
-		}
-
-		private async Task ValidateWebApiVersion(
+        private async Task ValidateWebApiVersion(
 			CancellationToken token,
 			Version relativityVersion)
 		{
