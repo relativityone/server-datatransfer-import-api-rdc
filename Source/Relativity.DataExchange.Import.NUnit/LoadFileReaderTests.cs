@@ -6,7 +6,9 @@
 
 namespace Relativity.DataExchange.Import.NUnit
 {
+	using System.Collections.Generic;
 	using System.Globalization;
+	using System.Linq;
 
 	using global::NUnit.Framework;
 
@@ -62,6 +64,54 @@ namespace Relativity.DataExchange.Import.NUnit
 			// Assert
 			Assert.AreNotEqual(ExpectedDecimal, result);
 			Assert.AreEqual(DecimalParsedInvariantWay, result);
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "It is a unit test")]
+		[Test]
+		public void GetListOfItemsFromStringDefaultCodePath()
+		{
+			var itemsUnderTest = new List<string> { "test1", "test2" };
+
+			// Arrange
+			var items = string.Join(";", itemsUnderTest);
+
+			// Act
+			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
+
+			// Assert
+			Assert.AreEqual(2, itemsUnderTest.Intersect(retVal).Count());
+			Assert.AreEqual(2, retVal.Count);
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "It is a unit test")]
+		[Test]
+		public void GetListOfItemsFromStringInvalidXml()
+		{
+			var itemsUnderTest = new List<string> { "weatherford.com??S\"Findley, Kari\" <kari.findley", "test2" };
+
+			// Arrange
+			var items = string.Join(";", itemsUnderTest);
+
+			// Act
+			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
+
+			// Assert
+			Assert.AreEqual(2, itemsUnderTest.Intersect(retVal).Count());
+			Assert.AreEqual(2, retVal.Count);
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "It is a unit test")]
+		[Test]
+		public void GetListOfItemsFromStringBlankString()
+		{
+			// Arrange
+			var items = string.Empty;
+
+			// Act
+			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
+
+			// Assert
+			Assert.AreEqual(0, retVal.Count);
 		}
 	}
 }

@@ -10,19 +10,18 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Private Const _KCURAMARKERFILENAME As String = "kcuramarkerfilename"
 
-		Private _reader As System.Data.IDataReader
+		Private ReadOnly _reader As System.Data.IDataReader
 		Private ReadOnly _FileSettings As FileSettings
-		Private _loadFileSettings As kCura.WinEDDS.LoadFile
-		Protected _currentLineNumber As Long = 1
-		Protected _nextLineNumber As Long = 1
+		Private ReadOnly _loadFileSettings As kCura.WinEDDS.LoadFile
+		Protected _currentLineNumber As Long = 0
 		Private _size As Long = -1
 		Private _columnNames As String()
-		Private _allFields As Api.ArtifactFieldCollection
+		Private ReadOnly _allFields As Api.ArtifactFieldCollection
 		Private _tempLocalDirectory As String
 		Private _markerNameIsMapped As Nullable(Of Boolean)
-		Private _identifierFieldIndex As Integer
+		Private ReadOnly _identifierFieldIndex As Integer
 		Private _lastSourceIdentifier As String
-		Private _lineNumberToIdentifierMapping As LineToIdentifierMappings = New LineToIdentifierMappings()
+		Private ReadOnly _lineNumberToIdentifierMapping As New LineToIdentifierMappings()
 
 		Private _fileSettingsFileNameColumnIndex As Integer
 		Private _fileSettingsFileSizeColumnIndex As Integer
@@ -102,7 +101,7 @@ Namespace kCura.WinEDDS.ImportExtension
 					_reader.Close()
 				End If
 			Finally
-				_nextLineNumber += 1
+				_currentLineNumber += 1
 			End Try
 		End Sub
 
@@ -188,7 +187,6 @@ Namespace kCura.WinEDDS.ImportExtension
 
 		Public Function ReadArtifact() As kCura.WinEDDS.Api.ArtifactFieldCollection Implements kCura.WinEDDS.Api.IArtifactReader.ReadArtifact
 			Try
-				Me._currentLineNumber = Me._nextLineNumber
 				Return ReadArtifactData()
 			Finally
 				AdvanceRecord()
@@ -203,7 +201,9 @@ Namespace kCura.WinEDDS.ImportExtension
 			' step 1 - save off the identifier for the current record
 			If _identifierFieldIndex > -1 Then
 				_lastSourceIdentifier = _reader.Item(_identifierFieldIndex).ToString()
-				_lineNumberToIdentifierMapping.AddMapping(_currentLineNumber, _lastSourceIdentifier)
+
+				' +1 because _currentLineNumber is incremented after the record is read
+				_lineNumberToIdentifierMapping.AddMapping(_currentLineNumber + 1, _lastSourceIdentifier)
 			End If
 			For i As Integer = 0 To _reader.FieldCount - 1
 				Dim field As Api.ArtifactField = _allFields(_reader.GetName(i).ToLower())

@@ -133,8 +133,8 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
 
 				DefaultImportDto[] initialData = overwriteMode == OverwriteModeEnum.AppendOverlay
-					                                 ? importData.Take(importData.Length / 2).ToArray()
-					                                 : importData;
+													 ? importData.Take(importData.Length / 2).ToArray()
+													 : importData;
 
 				ImportTestJobResult initialImportResults = this.JobExecutionContext.Execute(initialData);
 				this.ThenTheImportJobIsSuccessful(initialImportResults, initialData.Length);
@@ -207,6 +207,43 @@ namespace Relativity.DataExchange.Import.NUnit.Integration
 				NumberOfDocumentsToImport,
 				(int)ArtifactType.Document,
 				new[] { WellKnownFields.ControlNumber, WellKnownFields.FolderName });
+		}
+
+		[Category(TestCategories.Regression)]
+		[TestCase(0, 10, 10)]
+		[TestCase(1, 10, 9)]
+		[TestCase(2, 10, 8)]
+		[TestCase(9, 10, 1)]
+		[TestCase(10, 10, 0)]
+		public void ShouldUseStartLineNumber(int startRecordNumber, int numberOfRecordsInDataSource, int expectedNumberOfImportedRecords)
+		{
+			// ARRANGE
+			Settings settings = NativeImportSettingsProvider.GetDefaultSettings();
+
+			settings.StartRecordNumber = startRecordNumber;
+			this.JobExecutionContext.InitializeImportApiWithUserAndPassword(this.TestParameters, settings);
+
+			IEnumerable<string> controlNumber = GetControlNumberEnumerable(
+				OverwriteModeEnum.Append,
+				numberOfRecordsInDataSource,
+				nameSuffix: $"{nameof(this.ShouldUseStartLineNumber)}").ToList();
+
+			ImportDataSource<object[]> importDataSource = ImportDataSourceBuilder.New()
+				.AddField(WellKnownFields.ControlNumber, controlNumber)
+				.Build();
+
+			// ACT
+			ImportTestJobResult results = this.JobExecutionContext.Execute(importDataSource);
+
+			// ASSERT
+			this.ThenTheImportJobIsSuccessful(results, expectedNumberOfImportedRecords);
+			Assert.That(results.NumberOfJobMessages, Is.GreaterThan(0));
+			Assert.That(results.NumberOfCompletedRows, Is.EqualTo(expectedNumberOfImportedRecords));
+
+			this.ValidateFieldsAfterImport(
+				expectedNumberOfImportedRecords,
+				(int)ArtifactType.Document,
+				new[] { WellKnownFields.ControlNumber });
 		}
 
 		[IgnoreIfVersionLowerThan(MinSupportedVersion)]

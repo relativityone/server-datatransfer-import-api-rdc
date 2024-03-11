@@ -6,59 +6,114 @@
 
 namespace Relativity.DataExchange.Import.NUnit
 {
-	using System.Collections.Generic;
-	using System.Linq;
+	using System;
 
 	using global::NUnit.Framework;
 
 	using kCura.WinEDDS;
+	using kCura.WinEDDS.Api;
+	using kCura.WinEDDS.ImportExtension;
 
-	[TestFixture]
+	using Relativity.DataExchange.Service;
+	using Relativity.DataExchange.TestFramework.Import.SimpleFieldsImport;
+
+	using FieldType = Relativity.DataExchange.Service.FieldType;
+
+	[TestFixture(10)]
+	[TestFixture(1021212)]
 	public class DataReaderReaderTests
 	{
-		[Test]
-		public void GetListOfItemsFromStringDefaultCodePath()
+		private const string IdentifierFieldName = "identifierfield";
+		private const string TextFieldName = "textfield";
+		private int _artifactTypeID;
+
+		public DataReaderReaderTests(int artifactTypeID)
 		{
-			var itemsUnderTest = new List<string> { "test1", "test2" };
-
-			// Arrange
-			var items = string.Join(";", itemsUnderTest);
-
-			// Act
-			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
-
-			// Assert
-			Assert.AreEqual(2, itemsUnderTest.Intersect(retVal).Count());
-			Assert.AreEqual(2, retVal.Count);
+			this._artifactTypeID = artifactTypeID;
 		}
 
 		[Test]
-		public void GetListOfItemsFromStringInvalidXml()
+		public void ItShouldReadRecordsAndMapLineNumberToIdentifier()
 		{
-			var itemsUnderTest = new List<string> { "weatherford.com??S\"Findley, Kari\" <kari.findley", "test2" };
+			// arrange
+			var dataSource = ImportDataSourceBuilder.New()
+				.AddField(IdentifierFieldName, new[] { "Record 001", "Record 002", "Record 003" })
+				.AddField(TextFieldName, new[] { "One", "Two", "Three" })
+				.Build();
 
-			// Arrange
-			var items = string.Join(";", itemsUnderTest);
+			using (var reader = new ImportDataSourceToDataReaderAdapter<object[]>(dataSource))
+			{
+				reader.Read(); // DataReaderReader expects the reader to be positioned at the first record
 
-			// Act
-			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
+				var identifierField = CreateField(IdentifierFieldName, artifactID: 1001, isIdentifier: true);
+				var allFields = new ArtifactFieldCollection
+				{
+					new ArtifactField(identifierField),
+					new ArtifactField(CreateField(TextFieldName, artifactID: 1002, isIdentifier: false)),
+				};
+				var initializationArgs = new DataReaderReaderInitializationArgs(
+					allFields,
+					artifactTypeID: this._artifactTypeID);
+				var fieldMap = new LoadFile
+				{
+					ArtifactTypeID = _artifactTypeID,
+					SelectedIdentifierField = identifierField,
+				};
 
-			// Assert
-			Assert.AreEqual(2, itemsUnderTest.Intersect(retVal).Count());
-			Assert.AreEqual(2, retVal.Count);
+				var sut = new DataReaderReader(initializationArgs, fieldMap, reader);
+
+				// act & assert
+				Assert.That(sut.CurrentLineNumber, Is.EqualTo(0));
+
+				Assert.That(sut.HasMoreRecords, Is.True);
+				var firstArtifact = sut.ReadArtifact();
+				Assert.That(firstArtifact[IdentifierFieldName].Value, Is.EqualTo("Record 001"));
+				Assert.That(firstArtifact[TextFieldName].Value, Is.EqualTo("One"));
+				Assert.That(
+					sut.CurrentLineNumber,
+					Is.EqualTo(
+						1)); // DataReaderReader.CurrentLineNumber is incremented after ReadArtifact, so it is 1-based
+
+				Assert.That(sut.HasMoreRecords, Is.True);
+				var secondArtifact = sut.ReadArtifact();
+				Assert.That(secondArtifact[IdentifierFieldName].Value, Is.EqualTo("Record 002"));
+				Assert.That(secondArtifact[TextFieldName].Value, Is.EqualTo("Two"));
+				Assert.That(sut.CurrentLineNumber, Is.EqualTo(2));
+
+				Assert.That(sut.HasMoreRecords, Is.True);
+				var thirdArtifact = sut.ReadArtifact();
+				Assert.That(thirdArtifact[IdentifierFieldName].Value, Is.EqualTo("Record 003"));
+				Assert.That(thirdArtifact[TextFieldName].Value, Is.EqualTo("Three"));
+				Assert.That(sut.CurrentLineNumber, Is.EqualTo(3));
+
+				Assert.That(sut.HasMoreRecords, Is.False);
+
+				// assert - Source identifiers are mapped to CurrentLineNumber
+				var firstRecordIdentifier = sut.SourceIdentifierValue(1);
+				Assert.That(firstRecordIdentifier, Is.EqualTo("Record 001"));
+				var secondRecordIdentifier = sut.SourceIdentifierValue(2);
+				Assert.That(secondRecordIdentifier, Is.EqualTo("Record 002"));
+				var thirdRecordIdentifier = sut.SourceIdentifierValue(3);
+				Assert.That(thirdRecordIdentifier, Is.EqualTo("Record 003"));
+			}
 		}
 
-		[Test]
-		public void GetListOfItemsFromStringBlankString()
+		private static DocumentField CreateField(string name, int artifactID, bool isIdentifier)
 		{
-			// Arrange
-			var items = string.Empty;
+			int fieldCategoryID = isIdentifier ? (int)FieldCategory.Identifier : (int)FieldCategory.Generic;
 
-			// Act
-			var retVal = LoadFileReader.GetStringArrayFromDelimitedFieldValue(items, ';').ToList();
-
-			// Assert
-			Assert.AreEqual(0, retVal.Count);
+			return new DocumentField(
+				fieldName: name,
+				fieldID: artifactID,
+				fieldTypeID: (int)FieldType.Varchar,
+				fieldCategoryID: fieldCategoryID,
+				codeTypeID: null,
+				fieldLength: 255,
+				associatedObjectTypeID: null,
+				useUnicode: true,
+				importBehavior: null,
+				guids: new[] { Guid.NewGuid() },
+				enableDataGrid: false);
 		}
 	}
 }
