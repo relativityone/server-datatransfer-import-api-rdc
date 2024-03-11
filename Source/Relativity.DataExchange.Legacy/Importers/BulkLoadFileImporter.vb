@@ -950,7 +950,7 @@ Namespace kCura.WinEDDS
 							End If
 
 							If _copyFileToRepository Then
-								If fileExists Then
+								If Not Me.DisableNativeLocationValidation AndAlso fileExists OrElse Me.GetFileExists(filename) Then
 									Dim guid As String = System.Guid.NewGuid().ToString()
 									Me.ImportFilesCount += 1
 									_jobCompleteNativeCount += 1
@@ -2030,24 +2030,23 @@ Namespace kCura.WinEDDS
 			Dim errorRecord As ErrorBeforeMassImportArgs = New ErrorBeforeMassImportArgs(currentLineNumber)
 			prePushErrorWriter.WriteErrorMessage(errorRecord)
 
-			Dim recordIdentifier As String = _artifactReader.SourceIdentifierValue(currentLineNumber)
 		    Dim ht As Hashtable 
 		    If line.Contains("Malware exception") Then
 		        ht = New Hashtable From {
 		            {"Message", "Malware exception"},' use only general message without path
 		            {"Line Number", currentLineNumber},
-		            {"Identifier", recordIdentifier},
+		            {"Identifier", _artifactReader.SourceIdentifierValue},
 		            {"Malware", line.Replace("Malware exception ","")} ' pass only the path
 		        }
 		    Else
 		        ht = New Hashtable From {
 		            {"Message", line},
 		            {"Line Number", currentLineNumber},
-		            {"Identifier", recordIdentifier}
+		            {"Identifier", _artifactReader.SourceIdentifierValue}
 		        }
 		    End If
 
-			RaiseReportError(ht, recordIdentifier, "client")
+			RaiseReportError(ht, _artifactReader.SourceIdentifierValue, "client")
 			WriteStatusLine(EventType2.Error, line)
 		End Sub
 

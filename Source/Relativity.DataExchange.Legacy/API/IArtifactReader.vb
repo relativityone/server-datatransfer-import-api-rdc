@@ -12,7 +12,6 @@ Namespace kCura.WinEDDS.Api
 		Sub ValidateColumnNames(invalidNameAction As Action(Of String)) 
 		Function CountRecords() As Int64?
 		Function SourceIdentifierValue() As String
-		Function SourceIdentifierValue(ByVal lineNumber As Integer) As String
 
 		Sub AdvanceRecord()
 		Sub Close()
