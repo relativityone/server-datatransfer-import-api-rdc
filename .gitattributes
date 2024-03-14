@@ -1,2 +1,4 @@
+Source/Relativity.DataExchange.NUnit.Integration/Resources/OutsideIn/Test-FileTypeId-List.zip filter=lfs diff=lfs merge=lfs -text
+Backups/DatabaseBackup/EDDS.bak filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 *.bak filter=lfs diff=lfs merge=lfs -text
