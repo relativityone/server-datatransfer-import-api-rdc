@@ -758,7 +758,7 @@ task PublishPackages -Description "Publishes packages to the NuGet feed" {
     $path = Join-Path $PackagesArtifactsDir "*.*"
     Get-ChildItem -Path $path -Filter $filter -File | ForEach-Object {
         $fileToUpload = $_.FullName
-        Write-Verbose "FileToUpload = $fileToUpload"
+        Write-Host "FileToUpload = $fileToUpload"
         $sendFileToRepoParameters = @{
             BaseURL = $ArtifactoryURL
             Repo = $ArtifactoryRepositoryName
@@ -776,7 +776,7 @@ task PublishPackages -Description "Publishes packages to the NuGet feed" {
     $duration = [System.DateTime]::Now - $startTime
     $totalBytesFriendly = $totalBytes.ToString("N0")
     $durationFriendly = $duration.ToString("c")
-    Write-Verbose "Artifactory Publish Results: $uploadedCount binaries ($totalBytesFriendly bytes total), which took $durationFriendly."
+    Write-Host "Artifactory Publish Results: $uploadedCount binaries ($totalBytesFriendly bytes total), which took $durationFriendly."
 }
 
 task SemanticVersions -Depends BuildVersion, PackageVersion -Description "Calculate and retrieve the semantic build and package versions" {

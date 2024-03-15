@@ -419,3 +419,13 @@ Branch: server-main
 
 ## Publishing Packages
 Packages are strictly published to Artifactory and no longer copied to the \\\\bld-pkgs.kcura.corp\\packages file share.
+
+## History
+
+The server-main branch was migrated from https://git.kcura.com/projects/DTX/repos/import-api-rdc/browse?at=refs%2Fheads%2Fserver-main by the Server Data Transfer Team. 
+Tag: 3.0.2-server 
+Branch: server-main
+
+## Maintainers
+This repository is owned by the Server Data Transfer Team. 
+#help-server-data-transfer

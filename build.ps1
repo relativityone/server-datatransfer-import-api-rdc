@@ -223,8 +223,8 @@ param(
 	[Switch]$TestOnWorkspaceWithNonDefaultCollation,
 	[Parameter()]
 	[String]$ReleasedVersionName,
-    [Parameter()]
-	[String]$PackageVersion=""
+	[Parameter(Mandatory=$False)]
+	[string]$PackageVersion = "1.0.0"
 )
 
 . $profile
@@ -232,16 +232,27 @@ $BaseDir = $PSScriptRoot
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
 $NuGetExe = Join-Path $ToolsDir 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-Write-Progress "Checking for NuGet in tools path..."
+
+$ToolsConfig = Join-Path $ToolsDir "packages.config"
+
+Write-Host "Checking for NuGet in tools path..."
 if (-Not (Test-Path $NuGetExe -Verbose:$VerbosePreference)) {
 	Write-Progress "Installing NuGet from $NugetUrl..."
 	Invoke-WebRequest $NuGetUrl -OutFile $NugetExe -Verbose:$VerbosePreference -ErrorAction Stop
 }
 
+Write-Host "Restoring tools from NuGet..."
+$NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "normal" } else { "quiet" }
+& $NugetExe install $ToolsConfig -o $ToolsDir -Verbosity $NuGetVerbosity
+
+if ($LASTEXITCODE -ne 0) {
+	Throw "An error occured while restoring NuGet tools."
+}
+
 Import-Module -Force "$ToolsDir\BuildHelpers.psm1" -ErrorAction Stop
-Install-NugetPackage -Name kCura.PSBuildTools -Version 0.9.8 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name kCura.PSBuildTools -Version 0.9.8 -NuGetEXE $NuGetEXE -ToolsDir $ToolsDir -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -ErrorAction Stop
-Install-NugetPackage -Name psake-rel -Version 5.0.0 -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name psake-rel -Version 5.0.0 -NuGetEXE $NuGetEXE -ToolsDir $ToolsDir -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "psake-rel\tools\psake\psake.psd1") -ErrorAction Stop
 Install-NugetPackage -Name ArtifactoryTools -Version 2022.9.12.52574 -ToolsDir $ToolsDir -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "ArtifactoryTools\ArtifactoryTools.psd1") -ErrorAction Stop
@@ -298,6 +309,7 @@ $Params = @{
 		TestOnWorkspaceWithNonDefaultCollation = $TestOnWorkspaceWithNonDefaultCollation
 		ReleasedVersionName = $ReleasedVersionName
         PackageVersion = $PackageVersion
+        NugetExe = $NugetExe
     }
 
     Verbose = $VerbosePreference
