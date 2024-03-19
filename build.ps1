@@ -223,8 +223,8 @@ param(
 	[Switch]$TestOnWorkspaceWithNonDefaultCollation,
 	[Parameter()]
 	[String]$ReleasedVersionName,
-	[Parameter(Mandatory=$False)]
-	[string]$PackageVersion = "1.0.0"
+	[Parameter()]
+	[string]$PackageVersion = ""
 )
 
 . $profile
