@@ -230,6 +230,7 @@ param(
 . $profile
 $BaseDir = $PSScriptRoot
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
+$NuGetFolder = Join-path $ToolsDir 'NuGet'
 $NuGetExe = Join-Path $ToolsDir 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
@@ -277,6 +278,8 @@ $Params = @{
         Root = $BaseDir
         ToolsDir = $ToolsDir
         TestReportFolderName = $TestReportFolderName
+        PackageVersion = $PackageVersion
+        NugetExe = $NugetExe
     }
     properties = @{
         Target = $Target
@@ -308,8 +311,6 @@ $Params = @{
 		SqlDataComparer = $SqlDataComparer
 		TestOnWorkspaceWithNonDefaultCollation = $TestOnWorkspaceWithNonDefaultCollation
 		ReleasedVersionName = $ReleasedVersionName
-        PackageVersion = $PackageVersion
-        NugetExe = $NugetExe
     }
 
     Verbose = $VerbosePreference
