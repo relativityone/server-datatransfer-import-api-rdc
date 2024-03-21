@@ -223,15 +223,15 @@ param(
 	[Switch]$TestOnWorkspaceWithNonDefaultCollation,
 	[Parameter()]
 	[String]$ReleasedVersionName,
-	[Parameter()]
-	[string]$PackageVersion = ""
+	[Parameter(Mandatory=$False)]
+	[string]$PackageVersion = "1.0.0"
 )
 
 . $profile
 $BaseDir = $PSScriptRoot
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
 $NuGetFolder = Join-path $ToolsDir 'NuGet'
-$NuGetExe = Join-Path $ToolsDir 'nuget.exe'
+$NugetExe = Join-Path $NuGetFolder 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
 $ToolsConfig = Join-Path $ToolsDir "packages.config"
