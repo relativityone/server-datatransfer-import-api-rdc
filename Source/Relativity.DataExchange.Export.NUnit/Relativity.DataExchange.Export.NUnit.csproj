@@ -55,10 +55,15 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContainerFactoryTests.cs" />
+    <Compile Include="ExportInstallerTests.cs" />
     <Compile Include="ExportRequestBuilderTests.cs" />
     <Compile Include="FileNameProviderContainerFactoryTests.cs" />
+    <Compile Include="FilePathTransformerTests.cs" />
     <Compile Include="FileShareSettingsServiceTests.cs" />
     <Compile Include="ImagesRollupManagerTests.cs" />
+    <Compile Include="ImagesRollupTests.cs" />
+    <Compile Include="ImageWrapperTests.cs" />
     <Compile Include="LinePdfFilePathTests.cs" />
     <Compile Include="LongTextObjectManagerDownloaderTests.cs" />
     <Compile Include="LongTextTapiBridgeFactoryTests.cs" />
@@ -68,6 +73,7 @@
     <Compile Include="PdfFilePathProviderTests.cs" />
     <Compile Include="ProductionExportFileNameProviderTests.cs" />
     <Compile Include="RelativeFilePathProviderTests.cs" />
+    <Compile Include="RelativityFileShareSettingsTests.cs" />
     <Compile Include="RetryableStreamWriterTests.cs" />
     <Compile Include="RetryableStreamWriterTestsRetries.cs" />
     <Compile Include="SearchListSelectorTest.cs">
@@ -82,6 +88,7 @@
     <Compile Include="ViewFieldInfoMockFactory.cs" />
     <Compile Include="VolumeAndSubdirectoryValidatorTests.cs" />
     <Compile Include="VolumeManagerTests.cs" />
+    <Compile Include="WritersRetryPolicyTests.cs" />
     <Compile Include="WriterStub.cs" />
     <Compile Include="..\..\Version\AssemblySharedInfo.cs">
       <Link>Properties\AssemblySharedInfo.cs</Link>
@@ -191,6 +198,7 @@
     <Compile Include="PrefixFilePathTransformerTests.cs" />
     <Compile Include="ProgressHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WriterStubTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\buildtools\CustomDictionary.xml">

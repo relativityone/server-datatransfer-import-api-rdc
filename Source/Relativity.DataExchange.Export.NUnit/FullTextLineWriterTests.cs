@@ -107,5 +107,5 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			return builder.ToString();
 		}
-	}
+    }
 }
