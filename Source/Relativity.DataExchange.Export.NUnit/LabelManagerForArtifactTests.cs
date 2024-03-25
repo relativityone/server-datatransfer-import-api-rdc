@@ -7,12 +7,14 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using global::NUnit.Framework;
-
-	using Moq;
+    using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2.Directories;
+    using System.Threading;
 
-	[TestFixture]
+    using kCura.WinEDDS.Exporters;
+
+    [TestFixture]
 	public class LabelManagerForArtifactTests
 	{
 		private LabelManagerForArtifact _instance;
@@ -65,5 +67,17 @@ namespace Relativity.DataExchange.Export.NUnit
 
 			this._labelManager.Verify(manager => manager.GetCurrentPdfSubdirectoryLabel(), Times.Once);
 		}
-	}
+
+        [Test]
+        public void InitializeFor_DoesNotThrowException()
+        {
+            // Arrange
+            var artifacts = new ObjectExportInfo[0]; // Provide necessary input, if any
+            var volumePredictions = new VolumePredictions[0]; // Provide necessary input, if any
+            var cancellationToken = CancellationToken.None;
+
+            // Act & Assert
+            Assert.DoesNotThrow(() => this._instance.InitializeFor(artifacts, volumePredictions, cancellationToken));
+        }
+    }
 }

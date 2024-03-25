@@ -10,6 +10,7 @@ namespace Relativity.DataExchange.Export.NUnit
 	using System.Collections.Generic;
 	using System.Linq;
     using System.Net;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -328,5 +329,32 @@ namespace Relativity.DataExchange.Export.NUnit
 				null,
 				cloudInstance);
 		}
-	}
+
+		[Test]
+		public async Task ReadFileSharesAsync_ShouldReturnWithoutReadingFileShares_WhenReadFileSharesIsTrue()
+		{
+			// ARRANGE
+			_instance = new FileShareSettingsService(
+				_status.Object,
+				_tapiObjectService.Object,
+				_logger.Object,
+				_exportFile);
+
+			// Set _readFileShares to true
+			typeof(FileShareSettingsService)
+				.GetField("_readFileShares", BindingFlags.NonPublic | BindingFlags.Instance)
+				.SetValue(_instance, true);
+
+			// ACT
+			await _instance.ReadFileSharesAsync(CancellationToken.None).ConfigureAwait(false); // Add ConfigureAwait(false) here
+
+			// ASSERT
+			// Verify that no interactions occurred with the dependencies
+			_status.Verify(x => x.WriteStatusLineWithoutDocCount(It.IsAny<EventType2>(), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
+			_tapiObjectService.Verify(x => x.GetWorkspaceDefaultFileShareAsync(It.IsAny<TapiBridgeParameters2>(), It.IsAny<ILog>(), It.IsAny<CancellationToken>()), Times.Never);
+			_tapiObjectService.Verify(x => x.SearchFileStorageAsync(It.IsAny<TapiBridgeParameters2>(), It.IsAny<ILog>(), It.IsAny<CancellationToken>()), Times.Never);
+			_logger.Verify(x => x.LogInformation(It.IsAny<string>(), It.IsAny<object[]>()), Times.Never);
+			_logger.Verify(x => x.LogWarning(It.IsAny<string>(), It.IsAny<object[]>()), Times.Never);
+		}
+    }
 }

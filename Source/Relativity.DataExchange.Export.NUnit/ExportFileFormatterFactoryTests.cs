@@ -7,10 +7,10 @@
 namespace Relativity.DataExchange.Export.NUnit
 {
 	using System;
+    using System.Reflection;
 
-	using global::NUnit.Framework;
-
-	using kCura.WinEDDS;
+    using global::NUnit.Framework;
+    using kCura.WinEDDS;
 	using kCura.WinEDDS.Exporters;
 
 	using Moq;
@@ -46,5 +46,20 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			Assert.IsInstanceOf(formatterType, retFormatter);
 		}
+
+        [Test]
+        public void Parameterless_Constructor_Initializes_FieldNameProvider_With_New_Instance()
+        {
+            // Act
+            var factory = new ExportFileFormatterFactory();
+
+            // Get the private _fieldNameProvider field using reflection
+            var fieldInfo = typeof(ExportFileFormatterFactory).GetField("_fieldNameProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // Assert
+            Assert.IsNotNull(factory); // Ensure constructor succeeded
+            Assert.IsNotNull(fieldInfo.GetValue(factory)); // Ensure _fieldNameProvider is not null
+            Assert.IsInstanceOf<FieldNameProvider>(fieldInfo.GetValue(factory)); // Ensure correct type
+        }
     }
 }

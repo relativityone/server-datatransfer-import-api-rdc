@@ -14,7 +14,9 @@ namespace Relativity.DataExchange.Export.NUnit
 
 	using kCura.WinEDDS.Exporters;
 
-	using Moq;
+    using Microsoft.SqlServer.Management.Common;
+
+    using Moq;
 
 	using Relativity.DataExchange.Export.VolumeManagerV2;
 	using Relativity.DataExchange.Export.VolumeManagerV2.Batches;
@@ -94,5 +96,23 @@ namespace Relativity.DataExchange.Export.NUnit
 			// ASSERT
 			this._batchState.Verify(x => x.RestoreState(), Times.Once);
 		}
-	}
+
+        [Test]
+        public async Task ItShouldReturnWhenCancellationIsRequested()
+        {
+            // Arrange
+            ObjectExportInfo[] artifacts = new ObjectExportInfo[1];
+            VolumePredictions[] volumePredictions = new VolumePredictions[1];
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel(); // Request cancellation
+
+            // Act
+            await this._instance.ExportAsync(artifacts, volumePredictions, cancellationTokenSource.Token).ConfigureAwait(false);
+
+            // Assert
+            // You don't need assertions here because if the method returns without throwing an exception,
+            // it means it successfully exited when cancellation was requested.
+        }
+
+    }
 }
