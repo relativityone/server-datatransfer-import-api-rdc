@@ -55,11 +55,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContainerFactoryTests.cs" />
-    <Compile Include="ExportInstallerTests.cs" />
     <Compile Include="ExportRequestBuilderTests.cs" />
     <Compile Include="FileNameProviderContainerFactoryTests.cs" />
-    <Compile Include="FilePathTransformerTests.cs" />
     <Compile Include="FileShareSettingsServiceTests.cs" />
     <Compile Include="ImagesRollupManagerTests.cs" />
     <Compile Include="ImagesRollupTests.cs" />
