@@ -247,9 +247,9 @@ $NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "normal" } el
 
 
 Import-Module -Force "$ToolsDir\BuildHelpers.psm1" -ErrorAction Stop
-Install-NugetPackage -Name kCura.PSBuildTools -Version 0.9.8 -NuGetEXE $NuGetEXE -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name kCura.PSBuildTools -Version 0.9.8 -ToolsDir $ToolsDir -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -ErrorAction Stop
-Install-NugetPackage -Name psake-rel -Version 5.0.0 -NuGetEXE $NuGetEXE -ToolsDir $ToolsDir -ErrorAction Stop
+Install-NugetPackage -Name psake-rel -Version 5.0.0 -ToolsDir $ToolsDir -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "psake-rel\tools\psake\psake.psd1") -ErrorAction Stop
 Install-NugetPackage -Name ArtifactoryTools -Version 2022.9.12.52574 -ToolsDir $ToolsDir -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "ArtifactoryTools\ArtifactoryTools.psd1") -ErrorAction Stop
