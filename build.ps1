@@ -234,7 +234,6 @@ $NuGetFolder = Join-path $ToolsDir 'NuGet'
 $NugetExe = Join-Path $NuGetFolder 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
-$ToolsConfig = Join-Path $ToolsDir "packages.config"
 
 Write-Host "Checking for NuGet in tools path..."
 if (-Not (Test-Path $NuGetExe -Verbose:$VerbosePreference)) {
@@ -246,9 +245,6 @@ Write-Host "Restoring tools from NuGet..."
 $NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "normal" } else { "quiet" }
 & $NugetExe install $ToolsConfig -o $ToolsDir -Verbosity $NuGetVerbosity
 
-if ($LASTEXITCODE -ne 0) {
-	Throw "An error occured while restoring NuGet tools."
-}
 
 Import-Module -Force "$ToolsDir\BuildHelpers.psm1" -ErrorAction Stop
 Install-NugetPackage -Name kCura.PSBuildTools -Version 0.9.8 -NuGetEXE $NuGetEXE -ToolsDir $ToolsDir -ErrorAction Stop
