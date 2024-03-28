@@ -13,12 +13,11 @@ resources:
       type: github
       name: relativityone/azdo-templates   # organization and name of repo to reference
       endpoint: relativityone
-      ref: 'refs/heads/main'
+      ref: 'refs/heads/main'   # branch to reference
 
 stages:
 - template: libraryci-server.yml@azdo_templates  # pipeline yml file reference
   parameters:
-    BuildInstaller: true
     buildSteps:
       - checkout: self
-      - checkout: azdo_templates
+      - checkout: azdo_templates 
