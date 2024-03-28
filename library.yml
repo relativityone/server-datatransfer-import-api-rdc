@@ -20,4 +20,4 @@ stages:
   parameters:
     buildSteps:
       - checkout: self
-      - checkout: azdo_templates
+      - checkout: azdo_templates 
